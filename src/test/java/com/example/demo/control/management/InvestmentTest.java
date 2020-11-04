@@ -31,7 +31,7 @@ class InvestmentTest {
     public void shouldGetLoss() {
         assertThat(investment.getProfitOrLoss())
                 .isNegative()
-                .isEqualTo(BigDecimal.valueOf(-50));
+                .isEqualTo(BigDecimal.valueOf(-10));
     }
 
 }

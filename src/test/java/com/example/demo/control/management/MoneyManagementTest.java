@@ -36,14 +36,14 @@ class MoneyManagementTest {
     public void getPortfolioRisk() {
         double portfolioRisk = moneyManagement.getPortfolioRiskInPercent();
 
-        assertThat(portfolioRisk).isCloseTo(91.818, offset(0.001));
+        assertThat(portfolioRisk).isCloseTo(5.454, offset(0.001));
     }
 
     @Test
     public void getTotalRisk() {
         double totalRisk = moneyManagement.getTotalRiskInPercent();
 
-        assertThat(totalRisk).isCloseTo(0.336, offset(0.001));
+        assertThat(totalRisk).isCloseTo(0.02, offset(0.001));
     }
 
 }

@@ -52,7 +52,7 @@ class InvestmentsTest {
 
     @Test
     void shouldGetTotalLossAbs() {
-        assertThat(investments.getTotalLossAbs()).isEqualTo(BigDecimal.valueOf(101));
+        assertThat(investments.getTotalLossAbs()).isEqualTo(BigDecimal.valueOf(6));
     }
 
 }

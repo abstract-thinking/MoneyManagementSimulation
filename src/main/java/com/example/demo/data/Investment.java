@@ -40,6 +40,6 @@ public class Investment {
     }
 
     public BigDecimal getProfitOrLoss() {
-        return getSum().subtract(getNotionalRevenue()).subtract(purchaseCost);
+        return getNotionalRevenue().subtract(getSum()).subtract(purchaseCost);
     }
 }
