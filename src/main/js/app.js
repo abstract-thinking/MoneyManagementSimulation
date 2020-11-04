@@ -10,9 +10,8 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        client({method: 'GET', path: '/api/investments'}).done(
-            response => {
-                this.setState({investments: response.entity._embedded.investments});
+        client({method: 'GET', path: '/api/investments'}).done(response => {
+            this.setState({investments: response.entity._embedded.investments});
         });
     }
 
@@ -23,35 +22,7 @@ class App extends React.Component {
     }
 }
 
-class MoneyManagement extends React.Component {
-
-
-
-    render() {
-        const investments = this.props.investments.map(
-            investment => <Investment key={investment._links.self.href} investment={investment}/>
-        );
-        return (
-            <table>
-                <tbody>
-                    <tr>
-                        <th>Name</th>
-                        <th>Quantity</th>
-                        <th>Purchase Price</th>
-                        <th>Notional Sales Price</th>
-                        <th>Purchase Cost</th>
-                        <th>Notional Revenue</th>
-                        <th>Sum</th>
-                        <th>Profit or Loss</th>
-                    </tr>
-                    {investments}
-                </tbody>
-            </table>
-        )
-    }
-}
-
-class InvestmentList extends React.Component {
+class InvestmentList extends React.Component{
     render() {
         const investments = this.props.investments.map(
             investment => <Investment key={investment._links.self.href} investment={investment}/>
