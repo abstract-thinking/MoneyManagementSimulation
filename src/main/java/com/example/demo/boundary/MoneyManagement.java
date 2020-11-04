@@ -1,5 +1,6 @@
-package com.example.demo.control.managment;
+package com.example.demo.boundary;
 
+import com.example.demo.control.managment.Investments;
 import com.example.demo.data.MoneyManagementValues;
 
 import java.math.BigDecimal;

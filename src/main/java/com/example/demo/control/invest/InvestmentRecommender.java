@@ -1,7 +1,7 @@
 package com.example.demo.control.invest;
 
-import com.example.demo.boundary.InvestmentRecommendation;
 import com.example.demo.boundary.CompanyResult;
+import com.example.demo.boundary.InvestmentRecommendation;
 import com.example.demo.data.Investment;
 import com.example.demo.data.InvestmentRepository;
 import com.example.demo.service.rsl.RslService;
@@ -10,7 +10,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -21,7 +20,6 @@ import java.util.Map;
 import static java.util.Comparator.comparingDouble;
 
 @Component
-@PropertySource("classpath:application.properties")
 public class InvestmentRecommender {
 
     private final String exchange = "NASDAQ 100";

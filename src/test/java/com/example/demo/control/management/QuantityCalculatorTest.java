@@ -1,6 +1,6 @@
 package com.example.demo.control.management;
 
-import com.example.demo.control.managment.MoneyManagement;
+import com.example.demo.boundary.MoneyManagement;
 import com.example.demo.data.MoneyManagementValues;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

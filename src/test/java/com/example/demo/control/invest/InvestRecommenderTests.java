@@ -40,21 +40,18 @@ public class InvestRecommenderTests {
         }
     }
 
-    // @Test
+    @Test
     public void shouldGetRecommendations() {
         ResourceLoader resourceLoader = new DefaultResourceLoader();
-        // TODO: Add file
         Resource resource = resourceLoader.getResource("classpath:data/content.html");
-
         when(rslService.fetchTable()).thenReturn(asString(resource));
 
         List<InvestmentRecommendation> investmentRecommendations = recommender.getRecommendations();
 
         assertThat(investmentRecommendations).hasSize(2);
-
         assertThat(investmentRecommendations).contains(
-                createRecommendation("PayPal Holdings Inc.", 1.16),
-                createRecommendation("Fiserv Inc.", 1.01));
+                createRecommendation("PayPal Holdings Inc.", 1.08),
+                createRecommendation("Fiserv Inc.", 0.94));
     }
 
     private InvestmentRecommendation createRecommendation(String company, Double companyRsl) {
@@ -62,7 +59,7 @@ public class InvestRecommenderTests {
                 .company(company)
                 .companyRsl(companyRsl)
                 .exchange("NASDAQ 100")
-                .exchangeRsl(1.12)
+                .exchangeRsl(1.05)
                 .build();
     }
 }

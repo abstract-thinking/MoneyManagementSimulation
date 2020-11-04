@@ -29,7 +29,7 @@ public class DatabaseLoader implements CommandLineRunner {
                 .build());
 
         this.investmentRepository.save(Investment.builder()
-                .name("Paypal Inc.")
+                .name("PayPal Holdings Inc.")
                 .quantity(13)
                 .purchasePrice(BigDecimal.valueOf(166.38))
                 .notionalSalesPrice(BigDecimal.valueOf(145.67))
