@@ -1,12 +1,13 @@
 package com.example.demo.control.management;
 
 import com.example.demo.control.managment.MoneyManagement;
+import com.example.demo.data.MoneyManagementValues;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static com.example.demo.control.management.PortfolioTest.createPortfolio;
+import static com.example.demo.control.management.InvestmentsTest.createInvestments;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.offset;
 
@@ -16,7 +17,12 @@ class MoneyManagementTest {
 
     @BeforeEach
     private void setUp() {
-        moneyManagement = new MoneyManagement(BigDecimal.valueOf(30000), 2, createPortfolio());
+        MoneyManagementValues moneyManagementValues = MoneyManagementValues.builder()
+                .totalCapital(BigDecimal.valueOf(30000))
+                .individualPositionRiskInPercent(2)
+                .build();
+
+        moneyManagement = new MoneyManagement(moneyManagementValues, createInvestments());
     }
 
     @Test

@@ -1,23 +1,34 @@
-package com.example.demo.control.managment;
+package com.example.demo.data;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.NonNull;
-import lombok.Value;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 
 import java.math.BigDecimal;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 
-@Value
+@Data
+@EqualsAndHashCode
+@Entity
 @Builder
-public class PortfolioEntry {
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString
+public class Investment {
 
-    @NonNull
+    @Id
+    @GeneratedValue
+    private Long id;
+
     String name;
     int quantity;
-    @NonNull
     BigDecimal purchasePrice;
-    @NonNull
     BigDecimal purchaseCost;
-    @NonNull
     BigDecimal notionalSalesPrice;
 
     public BigDecimal getSum() {

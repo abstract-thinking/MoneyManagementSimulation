@@ -2,12 +2,14 @@ package com.example.demo.control.invest;
 
 import com.example.demo.boundary.InvestmentRecommendation;
 import com.example.demo.boundary.CompanyResult;
+import com.example.demo.data.Investment;
+import com.example.demo.data.InvestmentRepository;
 import com.example.demo.service.rsl.RslService;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Component;
 
@@ -22,15 +24,15 @@ import static java.util.Comparator.comparingDouble;
 @PropertySource("classpath:application.properties")
 public class InvestmentRecommender {
 
-    @Value("${rsl.exchange}")
-    private String exchange;
+    private final String exchange = "NASDAQ 100";
 
-    @Value("#{'${rsl.companies}'.split(',')}")
-    private List<String> companies;
+    private final InvestmentRepository repository;
 
     private final RslService rslService;
 
-    public InvestmentRecommender(RslService rslService) {
+    @Autowired
+    public InvestmentRecommender(InvestmentRepository repository, RslService rslService) {
+        this.repository = repository;
         this.rslService = rslService;
     }
 
@@ -39,8 +41,8 @@ public class InvestmentRecommender {
         Map<String, Double> result = parseContent(content);
 
         List<InvestmentRecommendation> recommendations = new ArrayList<>();
-        for (String company : companies) {
-            recommendations.add(createRecommendation(company, result));
+        for (Investment entry : repository.findAll()) {
+            recommendations.add(createRecommendation(entry.getName(), result));
         }
 
         return recommendations;
@@ -52,8 +54,8 @@ public class InvestmentRecommender {
         Element table = doc.select("table").get(0);
         Elements rows = table.select("tr");
 
-        Map<String, Double> result = new HashMap<>(companies.size());
-        for (int i = 2; i < rows.size(); i++) {
+        Map<String, Double> result = new HashMap<>();
+        for (int i = 2; i < rows.size(); ++i) {
             Elements cols = rows.get(i).select("td");
             result.put(cols.get(2).text(), Double.parseDouble(cols.get(6).text().replace(',', '.')));
         }
@@ -81,7 +83,7 @@ public class InvestmentRecommender {
 
         companyResults.sort(comparingDouble(CompanyResult::getRsl).reversed());
 
-        return  companyResults.subList(0, 10);
+        return companyResults.subList(0, 10);
     }
 }
 

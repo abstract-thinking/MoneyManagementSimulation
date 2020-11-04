@@ -1,15 +1,15 @@
 package com.example.demo.control.management;
 
-import com.example.demo.control.managment.PortfolioEntry;
+import com.example.demo.data.Investment;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class PortfolioEntryTest {
+class InvestmentTest {
 
-    private final PortfolioEntry portfolioEntry = PortfolioEntry.builder()
+    private final Investment investment = Investment.builder()
             .name("ABC")
             .quantity(2)
             .purchasePrice(BigDecimal.TEN)
@@ -19,17 +19,17 @@ class PortfolioEntryTest {
 
     @Test
     public void shouldGetSum() {
-        assertThat(portfolioEntry.getSum()).isEqualTo(BigDecimal.valueOf(20));
+        assertThat(investment.getSum()).isEqualTo(BigDecimal.valueOf(20));
     }
 
     @Test
     public void shouldGetNotationalRevenueResult() {
-        assertThat(portfolioEntry.getNotionalRevenue()).isEqualTo(BigDecimal.valueOf(40));
+        assertThat(investment.getNotionalRevenue()).isEqualTo(BigDecimal.valueOf(40));
     }
 
     @Test
     public void shouldGetLoss() {
-        assertThat(portfolioEntry.getProfitOrLoss())
+        assertThat(investment.getProfitOrLoss())
                 .isNegative()
                 .isEqualTo(BigDecimal.valueOf(-50));
     }

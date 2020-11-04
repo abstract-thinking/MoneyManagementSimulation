@@ -1,5 +1,6 @@
 package com.example.demo.control.managment;
 
+import com.example.demo.data.Investment;
 import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
@@ -8,26 +9,26 @@ import java.util.List;
 import static java.math.BigDecimal.ZERO;
 
 @AllArgsConstructor
-public class Portfolio {
+public class Investments {
 
-    private final List<PortfolioEntry> portfolioEntries;
+    private final List<Investment> investments;
 
     public BigDecimal getTotalSum() {
-        return portfolioEntries.stream()
-                .map(PortfolioEntry::getSum)
+        return investments.stream()
+                .map(Investment::getSum)
                 .reduce(ZERO, BigDecimal::add);
     }
 
     public BigDecimal getTotalRevenue() {
-        return portfolioEntries.stream()
-                .map(PortfolioEntry::getNotionalRevenue)
+        return investments.stream()
+                .map(Investment::getNotionalRevenue)
                 .reduce(ZERO, BigDecimal::add);
     }
 
     public BigDecimal getTotalLossAbs() {
-        return portfolioEntries.stream()
+        return investments.stream()
                 .filter(i -> i.getProfitOrLoss().signum() == -1)
-                .map(PortfolioEntry::getProfitOrLoss)
+                .map(Investment::getProfitOrLoss)
                 .reduce(ZERO, BigDecimal::add)
                 .abs();
     }

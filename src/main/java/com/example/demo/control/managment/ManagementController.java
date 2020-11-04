@@ -1,37 +1,39 @@
 package com.example.demo.control.managment;
 
-import com.example.demo.control.managment.MoneyManagement;
-import com.example.demo.control.managment.Portfolio;
-import com.example.demo.control.managment.PortfolioEntry;
+
+
+import com.example.demo.data.Investment;
+import com.example.demo.data.InvestmentRepository;
+import com.example.demo.data.MoneyManagementRepository;
+import com.example.demo.data.MoneyManagementValues;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
 public class ManagementController {
 
+    private final InvestmentRepository investmentRepository;
+
+    private final MoneyManagementRepository moneyManagementRepository;
+
+    @Autowired
+    public ManagementController(InvestmentRepository investmentRepository, MoneyManagementRepository moneyManagementRepository) {
+        this.investmentRepository = investmentRepository;
+        this.moneyManagementRepository = moneyManagementRepository;
+    }
+
     public MoneyManagement getMoneyManagement() {
-        PortfolioEntry entry1 = PortfolioEntry.builder()
-                .name("Fiserv Inc.")
-                .quantity(210)
-                .purchasePrice(BigDecimal.valueOf(59.90))
-                .notionalSalesPrice(BigDecimal.valueOf(89.00))
-                .purchaseCost(BigDecimal.valueOf(30.00))
-                .build();
+        List<Investment> investments = new ArrayList<>();
+        for (Investment entry : investmentRepository.findAll()) {
+            investments.add(entry);
+        }
 
-        PortfolioEntry entry2 = PortfolioEntry.builder()
-                .name("Paypal Inc.")
-                .quantity(13)
-                .purchasePrice(BigDecimal.valueOf(166.38))
-                .notionalSalesPrice(BigDecimal.valueOf(145.67))
-                .purchaseCost(BigDecimal.valueOf(30.00))
-                .build();
-
-        List<PortfolioEntry> portfolioEntries = new ArrayList<>();
-        portfolioEntries.add(entry1);
-        portfolioEntries.add(entry2);
-
-        return new MoneyManagement(BigDecimal.valueOf(30000), 2, new Portfolio(portfolioEntries));
+        Iterable<MoneyManagementValues> all = moneyManagementRepository.findAll();
+        return new MoneyManagement(all.iterator().next(), new Investments(investments));
     }
 }
 

@@ -1,6 +1,8 @@
 package com.example.demo.control.management;
 
 import com.example.demo.control.managment.MoneyManagement;
+import com.example.demo.data.MoneyManagementValues;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
@@ -18,7 +20,19 @@ class QuantityCalculatorTest {
 
     private static final BigDecimal PURCHASE_COST = BigDecimal.valueOf(30);
 
-    private final MoneyManagement moneyManagement = new MoneyManagement(BigDecimal.valueOf(31500), 2);
+    private static final double POSITION_RISK = 2;
+
+    private MoneyManagement moneyManagement;
+
+    @BeforeEach
+    public void setUp() {
+        MoneyManagementValues moneyManagementValues = MoneyManagementValues.builder()
+                .totalCapital(BigDecimal.valueOf(31500))
+                .individualPositionRiskInPercent(2)
+                .build();
+
+        moneyManagement = new MoneyManagement(moneyManagementValues);
+    }
 
     @Test
     public void calculate() {

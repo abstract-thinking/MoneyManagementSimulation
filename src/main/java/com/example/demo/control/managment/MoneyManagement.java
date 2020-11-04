@@ -1,5 +1,7 @@
 package com.example.demo.control.managment;
 
+import com.example.demo.data.MoneyManagementValues;
+
 import java.math.BigDecimal;
 import java.util.Collections;
 
@@ -11,16 +13,16 @@ public class MoneyManagement {
 
     private final double individualPositionRiskInPercent;
 
-    private final Portfolio portfolio;
+    private final Investments investments;
 
-    public MoneyManagement(BigDecimal totalCapital, double individualPositionRiskInPercent) {
-        this(totalCapital, individualPositionRiskInPercent, new Portfolio(Collections.emptyList()));
+    public MoneyManagement(MoneyManagementValues moneyManagementValues) {
+        this(moneyManagementValues, new Investments(Collections.emptyList()));
     }
 
-    public MoneyManagement(BigDecimal totalCapital, double individualPositionRiskInPercent, Portfolio portfolio) {
-        this.totalCapital = requireNonNull(totalCapital);
-        this.individualPositionRiskInPercent = individualPositionRiskInPercent;
-        this.portfolio = requireNonNull(portfolio);
+    public MoneyManagement(MoneyManagementValues moneyManagementValues, Investments investments) {
+        this.totalCapital = requireNonNull(moneyManagementValues.getTotalCapital());
+        this.individualPositionRiskInPercent = moneyManagementValues.getIndividualPositionRiskInPercent();
+        this.investments = requireNonNull(investments);
     }
 
     public BigDecimal getIndividualPositionRisk() {
@@ -28,10 +30,10 @@ public class MoneyManagement {
     }
 
     public double getPortfolioRiskInPercent() {
-        return portfolio.getTotalLossAbs().doubleValue() / portfolio.getTotalSum().doubleValue() * 100;
+        return investments.getTotalLossAbs().doubleValue() / investments.getTotalSum().doubleValue() * 100;
     }
 
     public double getTotalRiskInPercent() {
-        return portfolio.getTotalLossAbs().doubleValue() / totalCapital.doubleValue() * 100;
+        return investments.getTotalLossAbs().doubleValue() / totalCapital.doubleValue() * 100;
     }
 }
