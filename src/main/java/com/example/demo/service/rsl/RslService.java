@@ -32,7 +32,7 @@ public class RslService {
         map.add("seoTag", "NASDAQ-100-Index");
         map.add("sortierung", "idkRelativeStrengthLevy");
         map.add("ascdesc", "DESC");
-        map.add("ajax", "1");
+        map.add("ajax", "0");
 
         return map;
     }
