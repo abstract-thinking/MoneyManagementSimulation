@@ -43,6 +43,7 @@ public class InvestRecommenderTests {
     @Test
     public void shouldGetRecommendations() {
         ResourceLoader resourceLoader = new DefaultResourceLoader();
+        // TODO: Add file
         Resource resource = resourceLoader.getResource("classpath:data/content.html");
 
         when(rslService.fetchTable()).thenReturn(asString(resource));
