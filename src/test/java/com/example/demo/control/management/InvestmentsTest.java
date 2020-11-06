@@ -13,7 +13,7 @@ import static java.math.BigDecimal.ONE;
 import static java.math.BigDecimal.TEN;
 import static org.assertj.core.api.Assertions.assertThat;
 
-class InvestmentsTest {
+public class InvestmentsTest {
 
     private Investments investments;
 

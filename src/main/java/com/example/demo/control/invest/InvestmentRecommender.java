@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +81,10 @@ public class InvestmentRecommender {
         }
 
         companyResults.sort(comparingDouble(CompanyResult::getRsl).reversed());
+
+        if (companyResults.size() < 10) {
+            return Collections.emptyList();
+        }
 
         return companyResults.subList(0, 10);
     }
