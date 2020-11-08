@@ -1,5 +1,6 @@
 package com.example.demo.boundary;
 
+import com.example.demo.data.MoneyManagement;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;

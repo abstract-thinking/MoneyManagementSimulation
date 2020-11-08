@@ -29,7 +29,6 @@ public class InvestRecommendationBoundary {
     public List<CompanyResult> rslCompanies() {
         log.info("Companies invoked");
 
-
         return recommender.getTopRsl();
     }
 }

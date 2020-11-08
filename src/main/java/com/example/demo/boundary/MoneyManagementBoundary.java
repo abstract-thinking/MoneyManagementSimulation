@@ -1,6 +1,7 @@
 package com.example.demo.boundary;
 
 import com.example.demo.control.managment.ManagementController;
+import com.example.demo.data.MoneyManagement;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -5,6 +5,7 @@ import com.example.demo.boundary.InvestmentRecommendation;
 import com.example.demo.data.Investment;
 import com.example.demo.data.InvestmentRepository;
 import com.example.demo.service.rsl.RslService;
+import lombok.extern.slf4j.Slf4j;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -20,6 +21,7 @@ import java.util.Map;
 
 import static java.util.Comparator.comparingDouble;
 
+@Slf4j
 @Component
 public class InvestmentRecommender {
 
@@ -37,6 +39,7 @@ public class InvestmentRecommender {
 
     public List<InvestmentRecommendation> getRecommendations() {
         String content = rslService.fetchTable();
+        log.info("Received content: {}", content);
         Map<String, Double> result = parseContent(content);
 
         List<InvestmentRecommendation> recommendations = new ArrayList<>();
@@ -50,7 +53,8 @@ public class InvestmentRecommender {
     private Map<String, Double> parseContent(String content) {
         Document doc = Jsoup.parse(content);
 
-        Element table = doc.select("table").get(0);
+        //  <table class="extendetKursliste filterTable ov">
+        Element table = doc.select("table").get(3);
         Elements rows = table.select("tr");
 
         Map<String, Double> result = new HashMap<>();
@@ -73,7 +77,10 @@ public class InvestmentRecommender {
 
     public List<CompanyResult> getTopRsl() {
         String content = rslService.fetchTable();
+        log.info("Received content: {}", content);
+
         Map<String, Double> result = parseContent(content);
+        log.info("Result: {}", result);
 
         List<CompanyResult> companyResults = new ArrayList<>();
         for (Map.Entry<String, Double> entry : result.entrySet()) {

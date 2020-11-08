@@ -1,7 +1,6 @@
 package com.example.demo.control.management;
 
-import com.example.demo.boundary.MoneyManagement;
-import com.example.demo.data.MoneyManagementValues;
+import com.example.demo.data.MoneyManagement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -26,12 +25,10 @@ class QuantityCalculatorTest {
 
     @BeforeEach
     public void setUp() {
-        MoneyManagementValues moneyManagementValues = MoneyManagementValues.builder()
+        moneyManagement = MoneyManagement.builder()
                 .totalCapital(BigDecimal.valueOf(31500))
                 .individualPositionRiskInPercent(2)
                 .build();
-
-        moneyManagement = new MoneyManagement(moneyManagementValues);
     }
 
     @Test

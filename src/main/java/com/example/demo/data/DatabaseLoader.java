@@ -19,13 +19,21 @@ public class DatabaseLoader implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... strings) throws Exception {
+    public void run(String... strings) {
+        MoneyManagement moneyManagement = MoneyManagement.builder()
+                .totalCapital(BigDecimal.valueOf(30000))
+                .individualPositionRiskInPercent(2)
+                .build();
+
+        this.moneyManagementRepository.save(moneyManagement);
+
         this.investmentRepository.save(Investment.builder()
                 .name("Fiserv Inc.")
                 .quantity(210)
                 .purchasePrice(BigDecimal.valueOf(59.90))
                 .notionalSalesPrice(BigDecimal.valueOf(89.00))
                 .purchaseCost(BigDecimal.valueOf(30.00))
+                .moneyManagement(moneyManagement)
                 .build());
 
         this.investmentRepository.save(Investment.builder()
@@ -34,11 +42,7 @@ public class DatabaseLoader implements CommandLineRunner {
                 .purchasePrice(BigDecimal.valueOf(166.38))
                 .notionalSalesPrice(BigDecimal.valueOf(145.67))
                 .purchaseCost(BigDecimal.valueOf(30.00))
-                .build());
-
-        this.moneyManagementRepository.save(MoneyManagementValues.builder()
-                .totalCapital(BigDecimal.valueOf(30000))
-                .individualPositionRiskInPercent(2)
+                .moneyManagement(moneyManagement)
                 .build());
     }
 }

@@ -1,5 +1,6 @@
 package com.example.demo.data;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -7,10 +8,13 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 
-import java.math.BigDecimal;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import java.math.BigDecimal;
 
 @Data
 @EqualsAndHashCode
@@ -19,6 +23,7 @@ import javax.persistence.Id;
 @NoArgsConstructor
 @AllArgsConstructor
 @ToString
+@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Investment {
 
     @Id
@@ -30,6 +35,10 @@ public class Investment {
     BigDecimal purchasePrice;
     BigDecimal purchaseCost;
     BigDecimal notionalSalesPrice;
+
+    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JoinColumn(name = "investment_id", nullable = false)
+    private MoneyManagement moneyManagement;
 
     public BigDecimal getSum() {
         return purchasePrice.multiply(BigDecimal.valueOf(quantity));

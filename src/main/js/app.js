@@ -11,7 +11,7 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {investments: [], attributes: [], pageSize: 2, links: {}};
+        this.state = {moneyManagement: [], investments: [], attributes: [], pageSize: 10, links: {}};
 
         this.updatePageSize = this.updatePageSize.bind(this);
         this.onCreate = this.onCreate.bind(this);
@@ -22,23 +22,63 @@ class App extends React.Component {
 
     loadFromServer(pageSize) {
         follow(client, root, [ // <1>
-            {rel: 'investments', params: {size: pageSize}}]
-        ).then(investmentCollection => { // <2>
-            return client({
-                              method: 'GET',
-                              path: investmentCollection.entity._links.profile.href,
-                              headers: {'Accept': 'application/schema+json'}
-                          }).then(schema => {
-                this.schema = schema.entity;
-                this.links = investmentCollection.entity._links;
-                return investmentCollection;
-            });
-        }).then(investmentCollection => { // <3>
+            {rel: 'moneyManagements'}]
+        ).then(moneyManagementCollection => { // <2>
+                                console.log(moneyManagementCollection.entity._links.profile.href)
+                                return client({
+                                                  method: 'GET',
+                                                  path: moneyManagementCollection.entity._links.profile.href,
+                                                  headers: {'Accept': 'application/schema+json'}
+                                              }).then(schema => {
+                                    console.log(schema.entity)
+                                    this.schema = schema.entity;
+                                    console.log(moneyManagementCollection)
+                                    return moneyManagementCollection;
+                              });
+
+                   })
+        .then(moneyManagementCollection => {
+                     return client({
+                                       method: 'GET',
+                                       path: moneyManagementCollection.entity._embedded.moneyManagements[0]._links.investments.href,
+                                       headers: {'Accept': 'application/json'}
+                                   }).then(investmentCollection => {
+                         // this.schema = schema.entity;
+
+                         this.links = investmentCollection.entity._links;
+                         console.log(this.links)
+                         console.log(investmentCollection)
+                         return investmentCollection;
+                     });
+
+         })
+         .then(investmentCollection => { // <2>
+                                         console.log(investmentCollection.entity._links)
+                                         return client({
+                                                           method: 'GET',
+                                                           path: 'http://localhost:8080/api/profile/investments',
+                                                           headers: {'Accept': 'application/schema+json'}
+                                                       }).then(schema => {
+                                             console.log(schema.entity)
+                                             this.schema = schema.entity;
+                                             this.schema.properties = Object.fromEntries(
+                                             Object.entries(schema.entity.properties).filter(([k,v]) => v.readOnly === false));
+                                             delete this.schema.properties['moneyManagement']
+                                             console.log(this.schema)
+
+                                             console.log(investmentCollection)
+                                             return investmentCollection;
+                                       });
+
+                            })
+
+
+         .then(investmentCollection => { // <3>
             return investmentCollection.entity._embedded.investments.map(investment =>
-                                                                             client({
-                                                                                        method: 'GET',
-                                                                                        path: investment._links.self.href
-                                                                                    })
+                client({
+                    method: 'GET',
+                    path: investment._links.self.href
+                })
             );
         }).then(investmentPromises => { // <4>
             return when.all(investmentPromises);
@@ -92,7 +132,10 @@ class App extends React.Component {
     }
 
     onDelete(investment) {
-        client({method: 'DELETE', path: investment.entity._links.self.href}).done(response => {
+        client({
+            method: 'DELETE',
+            path: investment.entity._links.self.href
+        }).done(response => {
             this.loadFromServer(this.state.pageSize);
         });
     }
@@ -105,20 +148,20 @@ class App extends React.Component {
             this.links = investmentCollection.entity._links;
 
             return investmentCollection.entity._embedded.investments.map(investment =>
-                                                                             client({
-                                                                                        method: 'GET',
-                                                                                        path: investment._links.self.href
-                                                                                    })
+                client({
+                    method: 'GET',
+                    path: investment._links.self.href
+                })
             );
         }).then(investmentPromises => {
             return when.all(investmentPromises);
         }).done(investments => {
             this.setState({
-                              investments: investments,
-                              attributes: Object.keys(this.schema.properties),
-                              pageSize: this.state.pageSize,
-                              links: this.links
-                          });
+                investments: investments,
+                attributes: Object.keys(this.schema.properties),
+                pageSize: this.state.pageSize,
+                links: this.links
+            });
         });
     }
 
@@ -129,14 +172,12 @@ class App extends React.Component {
     }
 
     componentDidMount() {
-        console.log('I was triggered during componentDidMount')
         this.loadFromServer(this.state.pageSize);
     }
 
     render() {
         return (
             <div>
-                <CreateDialog attributes={this.state.attributes} onCreate={this.onCreate}/>
                 <InvestmentList investments={this.state.investments}
                                 links={this.state.links}
                                 pageSize={this.state.pageSize}
@@ -215,11 +256,13 @@ class UpdateDialog extends React.Component {
 
     render() {
         const inputs = this.props.attributes.map(attribute =>
-                                                     <p key={this.props.investment.entity[attribute]}>
-                                                         <input type="text" placeholder={attribute}
-                                                                defaultValue={this.props.investment.entity[attribute]}
-                                                                ref={attribute} className="field"/>
-                                                     </p>
+            <p key={this.props.investment.entity[attribute]}>
+                <input type="text"
+                    placeholder={attribute}
+                    defaultValue={this.props.investment.entity[attribute]}
+                    ref={attribute}
+                    className="field"/>
+            </p>
         );
 
         const dialogId = "updateInvestment-" + this.props.investment.entity._links.self.href;
@@ -242,7 +285,6 @@ class UpdateDialog extends React.Component {
             </div>
         )
     }
-
 }
 
 class InvestmentList extends React.Component {
@@ -288,11 +330,11 @@ class InvestmentList extends React.Component {
 
     render() {
         const investments = this.props.investments.map(investment =>
-                                                           <Investment key={investment.entity._links.self.href}
-                                                                       investment={investment}
-                                                                       attributes={this.props.attributes}
-                                                                       onUpdate={this.props.onUpdate}
-                                                                       onDelete={this.props.onDelete}/>
+            <Investment key={investment.entity._links.self.href}
+                investment={investment}
+                attributes={this.props.attributes}
+                onUpdate={this.props.onUpdate}
+                onDelete={this.props.onDelete}/>
         );
 
         const navLinks = [];
@@ -311,7 +353,6 @@ class InvestmentList extends React.Component {
 
         return (
             <div>
-                <input ref="pageSize" defaultValue={this.props.pageSize} onInput={this.handleInput}/>
                 <table>
                     <tbody>
                     <tr>
