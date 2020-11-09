@@ -11,7 +11,7 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {moneyManagement: [], investments: [], attributes: [], links: {}};
+        this.state = {moneyManagements: [], investments: [], attributes: [], links: {}};
 
         this.onCreate = this.onCreate.bind(this);
         this.onUpdate = this.onUpdate.bind(this);
@@ -28,6 +28,8 @@ class App extends React.Component {
                               headers: {'Accept': 'application/schema+json'}
                           }).then(schema => {
                 this.schema = schema.entity;
+                this.store = moneyManagementCollection.entity._embedded.moneyManagements
+                console.log('MM 1: ' + this.store)
                 return moneyManagementCollection;
             });
         }).then(moneyManagementCollection => {
@@ -37,6 +39,8 @@ class App extends React.Component {
                               headers: {'Accept': 'application/json'}
                           }).then(investmentCollection => {
                 // this.schema = schema.entity;
+                this.store = moneyManagementCollection.entity._embedded.moneyManagements
+                console.log('MM 2: ' + this.store)
 
                 this.links = investmentCollection.entity._links;
                 return investmentCollection;
@@ -66,6 +70,7 @@ class App extends React.Component {
         }).done(investments => { // <5>
             this.setState({
                               investments: investments,
+                              moneyManagements: this.store,
                               attributes: Object.keys(this.schema.properties),
                               links: this.links
                           });
@@ -116,13 +121,14 @@ class App extends React.Component {
         });
     }
 
-     componentDidMount() {
+    componentDidMount() {
         this.loadFromServer();
     }
 
     render() {
         return (
             <div>
+                <MoneyManagements moneyManagements={this.state.moneyManagements}/>
                 <InvestmentList investments={this.state.investments}
                                 links={this.state.links}
                                 attributes={this.state.attributes}
@@ -130,6 +136,37 @@ class App extends React.Component {
                                 onDelete={this.onDelete}/>
             </div>
 
+        )
+    }
+}
+
+class MoneyManagements extends React.Component {
+
+    render() {
+        console.log('In MoneyManagements ' + this.props.moneyManagements)
+
+        const moneyManagements = this.props.moneyManagements.map(
+            moneyManagement => <MoneyManagement moneyManagement={moneyManagement}/>);
+
+        return <div>
+            {moneyManagements}
+        </div>
+    }
+}
+
+class MoneyManagement extends React.Component {
+    render() {
+        return (
+            <div>
+                <h1>{this.props.moneyManagement.totalCapital}</h1>
+                <h1>{this.props.moneyManagement.individualPositionRiskInPercent}</h1>
+                <h1>{this.props.moneyManagement.individualPositionRisk}</h1>
+                <h1>{this.props.moneyManagement.portfolioRiskInPercent}</h1>
+                <h1>{this.props.moneyManagement.totalRiskInPercent}</h1>
+                <h1>{this.props.moneyManagement.totalSum}</h1>
+                <h1>{this.props.moneyManagement.totalRevenue}</h1>
+                <h1>{this.props.moneyManagement.totalLossAbs}</h1>
+            </div>
         )
     }
 }
