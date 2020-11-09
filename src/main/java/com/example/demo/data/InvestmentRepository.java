@@ -1,7 +1,7 @@
 package com.example.demo.data;
 
-import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.data.repository.CrudRepository;
 
-public interface InvestmentRepository extends PagingAndSortingRepository<Investment, Long> {
+public interface InvestmentRepository extends CrudRepository<Investment, Long> {
 
 }

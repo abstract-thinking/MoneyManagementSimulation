@@ -1,5 +1,6 @@
 package com.example.demo.boundary;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -15,6 +16,7 @@ public class InvestmentRecommendationBoundaryTests {
         boundary.investments();
     }
 
+    @Disabled
     @Test
     public void shouldGetTopRsl() {
         boundary.rslCompanies();

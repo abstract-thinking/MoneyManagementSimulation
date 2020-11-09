@@ -3,6 +3,8 @@ package com.example.demo.control.invest;
 import com.example.demo.boundary.InvestmentRecommendation;
 import com.example.demo.service.rsl.RslService;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Ignore;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -22,6 +24,7 @@ import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
+@Disabled
 @Slf4j
 @SpringBootTest
 public class InvestRecommenderTests {

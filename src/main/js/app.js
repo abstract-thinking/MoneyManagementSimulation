@@ -11,74 +11,55 @@ class App extends React.Component {
 
     constructor(props) {
         super(props);
-        this.state = {moneyManagement: [], investments: [], attributes: [], pageSize: 10, links: {}};
+        this.state = {moneyManagement: [], investments: [], attributes: [], links: {}};
 
-        this.updatePageSize = this.updatePageSize.bind(this);
         this.onCreate = this.onCreate.bind(this);
         this.onUpdate = this.onUpdate.bind(this);
         this.onDelete = this.onDelete.bind(this);
-        this.onNavigate = this.onNavigate.bind(this);
     }
 
-    loadFromServer(pageSize) {
+    loadFromServer() {
         follow(client, root, [ // <1>
             {rel: 'moneyManagements'}]
         ).then(moneyManagementCollection => { // <2>
-                                console.log(moneyManagementCollection.entity._links.profile.href)
-                                return client({
-                                                  method: 'GET',
-                                                  path: moneyManagementCollection.entity._links.profile.href,
-                                                  headers: {'Accept': 'application/schema+json'}
-                                              }).then(schema => {
-                                    console.log(schema.entity)
-                                    this.schema = schema.entity;
-                                    console.log(moneyManagementCollection)
-                                    return moneyManagementCollection;
-                              });
+            return client({
+                              method: 'GET',
+                              path: moneyManagementCollection.entity._links.profile.href,
+                              headers: {'Accept': 'application/schema+json'}
+                          }).then(schema => {
+                this.schema = schema.entity;
+                return moneyManagementCollection;
+            });
+        }).then(moneyManagementCollection => {
+            return client({
+                              method: 'GET',
+                              path: moneyManagementCollection.entity._embedded.moneyManagements[0]._links.investments.href,
+                              headers: {'Accept': 'application/json'}
+                          }).then(investmentCollection => {
+                // this.schema = schema.entity;
 
-                   })
-        .then(moneyManagementCollection => {
-                     return client({
-                                       method: 'GET',
-                                       path: moneyManagementCollection.entity._embedded.moneyManagements[0]._links.investments.href,
-                                       headers: {'Accept': 'application/json'}
-                                   }).then(investmentCollection => {
-                         // this.schema = schema.entity;
+                this.links = investmentCollection.entity._links;
+                return investmentCollection;
+            });
 
-                         this.links = investmentCollection.entity._links;
-                         console.log(this.links)
-                         console.log(investmentCollection)
-                         return investmentCollection;
-                     });
-
-         })
-         .then(investmentCollection => { // <2>
-                                         console.log(investmentCollection.entity._links)
-                                         return client({
-                                                           method: 'GET',
-                                                           path: 'http://localhost:8080/api/profile/investments',
-                                                           headers: {'Accept': 'application/schema+json'}
-                                                       }).then(schema => {
-                                             console.log(schema.entity)
-                                             this.schema = schema.entity;
-                                             this.schema.properties = Object.fromEntries(
-                                             Object.entries(schema.entity.properties).filter(([k,v]) => v.readOnly === false));
-                                             delete this.schema.properties['moneyManagement']
-                                             console.log(this.schema)
-
-                                             console.log(investmentCollection)
-                                             return investmentCollection;
-                                       });
-
-                            })
-
-
-         .then(investmentCollection => { // <3>
+        }).then(investmentCollection => { // <2>
+            return client({
+                              method: 'GET',
+                              path: 'http://localhost:8080/api/profile/investments',
+                              headers: {'Accept': 'application/schema+json'}
+                          }).then(schema => {
+                this.schema = schema.entity;
+                this.schema.properties = Object.fromEntries(
+                    Object.entries(schema.entity.properties).filter(([k, v]) => v.readOnly === false));
+                delete this.schema.properties['moneyManagement']
+                return investmentCollection;
+            });
+        }).then(investmentCollection => { // <3>
             return investmentCollection.entity._embedded.investments.map(investment =>
-                client({
-                    method: 'GET',
-                    path: investment._links.self.href
-                })
+                                                                             client({
+                                                                                        method: 'GET',
+                                                                                        path: investment._links.self.href
+                                                                                    })
             );
         }).then(investmentPromises => { // <4>
             return when.all(investmentPromises);
@@ -86,7 +67,6 @@ class App extends React.Component {
             this.setState({
                               investments: investments,
                               attributes: Object.keys(this.schema.properties),
-                              pageSize: pageSize,
                               links: this.links
                           });
         });
@@ -102,13 +82,9 @@ class App extends React.Component {
                               headers: {'Content-Type': 'application/json'}
                           })
         }).then(response => {
-            return follow(client, root, [{rel: 'investments', params: {'size': self.state.pageSize}}]);
+            return follow(client, root, [{rel: 'investments'}]);
         }).done(response => {
-            if (typeof response.entity._links.last !== "undefined") {
-                this.onNavigate(response.entity._links.last.href);
-            } else {
-                this.onNavigate(response.entity._links.self.href);
-            }
+
         });
     }
 
@@ -122,7 +98,7 @@ class App extends React.Component {
                        'If-Match': investment.headers.Etag
                    }
                }).done(response => {
-            this.loadFromServer(this.state.pageSize);
+            this.loadFromServer();
         }, response => {
             if (response.status.code === 412) {
                 alert('DENIED: Unable to update ' +
@@ -133,46 +109,15 @@ class App extends React.Component {
 
     onDelete(investment) {
         client({
-            method: 'DELETE',
-            path: investment.entity._links.self.href
-        }).done(response => {
-            this.loadFromServer(this.state.pageSize);
+                   method: 'DELETE',
+                   path: investment.entity._links.self.href
+               }).done(response => {
+            this.loadFromServer();
         });
     }
 
-    onNavigate(navUri) {
-        client({
-                   method: 'GET',
-                   path: navUri
-               }).then(investmentCollection => {
-            this.links = investmentCollection.entity._links;
-
-            return investmentCollection.entity._embedded.investments.map(investment =>
-                client({
-                    method: 'GET',
-                    path: investment._links.self.href
-                })
-            );
-        }).then(investmentPromises => {
-            return when.all(investmentPromises);
-        }).done(investments => {
-            this.setState({
-                investments: investments,
-                attributes: Object.keys(this.schema.properties),
-                pageSize: this.state.pageSize,
-                links: this.links
-            });
-        });
-    }
-
-    updatePageSize(pageSize) {
-        if (pageSize !== this.state.pageSize) {
-            this.loadFromServer(pageSize);
-        }
-    }
-
-    componentDidMount() {
-        this.loadFromServer(this.state.pageSize);
+     componentDidMount() {
+        this.loadFromServer();
     }
 
     render() {
@@ -180,12 +125,9 @@ class App extends React.Component {
             <div>
                 <InvestmentList investments={this.state.investments}
                                 links={this.state.links}
-                                pageSize={this.state.pageSize}
                                 attributes={this.state.attributes}
-                                onNavigate={this.onNavigate}
                                 onUpdate={this.onUpdate}
-                                onDelete={this.onDelete}
-                                updatePageSize={this.updatePageSize}/>
+                                onDelete={this.onDelete}/>
             </div>
 
         )
@@ -214,9 +156,9 @@ class CreateDialog extends React.Component {
 
     render() {
         const inputs = this.props.attributes.map(attribute =>
-           <p key={attribute}>
-                <input type="text" placeholder={attribute} ref={attribute} className="field"/>
-           </p>
+                                                     <p key={attribute}>
+                                                         <input type="text" placeholder={attribute} ref={attribute} className="field"/>
+                                                     </p>
         );
         return (
             <div>
@@ -256,13 +198,13 @@ class UpdateDialog extends React.Component {
 
     render() {
         const inputs = this.props.attributes.map(attribute =>
-            <p key={this.props.investment.entity[attribute]}>
-                <input type="text"
-                    placeholder={attribute}
-                    defaultValue={this.props.investment.entity[attribute]}
-                    ref={attribute}
-                    className="field"/>
-            </p>
+                                                     <p key={this.props.investment.entity[attribute]}>
+                                                         <input type="text"
+                                                                placeholder={attribute}
+                                                                defaultValue={this.props.investment.entity[attribute]}
+                                                                ref={attribute}
+                                                                className="field"/>
+                                                     </p>
         );
 
         const dialogId = "updateInvestment-" + this.props.investment.entity._links.self.href;
@@ -289,67 +231,14 @@ class UpdateDialog extends React.Component {
 
 class InvestmentList extends React.Component {
 
-    constructor(props) {
-        super(props);
-        this.handleNavFirst = this.handleNavFirst.bind(this);
-        this.handleNavPrev = this.handleNavPrev.bind(this);
-        this.handleNavNext = this.handleNavNext.bind(this);
-        this.handleNavLast = this.handleNavLast.bind(this);
-        this.handleInput = this.handleInput.bind(this);
-    }
-
-    handleInput(e) {
-        e.preventDefault();
-        const pageSize = ReactDOM.findDOMNode(this.refs.pageSize).value;
-        if (/^[0-9]+$/.test(pageSize)) {
-            this.props.updatePageSize(pageSize);
-        } else {
-            ReactDOM.findDOMNode(this.refs.pageSize).value = pageSize.substring(0, pageSize.length - 1);
-        }
-    }
-
-    handleNavFirst(e) {
-        e.preventDefault();
-        this.props.onNavigate(this.props.links.first.href);
-    }
-
-    handleNavPrev(e) {
-        e.preventDefault();
-        this.props.onNavigate(this.props.links.prev.href);
-    }
-
-    handleNavNext(e) {
-        e.preventDefault();
-        this.props.onNavigate(this.props.links.next.href);
-    }
-
-    handleNavLast(e) {
-        e.preventDefault();
-        this.props.onNavigate(this.props.links.last.href);
-    }
-
     render() {
         const investments = this.props.investments.map(investment =>
-            <Investment key={investment.entity._links.self.href}
-                investment={investment}
-                attributes={this.props.attributes}
-                onUpdate={this.props.onUpdate}
-                onDelete={this.props.onDelete}/>
+                                                           <Investment key={investment.entity._links.self.href}
+                                                                       investment={investment}
+                                                                       attributes={this.props.attributes}
+                                                                       onUpdate={this.props.onUpdate}
+                                                                       onDelete={this.props.onDelete}/>
         );
-
-        const navLinks = [];
-        if ("first" in this.props.links) {
-            navLinks.push(<button key="first" onClick={this.handleNavFirst}>&lt;&lt;</button>);
-        }
-        if ("prev" in this.props.links) {
-            navLinks.push(<button key="prev" onClick={this.handleNavPrev}>&lt;</button>);
-        }
-        if ("next" in this.props.links) {
-            navLinks.push(<button key="next" onClick={this.handleNavNext}>&gt;</button>);
-        }
-        if ("last" in this.props.links) {
-            navLinks.push(<button key="last" onClick={this.handleNavLast}>&gt;&gt;</button>);
-        }
 
         return (
             <div>
@@ -370,9 +259,6 @@ class InvestmentList extends React.Component {
                     {investments}
                     </tbody>
                 </table>
-                <div>
-                    {navLinks}
-                </div>
             </div>
         )
     }
