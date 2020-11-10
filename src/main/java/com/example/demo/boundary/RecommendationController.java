@@ -14,22 +14,18 @@ import java.util.List;
 @RequestMapping("/recommendations")
 @RestController
 @AllArgsConstructor
-public class InvestRecommendationBoundary {
+public class RecommendationController {
 
     private final InvestmentRecommender recommender;
 
-    @GetMapping(path = "/investment", produces = "application/json")
-    public List<InvestmentRecommendation> investments() {
-        log.info("Investment recommendation invoked");
-
-        return recommender.getRecommendations();
+    @GetMapping(path = "/sell", produces = "application/json")
+    public List<SellRecommendation> sellRecommendations() {
+        return recommender.getSellRecommendations();
     }
 
-    @GetMapping(path = "/companies", produces = "application/json")
-    public List<CompanyResult> rslCompanies() {
-        log.info("Companies invoked");
-
-        return recommender.getTopRsl();
+    @GetMapping(path = "/buy", produces = "application/json")
+    public List<BuyRecommendation> buyRecommendations() {
+        return recommender.getBuyRecommendations();
     }
 }
 

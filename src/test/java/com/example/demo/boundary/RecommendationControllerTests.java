@@ -6,19 +6,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class InvestmentRecommendationBoundaryTests {
+public class RecommendationControllerTests {
 
     @Autowired
-    private InvestRecommendationBoundary boundary;
+    private RecommendationController controller;
 
+    @Disabled
     @Test
-    public void shouldGetInvestments() {
-        boundary.investments();
+    public void shouldGetBuyRecommendations() {
+        controller.buyRecommendations();
     }
 
     @Disabled
     @Test
-    public void shouldGetTopRsl() {
-        boundary.rslCompanies();
+    public void shouldGetSellRecommendations() {
+        controller.sellRecommendations();
     }
 }

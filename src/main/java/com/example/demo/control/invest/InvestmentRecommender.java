@@ -1,7 +1,7 @@
 package com.example.demo.control.invest;
 
-import com.example.demo.boundary.CompanyResult;
-import com.example.demo.boundary.InvestmentRecommendation;
+import com.example.demo.boundary.BuyRecommendation;
+import com.example.demo.boundary.SellRecommendation;
 import com.example.demo.data.Investment;
 import com.example.demo.data.InvestmentRepository;
 import com.example.demo.service.rsl.RslService;
@@ -13,19 +13,19 @@ import org.jsoup.select.Elements;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
+import java.util.stream.Collectors;
 
+import static com.example.demo.control.invest.PriceCalculator.calculateNotionalSalesPrice;
 import static java.util.Comparator.comparingDouble;
 
 @Slf4j
 @Component
 public class InvestmentRecommender {
 
-    private final String exchange = "NASDAQ 100";
+    private static final String EXCHANGE_NAME = "NASDAQ 100";
 
     private final InvestmentRepository repository;
 
@@ -37,63 +37,80 @@ public class InvestmentRecommender {
         this.rslService = rslService;
     }
 
-    public List<InvestmentRecommendation> getRecommendations() {
+    public List<SellRecommendation> getSellRecommendations() {
         String content = rslService.fetchTable();
         log.info("Received content: {}", content);
-        Map<String, Double> result = parseContent(content);
+        List<DecisionRow> rows = parseContent(content);
 
-        List<InvestmentRecommendation> recommendations = new ArrayList<>();
+        List<SellRecommendation> sellRecommendations = new ArrayList<>();
         for (Investment entry : repository.findAll()) {
-            recommendations.add(createRecommendation(entry.getName(), result));
+            sellRecommendations.add(createSellRecommendation(entry.getName(), rows));
         }
 
-        return recommendations;
+        return sellRecommendations;
     }
 
-    private Map<String, Double> parseContent(String content) {
+    private List<DecisionRow> parseContent(String content) {
         Document doc = Jsoup.parse(content);
 
         //  <table class="extendetKursliste filterTable ov">
         Element table = doc.select("table").get(3);
         Elements rows = table.select("tr");
 
-        Map<String, Double> result = new HashMap<>();
+        List<DecisionRow> result = new ArrayList<>();
         for (int i = 2; i < rows.size(); ++i) {
             Elements cols = rows.get(i).select("td");
-            result.put(cols.get(2).text(), Double.parseDouble(cols.get(6).text().replace(',', '.')));
+            result.add(DecisionRow.builder()
+                    .wkn(cols.get(1).text())
+                    .name(cols.get(2).text())
+                    .price(BigDecimal.valueOf(parseDouble(cols.get(4).text())))
+                    .vola30Day(parseDouble(cols.get(5).text()))
+                    .rsl(parseDouble(cols.get(6).text()))
+                    .build());
         }
 
         return result;
     }
 
-    private InvestmentRecommendation createRecommendation(String company, Map<String, Double> result) {
-        return InvestmentRecommendation.builder()
-                .company(company)
-                .companyRsl(result.get(company))
-                .exchange(exchange)
-                .exchangeRsl(result.get(exchange))
+    private Double parseDouble(String s) {
+        return Double.parseDouble(
+                s.replace(".", "")
+                        .replace(",", "."));
+    }
+
+    private SellRecommendation createSellRecommendation(String companyName, List<DecisionRow> rows) {
+        return SellRecommendation.builder()
+                .company(companyName)
+                .companyRsl(getRsl(rows, companyName))
+                .exchange(EXCHANGE_NAME)
+                .exchangeRsl(getRsl(rows, EXCHANGE_NAME))
                 .build();
     }
 
-    public List<CompanyResult> getTopRsl() {
+    private double getRsl(List<DecisionRow> rows, String name) {
+        return rows.stream()
+                .filter(row -> row.getName().equals(name))
+                .findFirst()
+                .orElseThrow()
+                .getRsl();
+    }
+
+    public List<BuyRecommendation> getBuyRecommendations() {
         String content = rslService.fetchTable();
-        log.info("Received content: {}", content);
 
-        Map<String, Double> result = parseContent(content);
-        log.info("Result: {}", result);
+        List<DecisionRow> rows = parseContent(content);
+        rows.sort(comparingDouble(DecisionRow::getRsl).reversed());
 
-        List<CompanyResult> companyResults = new ArrayList<>();
-        for (Map.Entry<String, Double> entry : result.entrySet()) {
-            companyResults.add(new CompanyResult(entry.getKey(), entry.getValue()));
+        final double exchangeRsl = getRsl(rows, EXCHANGE_NAME);
+        List<BuyRecommendation> buyRecommendations = new ArrayList<>(rows.size());
+        for (DecisionRow row : rows) {
+            buyRecommendations.add(new BuyRecommendation(row,
+                    calculateNotionalSalesPrice(row.getRsl(), row.getPrice(), exchangeRsl)));
         }
 
-        companyResults.sort(comparingDouble(CompanyResult::getRsl).reversed());
-
-        if (companyResults.size() < 10) {
-            return Collections.emptyList();
-        }
-
-        return companyResults.subList(0, 10);
+        return buyRecommendations.stream()
+                .filter(r -> r.getRsl() > exchangeRsl)
+                .collect(Collectors.toList());
     }
 }
 

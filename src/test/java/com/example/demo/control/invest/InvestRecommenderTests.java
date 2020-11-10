@@ -1,9 +1,8 @@
 package com.example.demo.control.invest;
 
-import com.example.demo.boundary.InvestmentRecommendation;
+import com.example.demo.boundary.SellRecommendation;
 import com.example.demo.service.rsl.RslService;
 import lombok.extern.slf4j.Slf4j;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,16 +48,16 @@ public class InvestRecommenderTests {
         Resource resource = resourceLoader.getResource("classpath:data/content.html");
         when(rslService.fetchTable()).thenReturn(asString(resource));
 
-        List<InvestmentRecommendation> investmentRecommendations = recommender.getRecommendations();
+        List<SellRecommendation> sellRecommendations = recommender.getSellRecommendations();
 
-        assertThat(investmentRecommendations).hasSize(2);
-        assertThat(investmentRecommendations).contains(
+        assertThat(sellRecommendations).hasSize(2);
+        assertThat(sellRecommendations).contains(
                 createRecommendation("PayPal Holdings Inc.", 1.08),
                 createRecommendation("Fiserv Inc.", 0.94));
     }
 
-    private InvestmentRecommendation createRecommendation(String company, Double companyRsl) {
-        return InvestmentRecommendation.builder()
+    private SellRecommendation createRecommendation(String company, Double companyRsl) {
+        return SellRecommendation.builder()
                 .company(company)
                 .companyRsl(companyRsl)
                 .exchange("NASDAQ 100")

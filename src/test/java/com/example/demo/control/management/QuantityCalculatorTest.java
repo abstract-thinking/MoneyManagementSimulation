@@ -19,8 +19,6 @@ class QuantityCalculatorTest {
 
     private static final BigDecimal PURCHASE_COST = BigDecimal.valueOf(30);
 
-    private static final double POSITION_RISK = 2;
-
     private MoneyManagement moneyManagement;
 
     @BeforeEach
