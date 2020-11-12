@@ -4,11 +4,12 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Value;
+import org.springframework.hateoas.RepresentationModel;
 
 @Value
 @Builder
-@EqualsAndHashCode
-public class SellRecommendation {
+@EqualsAndHashCode(callSuper = true)
+public class SellRecommendation extends RepresentationModel<SellRecommendation> {
 
     String company;
     Double companyRsl;

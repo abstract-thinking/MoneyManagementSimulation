@@ -44,5 +44,14 @@ public class DatabaseLoader implements CommandLineRunner {
                 .purchaseCost(BigDecimal.valueOf(30.00))
                 .moneyManagement(moneyManagement)
                 .build());
+
+        this.investmentRepository.save(Investment.builder()
+                .name("Align Technology Inc.")
+                .quantity(5)
+                .purchasePrice(BigDecimal.valueOf(400))
+                .notionalSalesPrice(BigDecimal.valueOf(280))
+                .purchaseCost(BigDecimal.valueOf(30.00))
+                .moneyManagement(moneyManagement)
+                .build());
     }
 }
