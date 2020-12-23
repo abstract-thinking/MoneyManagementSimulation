@@ -32,4 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 
-src/main/java/com/example/mm/data/DatabaseLoader.java
+!**/src/main/java/com/example/mm/data/DatabaseLoader.java
