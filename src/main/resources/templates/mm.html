@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<style>
+    th, td {
+        padding-top: 5px;
+        padding-bottom: 5px;
+        padding-right: 10px;
+        padding-left: 10px;
+    }
+
+
+</style>
+<head>
+    <meta charset="UTF-8">
+    <title>Money Management</title>
+</head>
+<body>
+<table border="1" align="center" cellpadding="1">
+    <tbody>
+    <tr>
+        <td><b>Gesamtkapital</b></td>
+        <td style="text-align:right;" th:text="${moneyManagement.totalCapital}"></td>
+    </tr>
+    <tr>
+        <td><b>Einzelpositionrisiko</b></td>
+        <td style="text-align:right;" th:text="${moneyManagement.individualPositionRiskInPercent}"></td>
+    </tr>
+    <tr>
+        <td><b>Einzelpositionrisiko</b></td>
+        <td style="text-align:right;"
+            th:text="${#numbers.formatDecimal(moneyManagement.individualPositionRisk, 1, 2, 'POINT')}"></td>
+    </tr>
+    <tr align>
+        <td><b>WKN</b></td>
+        <td><b>Name</b></td>
+        <td><b>Stück</b></td>
+        <td><b>Kaufkurs</b></td>
+        <td><b>Einstiegssumme</b></td>
+        <td><b>Fiktiver Verkaufspreis</b></td>
+        <td><b>Kosten</b></td>
+        <td><b>Fiktiver Verkaufserlös</b></td>
+        <td><b>Risiko</b></td>
+    </tr>
+    <tr th:each="investment: ${moneyManagement.investments}">
+        <td th:text="${investment.wkn}"></td>
+        <td th:text="${investment.name}"></td>
+        <td style="text-align:right;" th:text="${investment.quantity}"></td>
+        <td style="text-align:right;" th:text="${investment.purchasePrice}"></td>
+        <td style="text-align:right;" th:text="${investment.sum}"></td>
+        <td style="text-align:right;"
+            th:text="${#numbers.formatDecimal(investment.notionalSalesPrice, 1, 2, 'POINT')}"></td>
+        <td style="text-align:right;" th:text="${investment.purchaseCost}"></td>
+        <td style="text-align:right;"
+            th:text="${#numbers.formatDecimal(investment.notionalRevenue, 1, 2, 'POINT')}"></td>
+        <td style="text-align:right;" th:text="${#numbers.formatDecimal(investment.risk, 1, 2, 'POINT')}"></td>
+    </tr>
+    <tr>
+        <td><b>Depotwert</b></td>
+        <td colspan="3"></td>
+        <td style="text-align:right;" th:text="${moneyManagement.totalSum}"></td>
+        <td colspan="2"></td>
+        <td style="text-align:right;"
+            th:text="${#numbers.formatDecimal(moneyManagement.totalRevenue, 1, 2, 'POINT')}"></td>
+        <td style="text-align:right;"
+            th:text="${#numbers.formatDecimal(moneyManagement.totalRisk, 1, 2, 'POINT')}"></td>
+    </tr>
+    <tr>
+        <td><b>Depotrisiko</b></td>
+        <td colspan="7"></td>
+        <td style="text-align:right;"
+            th:text="${#numbers.formatDecimal(moneyManagement.riskInPercent, 1, 2, 'POINT')}"></td>
+    </tr>
+    <tr>
+        <td><b>Gesamtrisiko</b></td>
+        <td style="text-align:right;"
+            th:text="${#numbers.formatDecimal(moneyManagement.totalRiskInPercent, 1, 2, 'POINT')}"></td>
+    </tr>
+    </tbody>
+</table>
+<table border="1" align="center" cellpadding="1">
+    <thead>
+    <tr align="center">
+        <th>WKN</th>
+        <th>Name</th>
+        <th>RSL</th>
+        <th>Börse</th>
+        <th>Börse RSL</th>
+        <th>Verkaufspreis</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr align="center" th:each="sellRecommendation: ${sellRecommendations}">
+        <td th:text="${sellRecommendation.wkn}"></td>
+        <td th:text="${sellRecommendation.company}"></td>
+        <td th:text="${sellRecommendation.companyRsl}"></td>
+        <td th:text="${sellRecommendation.exchange}"></td>
+        <td th:text="${sellRecommendation.exchangeRsl}"></td>
+        <td th:text="${sellRecommendation.price}"></td>
+    </tr>
+    </tbody>
+</table>
+<table border="1" align="center" cellpadding="1">
+    <thead>
+    <tr align="center">
+        <th>WKN</th>
+        <th>Name</th>
+        <th>RSL</th>
+        <th>Börse</th>
+        <th>Börse RSL</th>
+        <th>Preis</th>
+        <th>Fiktiver Verkaufspreis</th>
+        <th>Volalität 30 Tage</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr align="center" th:each="buyRecommendation: ${buyRecommendations}">
+        <td th:text="${buyRecommendation.wkn}"></td>
+        <td th:text="${buyRecommendation.name}"></td>
+        <td th:text="${buyRecommendation.rsl}"></td>
+        <td th:text="${buyRecommendation.exchange}"></td>
+        <td th:text="${buyRecommendation.exchangeRsl}"></td>
+        <td th:text="${buyRecommendation.price}"></td>
+        <td th:text="${buyRecommendation.notionalSalesPrice}"></td>
+        <td th:text="${buyRecommendation.vola30Day}"></td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
