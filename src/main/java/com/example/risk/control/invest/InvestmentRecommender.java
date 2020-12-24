@@ -2,13 +2,16 @@ package com.example.risk.control.invest;
 
 import com.example.risk.boundary.api.BuyRecommendation;
 import com.example.risk.boundary.api.SellRecommendation;
+import com.example.risk.control.management.MoneyManagement;
 import com.example.risk.control.management.RiskManagement;
 import com.example.risk.converter.DecisionRowConverter;
 import com.example.risk.converter.ExchangeResult;
+import com.example.risk.data.Investment;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,6 +23,8 @@ import static java.util.stream.Collectors.toList;
 @AllArgsConstructor
 @Component
 public class InvestmentRecommender {
+
+    public static final BigDecimal EXCHANGE_TRANSACTION_COSTS = BigDecimal.valueOf(35.50);
 
     private static final String EXCHANGE_NAME = "NASDAQ 100";
 
@@ -63,10 +68,22 @@ public class InvestmentRecommender {
     public List<BuyRecommendation> getBuyRecommendations() {
         List<ExchangeResult> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
+
         return results.stream()
                 .filter(result -> result.getRsl() > exchangeRsl)
                 .sorted(comparingDouble(ExchangeResult::getRsl).reversed())
                 .map(result -> createBuyRecommendation(result, exchangeRsl))
+                .collect(toList());
+    }
+
+    public List<BuyRecommendation> getBuyRecommendations(RiskManagement riskManagement) {
+        List<ExchangeResult> results = converter.fetchTable();
+        final double exchangeRsl = findExchangeRsl(results);
+
+        return results.stream()
+                .filter(result -> result.getRsl() > exchangeRsl)
+                .sorted(comparingDouble(ExchangeResult::getRsl).reversed())
+                .map(result -> createBuyRecommendation(result, exchangeRsl, riskManagement))
                 .collect(toList());
     }
 
@@ -80,6 +97,30 @@ public class InvestmentRecommender {
                 .exchange(EXCHANGE_NAME)
                 .exchangeRsl(exchangeRsl)
                 .notionalSalesPrice(calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl))
+                .build();
+    }
+
+    private BuyRecommendation createBuyRecommendation(ExchangeResult result, double exchangeRsl, RiskManagement riskManagement) {
+        BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl);
+
+        Investment possibleInvestment = Investment.builder()
+                .purchasePrice(result.getPrice())
+                .notionalSalesPrice(notionalSalesPrice)
+                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
+                .build();
+
+        int quantity = MoneyManagement.calculateQuantity(riskManagement.calculatePositionRisk(), possibleInvestment);
+
+        return BuyRecommendation.builder()
+                .name(result.getName())
+                .rsl(result.getRsl())
+                .wkn(result.getWkn())
+                .vola30Day(result.getVola30Day())
+                .price(result.getPrice())
+                .exchange(EXCHANGE_NAME)
+                .exchangeRsl(exchangeRsl)
+                .notionalSalesPrice(notionalSalesPrice)
+                .quantity(quantity)
                 .build();
     }
 }

@@ -14,10 +14,10 @@ class RiskManagementBoundaryTest {
     private RiskManagementBoundary boundary;
 
     @Test
-    public void shouldGetMoneyManagement() {
-        RiskManagementResult moneyManagement = boundary.riskManagement();
+    public void shouldGetRiskManagementResult() {
+        RiskManagementResult riskManagementResult = boundary.riskManagement(1L);
 
-        assertThat(moneyManagement).isNotNull();
+        assertThat(riskManagementResult).isNotNull();
     }
 
 }

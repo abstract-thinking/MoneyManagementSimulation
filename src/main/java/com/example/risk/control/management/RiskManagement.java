@@ -1,6 +1,7 @@
 package com.example.risk.control.management;
 
 import com.example.risk.boundary.api.RiskManagementResult;
+import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import lombok.Getter;
 import lombok.Setter;
@@ -16,22 +17,19 @@ public class RiskManagement {
 
     private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
-    private final BigDecimal totalCapital;
-
-    private final double positionRiskInPercent;
+    private final IndividualRisk individualRisk;
 
     @Setter
     @Getter
     private List<Investment> investments = new ArrayList<>();
 
-    public RiskManagement(BigDecimal totalCapital, double positionRiskInPercent) {
-        this.totalCapital = totalCapital;
-        this.positionRiskInPercent = positionRiskInPercent;
+    public RiskManagement(IndividualRisk individualRisk) {
+        this.individualRisk = individualRisk;
     }
 
     public BigDecimal calculatePositionRisk() {
-        return totalCapital
-                .multiply(BigDecimal.valueOf(positionRiskInPercent))
+        return individualRisk.getTotalCapital()
+                .multiply(BigDecimal.valueOf(individualRisk.getIndividualPositionRiskInPercent()))
                 .divide(ONE_HUNDRED, 4, RoundingMode.DOWN);
     }
 
@@ -50,7 +48,7 @@ public class RiskManagement {
 
     private double calculateTotalRiskInPercent() {
         return calculateDepotRisk()
-                .divide(totalCapital, 4, RoundingMode.DOWN)
+                .divide(individualRisk.getTotalCapital(), 4, RoundingMode.DOWN)
                 .multiply(ONE_HUNDRED).doubleValue();
     }
 
@@ -75,8 +73,9 @@ public class RiskManagement {
 
     public RiskManagementResult toApi() {
         return RiskManagementResult.builder()
-                .totalCapital(totalCapital)
-                .individualPositionRiskInPercent(positionRiskInPercent)
+                .id(individualRisk.getId())
+                .totalCapital(individualRisk.getTotalCapital())
+                .individualPositionRiskInPercent(individualRisk.getIndividualPositionRiskInPercent())
                 .individualPositionRisk(calculatePositionRisk())
                 .investments(investments)
                 .totalInvestment(calculateTotalInvestment())

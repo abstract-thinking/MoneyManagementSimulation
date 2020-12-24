@@ -1,6 +1,7 @@
 package com.example.risk.control.management;
 
 import com.example.risk.boundary.api.RiskManagementResult;
+import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import org.junit.jupiter.api.Test;
 
@@ -12,7 +13,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class RiskManagementTest {
 
-    private final RiskManagement riskManagement = new RiskManagement(BigDecimal.valueOf(15000), 1.5);
+    private final RiskManagement riskManagement = new RiskManagement(
+            new IndividualRisk(BigDecimal.valueOf(15000), 1.5));
 
     @Test
     void shouldReturnPositionRisk() {

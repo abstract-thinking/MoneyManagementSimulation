@@ -10,10 +10,10 @@ import java.math.RoundingMode;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class MoneyManagement {
 
-    public static int calculateQuantity(BigDecimal positionRisk, Investment investment) {
-        BigDecimal absolutePositionRisk = positionRisk.subtract(investment.getTransactionCosts());
+    public static int calculateQuantity(BigDecimal positionRisk, Investment possibleInvestment) {
+        BigDecimal absolutePositionRisk = positionRisk.subtract(possibleInvestment.getTransactionCosts());
 
-        return absolutePositionRisk.divide(investment.getPositionRisk(), 4, RoundingMode.DOWN).intValue();
+        return absolutePositionRisk.divide(possibleInvestment.getPositionRisk(), 4, RoundingMode.DOWN).intValue();
     }
 
 }

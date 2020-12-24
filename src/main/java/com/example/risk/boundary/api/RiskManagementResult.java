@@ -16,6 +16,8 @@ import java.util.List;
 @ToString
 public class RiskManagementResult extends RepresentationModel<RiskManagementResult> {
 
+    Long id;
+
     BigDecimal totalCapital;
 
     double individualPositionRiskInPercent;
@@ -35,5 +37,4 @@ public class RiskManagementResult extends RepresentationModel<RiskManagementResu
     double depotRiskInPercent;
 
     double totalRiskInPercent;
-
 }

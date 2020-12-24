@@ -2,6 +2,7 @@ package com.example.risk.control;
 
 import com.example.risk.boundary.api.BuyRecommendation;
 import com.example.risk.boundary.api.RiskManagementResult;
+import com.example.risk.boundary.api.RiskManagementResultList;
 import com.example.risk.boundary.api.SellRecommendation;
 import com.example.risk.control.invest.InvestmentRecommender;
 import com.example.risk.control.management.ManagementFacade;
@@ -12,6 +13,7 @@ import com.example.risk.data.Investment;
 import com.example.risk.data.InvestmentRepository;
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -39,8 +41,7 @@ public class Facade {
         IndividualRisk individualRisk = individualRiskRepository.findAll().iterator().next();
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
 
-        riskManagement = new RiskManagement(individualRisk.getTotalCapital(),
-                individualRisk.getIndividualPositionRiskInPercent());
+        riskManagement = new RiskManagement(individualRisk);
         riskManagement.setInvestments(investments);
     }
 
@@ -52,8 +53,7 @@ public class Facade {
         }
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
 
-        riskManagement = new RiskManagement(individualRisk.getTotalCapital(),
-                individualRisk.getIndividualPositionRiskInPercent());
+        riskManagement = new RiskManagement(individualRisk);
         riskManagement.setInvestments(investments);
     }
 
@@ -62,12 +62,40 @@ public class Facade {
         return riskManagement.toApi();
     }
 
+    public RiskManagementResultList doRiskManagements() {
+        List<RiskManagementResult> riskManagementResults = new ArrayList<>();
+
+        Iterable<IndividualRisk> individualRisks = individualRiskRepository.findAll();
+        individualRisks.forEach(individualRisk -> {
+                    List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
+                    List<Investment> updatedInvestments = managementFacade.updateNotionalSalesPrice(investments);
+
+                    RiskManagement riskManagement = new RiskManagement(individualRisk);
+                    riskManagement.setInvestments(updatedInvestments);
+                    riskManagementResults.add(riskManagement.toApi());
+                }
+
+        );
+
+        return new RiskManagementResultList(riskManagementResults);
+    }
+
+    public RiskManagementResult doRiskManagement(Long id) {
+        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+        List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
+
+        RiskManagement riskManagement = new RiskManagement(individualRisk);
+        riskManagement.setInvestments(managementFacade.updateNotionalSalesPrice(investments));
+
+        return riskManagement.toApi();
+    }
+
     public List<SellRecommendation> doSellRecommendations() {
         return investmentRecommender.getSellRecommendations(riskManagement);
     }
 
     public List<BuyRecommendation> doBuyRecommendations() {
-        // TODO: Add money management
-        return investmentRecommender.getBuyRecommendations();
+        return investmentRecommender.getBuyRecommendations(riskManagement);
     }
+
 }
