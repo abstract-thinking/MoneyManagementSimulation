@@ -1,7 +1,7 @@
 package com.example.mm.control.management;
 
 
-import com.example.mm.boundary.RiskManagementApi;
+import com.example.mm.boundary.RiskManagementResult;
 import com.example.mm.control.invest.ExchangeResult;
 import com.example.mm.converter.DecisionRowConverter;
 import com.example.mm.data.Investment;
@@ -11,7 +11,6 @@ import com.example.mm.data.MoneyManagementRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
-import java.math.BigDecimal;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
@@ -50,10 +49,8 @@ public class ManagementController {
 
             if (foundDecisionRow.isPresent()) {
                 ExchangeResult result = foundDecisionRow.get();
-                BigDecimal weeklyNotionalSalesPrice = calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl);
-                if (weeklyNotionalSalesPrice.compareTo(investment.getNotionalSalesPrice()) > 0) {
-                    investment.setNotionalSalesPrice(weeklyNotionalSalesPrice);
-                }
+                investment.setUpdatedNotionalSalesPrice(
+                        calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl));
             }
         }
     }
@@ -66,7 +63,7 @@ public class ManagementController {
                 .getRsl();
     }
 
-    public RiskManagementApi getMoneyManagement() {
+    public RiskManagementResult getMoneyManagement() {
         MoneyManagement moneyManagement = moneyManagementRepository.findAll().iterator().next();
 
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(moneyManagement.getId());
@@ -79,7 +76,7 @@ public class ManagementController {
         return riskManagement.toApi();
     }
 
-    public RiskManagementApi getMoneyManagement2() {
+    public RiskManagementResult getMoneyManagement2() {
         Iterator<MoneyManagement> iterator = moneyManagementRepository.findAll().iterator();
         MoneyManagement moneyManagement = iterator.next();
         while (iterator.hasNext()) {

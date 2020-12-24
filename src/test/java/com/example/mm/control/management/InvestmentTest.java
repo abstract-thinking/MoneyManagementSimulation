@@ -49,14 +49,6 @@ class InvestmentTest {
     }
 
     @Test
-    void shouldGetLoss() {
-        positiveInvestment.setTransactionCosts(BigDecimal.valueOf(250));
-        assertThat(positiveInvestment.getProfitOrLoss())
-                .isNegative()
-                .isEqualTo(BigDecimal.valueOf(-150));
-    }
-
-    @Test
     void shouldSell() {
         BigDecimal individualPositionRisk = BigDecimal.valueOf(101);
 

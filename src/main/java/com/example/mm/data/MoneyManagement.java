@@ -1,7 +1,5 @@
 package com.example.mm.data;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -11,29 +9,24 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 @Data
-@EqualsAndHashCode
-@Entity
 @NoArgsConstructor
-@AllArgsConstructor
+@EqualsAndHashCode
 @ToString
-@Builder
+@Entity
 public class MoneyManagement {
 
     @Id
     @GeneratedValue
     private Long id;
 
-    BigDecimal totalCapital;
+    private BigDecimal totalCapital;
 
-    double individualPositionRiskInPercent;
+    private double individualPositionRiskInPercent;
 
-    public BigDecimal getPositionRisk() {
-        return totalCapital
-                .multiply(BigDecimal.valueOf(individualPositionRiskInPercent))
-                .divide(BigDecimal.valueOf(100), 4, RoundingMode.DOWN);
+    public MoneyManagement(BigDecimal totalCapital, double individualPositionRiskInPercent) {
+        this.totalCapital = totalCapital;
+        this.individualPositionRiskInPercent = individualPositionRiskInPercent;
     }
-
 }

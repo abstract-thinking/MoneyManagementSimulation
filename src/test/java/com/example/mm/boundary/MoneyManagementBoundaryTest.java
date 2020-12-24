@@ -14,7 +14,7 @@ class MoneyManagementBoundaryTest {
 
     @Test
     public void shouldGetMoneyManagement() {
-        RiskManagementApi moneyManagement = boundary.moneyManagement();
+        RiskManagementResult moneyManagement = boundary.moneyManagement();
 
         assertThat(moneyManagement).isNotNull();
     }

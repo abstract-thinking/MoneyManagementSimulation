@@ -14,7 +14,7 @@ public class MoneyManagementBoundary {
     private final ManagementController controller;
 
     @GetMapping(path = "/management", produces = "application/json")
-    public RiskManagementApi moneyManagement() {
+    public RiskManagementResult moneyManagement() {
         log.info("Money management invoked");
 
         return controller.getMoneyManagement();

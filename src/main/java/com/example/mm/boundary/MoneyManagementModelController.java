@@ -24,11 +24,11 @@ public class MoneyManagementModelController {
         log.info("Show money management invoked");
 
         // TODO: Where is the common intelligence?
-        RiskManagementApi riskManagementApi = moneyManagementController.getMoneyManagement();
+        RiskManagementResult riskManagementResult = moneyManagementController.getMoneyManagement();
         List<SellRecommendation> sellRecommendations = investmentRecommender.getSellRecommendations();
         List<BuyRecommendation> buyRecommendations = investmentRecommender.getBuyRecommendations();
 
-        model.addAttribute("moneyManagement", riskManagementApi);
+        model.addAttribute("moneyManagement", riskManagementResult);
         model.addAttribute("sellRecommendations", sellRecommendations);
         model.addAttribute("buyRecommendations", buyRecommendations);
 
@@ -42,7 +42,7 @@ public class MoneyManagementModelController {
         log.info("Show money management 2 invoked");
 
         // TODO: Where is the logic?
-        RiskManagementApi moneyManagement = moneyManagementController.getMoneyManagement2();
+        RiskManagementResult moneyManagement = moneyManagementController.getMoneyManagement2();
         List<SellRecommendation> sellRecommendations = investmentRecommender.getSellRecommendations2();
         List<BuyRecommendation> buyRecommendations = investmentRecommender.getBuyRecommendations();
 

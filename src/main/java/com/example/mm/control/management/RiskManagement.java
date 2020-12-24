@@ -1,6 +1,6 @@
 package com.example.mm.control.management;
 
-import com.example.mm.boundary.RiskManagementApi;
+import com.example.mm.boundary.RiskManagementResult;
 import com.example.mm.data.Investment;
 import lombok.Setter;
 
@@ -12,6 +12,8 @@ import java.util.List;
 import static java.math.BigDecimal.ZERO;
 
 public class RiskManagement {
+
+    private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
     private final BigDecimal totalCapital;
 
@@ -25,97 +27,62 @@ public class RiskManagement {
         this.positionRiskInPercent = positionRiskInPercent;
     }
 
-    public BigDecimal getPositionRisk() {
+    public BigDecimal calculatePositionRisk() {
         return totalCapital
                 .multiply(BigDecimal.valueOf(positionRiskInPercent))
-                .divide(BigDecimal.valueOf(100), 4, RoundingMode.DOWN);
-    }
-
-    public BigDecimal getDepotRisk() {
-        BigDecimal capitalInvestment = getTotalInvestment();
-
-        return calculateDepotRisk()
-                .divide(capitalInvestment, 4, RoundingMode.DOWN);
-    }
-
-    public double getDepotRiskInPercent() {
-        return getDepotRisk().multiply(BigDecimal.valueOf(100)).doubleValue();
-    }
-
-    public BigDecimal getTotalRisk() {
-        return calculateDepotRisk().divide(totalCapital, 4, RoundingMode.DOWN);
-    }
-
-    public double getTotalRiskInPercent() {
-        return getTotalRisk().multiply(BigDecimal.valueOf(100)).doubleValue();
+                .divide(ONE_HUNDRED, 4, RoundingMode.DOWN);
     }
 
     private BigDecimal calculateDepotRisk() {
-        return getPositionRisk()
-                .multiply(BigDecimal.valueOf(investments.size()));
-    }
-
-    public BigDecimal recalculateDepotRisk() {
         return investments.stream()
                 .map(Investment::getRisk)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
 
-    public double recalculateTotalRisk() {
-        return recalculateDepotRisk()
-                .divide(recalculatedTotalCapital(), 4, RoundingMode.DOWN)
-                .multiply(BigDecimal.valueOf(100))
+    private double calculateDepotRiskInPercent() {
+        return calculateDepotRisk()
+                .divide(calculateTotalNotionalRevenue(), 4, RoundingMode.DOWN)
+                .multiply(ONE_HUNDRED)
                 .doubleValue();
     }
 
-    private BigDecimal recalculatedTotalCapital() {
-        BigDecimal notionalRevenue = getTotalRevenue();
-
-        BigDecimal transactionCosts = investments.stream()
-                .map(Investment::getTransactionCosts)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
-
-        BigDecimal investmentCapital = getTotalInvestment();
-
-        BigDecimal freeCapital = totalCapital.subtract(investmentCapital);
-
-        return notionalRevenue
-                .subtract(transactionCosts)
-                .add(freeCapital);
+    private double calculateTotalRiskInPercent() {
+        return calculateDepotRisk()
+                .divide(totalCapital, 4, RoundingMode.DOWN)
+                .multiply(ONE_HUNDRED).doubleValue();
     }
 
-    public RiskManagementApi toApi() {
-        return RiskManagementApi.builder()
-                .totalCapital(totalCapital)
-                .individualPositionRiskInPercent(positionRiskInPercent)
-                .individualPositionRisk(getPositionRisk())
-                .totalInvestment(getTotalInvestment())
-                .totalRevenue(getTotalRevenue())
-                .totalLossAbs(getTotalLossAbs())
-                .depotRisk(getDepotRisk())
-                .depotRiskInPercent(getDepotRiskInPercent())
-                .totalRisk(getTotalRisk())
-                .totalRiskInPercent(getTotalRiskInPercent())
-                .build();
-    }
-
-    public BigDecimal getTotalInvestment() {
+    private BigDecimal calculateTotalInvestment() {
         return investments.stream()
                 .map(Investment::getInvestment)
                 .reduce(ZERO, BigDecimal::add);
     }
 
-    public BigDecimal getTotalRevenue() {
+    private BigDecimal calculateTotalNotionalRevenue() {
         return investments.stream()
                 .map(Investment::getNotionalRevenue)
                 .reduce(ZERO, BigDecimal::add);
     }
 
-    public BigDecimal getTotalLossAbs() {
+    private BigDecimal calculateTotalLossAbs() {
         return investments.stream()
                 .map(Investment::getRisk)
                 .reduce(ZERO, BigDecimal::add)
                 .abs();
     }
 
+    public RiskManagementResult toApi() {
+        return RiskManagementResult.builder()
+                .totalCapital(totalCapital)
+                .individualPositionRiskInPercent(positionRiskInPercent)
+                .individualPositionRisk(calculatePositionRisk())
+                .investments(investments)
+                .totalInvestment(calculateTotalInvestment())
+                .totalRevenue(calculateTotalNotionalRevenue())
+                .totalLossAbs(calculateTotalLossAbs())
+                .depotRisk(calculateDepotRisk())
+                .depotRiskInPercent(calculateDepotRiskInPercent())
+                .totalRiskInPercent(calculateTotalRiskInPercent())
+                .build();
+    }
 }

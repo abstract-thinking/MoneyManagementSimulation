@@ -46,10 +46,10 @@
         <td th:text="${investment.name}"></td>
         <td style="text-align:right;" th:text="${investment.quantity}"></td>
         <td style="text-align:right;" th:text="${investment.purchasePrice}"></td>
-        <td style="text-align:right;" th:text="${investment.sum}"></td>
+        <td style="text-align:right;" th:text="${investment.investment}"></td>
         <td style="text-align:right;"
-            th:text="${#numbers.formatDecimal(investment.notionalSalesPrice, 1, 2, 'POINT')}"></td>
-        <td style="text-align:right;" th:text="${investment.purchaseCost}"></td>
+            th:text="${#numbers.formatDecimal(investment.highestNotionalSalesPrice, 1, 2, 'POINT')}"></td>
+        <td style="text-align:right;" th:text="${investment.transactionCosts}"></td>
         <td style="text-align:right;"
             th:text="${#numbers.formatDecimal(investment.notionalRevenue, 1, 2, 'POINT')}"></td>
         <td style="text-align:right;" th:text="${#numbers.formatDecimal(investment.risk, 1, 2, 'POINT')}"></td>
@@ -57,18 +57,18 @@
     <tr>
         <td><b>Depotwert</b></td>
         <td colspan="3"></td>
-        <td style="text-align:right;" th:text="${moneyManagement.totalSum}"></td>
+        <td style="text-align:right;" th:text="${moneyManagement.totalInvestment}"></td>
         <td colspan="2"></td>
         <td style="text-align:right;"
             th:text="${#numbers.formatDecimal(moneyManagement.totalRevenue, 1, 2, 'POINT')}"></td>
         <td style="text-align:right;"
-            th:text="${#numbers.formatDecimal(moneyManagement.totalRisk, 1, 2, 'POINT')}"></td>
+            th:text="${#numbers.formatDecimal(moneyManagement.depotRisk, 1, 2, 'POINT')}"></td>
     </tr>
     <tr>
         <td><b>Depotrisiko</b></td>
         <td colspan="7"></td>
         <td style="text-align:right;"
-            th:text="${#numbers.formatDecimal(moneyManagement.riskInPercent, 1, 2, 'POINT')}"></td>
+            th:text="${#numbers.formatDecimal(moneyManagement.depotRiskInPercent, 1, 2, 'POINT')}"></td>
     </tr>
     <tr>
         <td><b>Gesamtrisiko</b></td>
