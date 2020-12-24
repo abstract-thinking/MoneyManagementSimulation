@@ -1,7 +1,6 @@
 package com.example.mm.boundary;
 
-import com.example.mm.control.invest.InvestmentRecommender;
-import com.example.mm.control.management.ManagementController;
+import com.example.mm.control.Facade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -15,18 +14,17 @@ import java.util.List;
 @AllArgsConstructor
 public class MoneyManagementModelController {
 
-    private final ManagementController moneyManagementController;
-
-    private final InvestmentRecommender investmentRecommender;
+    private final Facade facade;
 
     @GetMapping(path = "/mm/1")
     public String showMoneyManagement(Model model) {
         log.info("Show money management invoked");
 
-        // TODO: Where is the common intelligence?
-        RiskManagementResult riskManagementResult = moneyManagementController.getMoneyManagement();
-        List<SellRecommendation> sellRecommendations = investmentRecommender.getSellRecommendations();
-        List<BuyRecommendation> buyRecommendations = investmentRecommender.getBuyRecommendations();
+        facade.useFirst();
+
+        RiskManagementResult riskManagementResult = facade.getMoneyManagement();
+        List<SellRecommendation> sellRecommendations = facade.getSellRecommendations();
+        List<BuyRecommendation> buyRecommendations = facade.getBuyRecommendations();
 
         model.addAttribute("moneyManagement", riskManagementResult);
         model.addAttribute("sellRecommendations", sellRecommendations);
@@ -41,12 +39,13 @@ public class MoneyManagementModelController {
     public String showMoneyManagement2(Model model) {
         log.info("Show money management 2 invoked");
 
-        // TODO: Where is the logic?
-        RiskManagementResult moneyManagement = moneyManagementController.getMoneyManagement2();
-        List<SellRecommendation> sellRecommendations = investmentRecommender.getSellRecommendations2();
-        List<BuyRecommendation> buyRecommendations = investmentRecommender.getBuyRecommendations();
+        facade.useSecond();
 
-        model.addAttribute("moneyManagement", moneyManagement);
+        RiskManagementResult riskManagementResult = facade.getMoneyManagement();
+        List<SellRecommendation> sellRecommendations = facade.getSellRecommendations();
+        List<BuyRecommendation> buyRecommendations = facade.getBuyRecommendations();
+
+        model.addAttribute("moneyManagement", riskManagementResult);
         model.addAttribute("sellRecommendations", sellRecommendations);
         model.addAttribute("buyRecommendations", buyRecommendations);
 

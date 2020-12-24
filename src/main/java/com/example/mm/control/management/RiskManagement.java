@@ -2,6 +2,7 @@ package com.example.mm.control.management;
 
 import com.example.mm.boundary.RiskManagementResult;
 import com.example.mm.data.Investment;
+import lombok.Getter;
 import lombok.Setter;
 
 import java.math.BigDecimal;
@@ -20,6 +21,7 @@ public class RiskManagement {
     private final double positionRiskInPercent;
 
     @Setter
+    @Getter
     private List<Investment> investments = new ArrayList<>();
 
     public RiskManagement(BigDecimal totalCapital, double positionRiskInPercent) {

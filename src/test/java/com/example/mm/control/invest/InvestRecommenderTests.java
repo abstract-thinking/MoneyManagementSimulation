@@ -48,7 +48,8 @@ public class InvestRecommenderTests {
         Resource resource = resourceLoader.getResource("classpath:data/content.html");
         when(rslService.fetchTable()).thenReturn(asString(resource));
 
-        List<SellRecommendation> sellRecommendations = recommender.getSellRecommendations();
+        // FIXME:
+        List<SellRecommendation> sellRecommendations = recommender.getSellRecommendations(null);
 
         assertThat(sellRecommendations).hasSize(2);
         assertThat(sellRecommendations).contains(
