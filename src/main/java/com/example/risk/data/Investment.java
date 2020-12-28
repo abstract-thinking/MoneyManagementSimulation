@@ -1,6 +1,7 @@
 package com.example.risk.data;
 
 import com.example.risk.boundary.api.SellRecommendation;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -43,6 +44,7 @@ public class Investment {
     @Getter(AccessLevel.NONE)
     private BigDecimal updatedNotionalSalesPrice;
 
+    @JsonIgnore
     private Long moneyManagementId;
 
     public BigDecimal getHighestNotionalSalesPrice() {

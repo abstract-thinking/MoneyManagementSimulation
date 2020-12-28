@@ -24,7 +24,7 @@ public class RiskManagementBoundary {
 
     private final Facade facade;
 
-    @GetMapping(path = "/rest/risk", produces = "application/json")
+    @GetMapping(path = "/api/risk", produces = "application/json")
     public RiskManagementResultList riskManagements() {
         log.info("Risk managements invoked");
 
@@ -35,7 +35,7 @@ public class RiskManagementBoundary {
         return riskManagementResults;
     }
 
-    @GetMapping(path = "/rest/risk/{id}", produces = "application/json")
+    @GetMapping(path = "/api/risk/{id}", produces = "application/json")
     public RiskManagementResult riskManagement(@PathVariable("id") Long id) {
         log.info("Risk management invoked");
 

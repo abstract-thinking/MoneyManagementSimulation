@@ -1,6 +1,5 @@
 package com.example.risk.service.rsl;
 
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -11,20 +10,15 @@ import org.springframework.web.client.RestTemplate;
 
 import static org.springframework.http.MediaType.APPLICATION_FORM_URLENCODED;
 
-@Slf4j
 @Service
 public class RslService {
 
-    private final String url;
-
-    public RslService() {
-        this.url = "https://www.finanztreff.de/indizes/einzelwerte/NASDAQ-100-Index/";
-    }
+    private static final String URL = "https://www.finanztreff.de/indizes/einzelwerte/NASDAQ-100-Index/";
 
     @Cacheable("fetchTable")
     public String fetchTable() {
         return new RestTemplate()
-                .postForEntity(url, new HttpEntity<>(createFormData(), createHeaders()), String.class)
+                .postForEntity(URL, new HttpEntity<>(createFormData(), createHeaders()), String.class)
                 .getBody();
     }
 
@@ -43,6 +37,7 @@ public class RslService {
     private HttpHeaders createHeaders() {
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(APPLICATION_FORM_URLENCODED);
+
         return headers;
     }
 }
