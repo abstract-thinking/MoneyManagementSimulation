@@ -47,3 +47,5 @@ target/
 .vscode/
 
 /src/main/java/com/example/risk/data/DatabaseLoader.java
+
+.eslintcache
