@@ -1,0 +1,233 @@
+Index: src/main/java/com/example/risk/data/DatabaseLoader.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/risk/data/DatabaseLoader.java b/src/main/java/com/example/risk/data/DatabaseLoader.java
+--- a/src/main/java/com/example/risk/data/DatabaseLoader.java	(date 1609153096936)
++++ b/src/main/java/com/example/risk/data/DatabaseLoader.java	(date 1609153096936)
+@@ -26,6 +26,61 @@
+         createRiskManagement2();
+     }
+ 
++    private void createRiskManagement1() {
++        IndividualRisk individualRisk = new IndividualRisk(BigDecimal.valueOf(35500), 1.5);
++        this.individualRiskRepository.save(individualRisk);
++
++        this.investmentRepository.save(Investment.builder()
++                .wkn("881793")
++                .name("Fiserv Inc.")
++                .quantity(210)
++                .purchasePrice(BigDecimal.valueOf(73.50))
++                .notionalSalesPrice(BigDecimal.valueOf(90.71))
++                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
++                .moneyManagementId(individualRisk.getId())
++                .build());
++
++        this.investmentRepository.save(Investment.builder()
++                .wkn("A14R7U")
++                .name("PayPal Holdings Inc.")
++                .quantity(13)
++                .purchasePrice(BigDecimal.valueOf(196))
++                .notionalSalesPrice(BigDecimal.valueOf(163.33))
++                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
++                .moneyManagementId(individualRisk.getId())
++                .build());
++
++        this.investmentRepository.save(Investment.builder()
++                .wkn("590375")
++                .name("Align Technology Inc.")
++                .quantity(5)
++                .purchasePrice(BigDecimal.valueOf(481.54))
++                .notionalSalesPrice(BigDecimal.valueOf(401.28))
++                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
++                .moneyManagementId(individualRisk.getId())
++                .build());
++
++        this.investmentRepository.save(Investment.builder()
++                .wkn("883121")
++                .name("Qualcomm")
++                .quantity(35)
++                .purchasePrice(BigDecimal.valueOf(146.70))
++                .notionalSalesPrice(BigDecimal.valueOf(128.07))
++                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
++                .moneyManagementId(individualRisk.getId())
++                .build());
++
++        this.investmentRepository.save(Investment.builder()
++                .wkn("869686")
++                .name("LAM Research Corporation")
++                .quantity(7)
++                .purchasePrice(BigDecimal.valueOf(436.49))
++                .notionalSalesPrice(BigDecimal.valueOf(375.10))
++                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
++                .moneyManagementId(individualRisk.getId())
++                .build());
++    }
++
+     private void createRiskManagement2() {
+         IndividualRisk individualRisk = new IndividualRisk(BigDecimal.valueOf(100000), 10);
+         this.individualRiskRepository.save(individualRisk);
+@@ -101,58 +156,4 @@
+                 .build());
+     }
+ 
+-    private void createRiskManagement1() {
+-        IndividualRisk individualRisk = new IndividualRisk(BigDecimal.valueOf(35500), 1.5);
+-        this.individualRiskRepository.save(individualRisk);
+-
+-        this.investmentRepository.save(Investment.builder()
+-                .wkn("881793")
+-                .name("Fiserv Inc.")
+-                .quantity(210)
+-                .purchasePrice(BigDecimal.valueOf(73.50))
+-                .notionalSalesPrice(BigDecimal.valueOf(90.71))
+-                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
+-                .moneyManagementId(individualRisk.getId())
+-                .build());
+-
+-        this.investmentRepository.save(Investment.builder()
+-                .wkn("A14R7U")
+-                .name("PayPal Holdings Inc.")
+-                .quantity(13)
+-                .purchasePrice(BigDecimal.valueOf(196))
+-                .notionalSalesPrice(BigDecimal.valueOf(163.33))
+-                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
+-                .moneyManagementId(individualRisk.getId())
+-                .build());
+-
+-        this.investmentRepository.save(Investment.builder()
+-                .wkn("590375")
+-                .name("Align Technology Inc.")
+-                .quantity(5)
+-                .purchasePrice(BigDecimal.valueOf(481.54))
+-                .notionalSalesPrice(BigDecimal.valueOf(401.28))
+-                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
+-                .moneyManagementId(individualRisk.getId())
+-                .build());
+-
+-        this.investmentRepository.save(Investment.builder()
+-                .wkn("883121")
+-                .name("Qualcomm")
+-                .quantity(35)
+-                .purchasePrice(BigDecimal.valueOf(146.70))
+-                .notionalSalesPrice(BigDecimal.valueOf(128.07))
+-                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
+-                .moneyManagementId(individualRisk.getId())
+-                .build());
+-
+-        this.investmentRepository.save(Investment.builder()
+-                .wkn("869686")
+-                .name("LAM Research Corporation")
+-                .quantity(7)
+-                .purchasePrice(BigDecimal.valueOf(436.49))
+-                .notionalSalesPrice(BigDecimal.valueOf(375.10))
+-                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
+-                .moneyManagementId(individualRisk.getId())
+-                .build());
+-    }
+ }
+Index: src/main/java/com/example/risk/control/management/RiskManagement.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/risk/control/management/RiskManagement.java b/src/main/java/com/example/risk/control/management/RiskManagement.java
+--- a/src/main/java/com/example/risk/control/management/RiskManagement.java	(date 1609152498480)
++++ b/src/main/java/com/example/risk/control/management/RiskManagement.java	(date 1609152498480)
+@@ -36,7 +36,8 @@
+     private BigDecimal calculateDepotRisk() {
+         return investments.stream()
+                 .map(Investment::getRisk)
+-                .reduce(BigDecimal.ZERO, BigDecimal::add);
++                .reduce(BigDecimal.ZERO, BigDecimal::add)
++                .abs();
+     }
+ 
+     private double calculateDepotRiskInPercent() {
+@@ -64,12 +65,6 @@
+                 .reduce(ZERO, BigDecimal::add);
+     }
+ 
+-    private BigDecimal calculateTotalLossAbs() {
+-        return investments.stream()
+-                .map(Investment::getRisk)
+-                .reduce(ZERO, BigDecimal::add)
+-                .abs();
+-    }
+ 
+     public RiskManagementResult toApi() {
+         return RiskManagementResult.builder()
+@@ -80,7 +75,6 @@
+                 .investments(investments)
+                 .totalInvestment(calculateTotalInvestment())
+                 .totalRevenue(calculateTotalNotionalRevenue())
+-                .totalLossAbs(calculateTotalLossAbs())
+                 .depotRisk(calculateDepotRisk())
+                 .depotRiskInPercent(calculateDepotRiskInPercent())
+                 .totalRiskInPercent(calculateTotalRiskInPercent())
+Index: src/main/java/com/example/risk/service/rsl/RslService.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/risk/service/rsl/RslService.java b/src/main/java/com/example/risk/service/rsl/RslService.java
+--- a/src/main/java/com/example/risk/service/rsl/RslService.java	(date 1609152244316)
++++ b/src/main/java/com/example/risk/service/rsl/RslService.java	(date 1609152244316)
+@@ -1,6 +1,5 @@
+ package com.example.risk.service.rsl;
+ 
+-import lombok.extern.slf4j.Slf4j;
+ import org.springframework.cache.annotation.Cacheable;
+ import org.springframework.http.HttpEntity;
+ import org.springframework.http.HttpHeaders;
+Index: src/main/java/com/example/risk/boundary/api/RiskManagementResult.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/risk/boundary/api/RiskManagementResult.java b/src/main/java/com/example/risk/boundary/api/RiskManagementResult.java
+--- a/src/main/java/com/example/risk/boundary/api/RiskManagementResult.java	(date 1609152430705)
++++ b/src/main/java/com/example/risk/boundary/api/RiskManagementResult.java	(date 1609152430705)
+@@ -30,8 +30,6 @@
+ 
+     BigDecimal totalRevenue;
+ 
+-    BigDecimal totalLossAbs;
+-
+     BigDecimal depotRisk;
+ 
+     double depotRiskInPercent;
+Index: src/main/java/com/example/risk/converter/DecisionRowConverter.java
+IDEA additional info:
+Subsystem: com.intellij.openapi.diff.impl.patch.CharsetEP
+<+>UTF-8
+===================================================================
+diff --git a/src/main/java/com/example/risk/converter/DecisionRowConverter.java b/src/main/java/com/example/risk/converter/DecisionRowConverter.java
+--- a/src/main/java/com/example/risk/converter/DecisionRowConverter.java	(date 1609152802718)
++++ b/src/main/java/com/example/risk/converter/DecisionRowConverter.java	(date 1609152802718)
+@@ -2,6 +2,7 @@
+ 
+ import com.example.risk.service.rsl.RslService;
+ import lombok.AllArgsConstructor;
++import lombok.extern.slf4j.Slf4j;
+ import org.jsoup.Jsoup;
+ import org.jsoup.nodes.Document;
+ import org.jsoup.nodes.Element;
+@@ -12,6 +13,7 @@
+ import java.util.ArrayList;
+ import java.util.List;
+ 
++@Slf4j
+ @Component
+ @AllArgsConstructor
+ public class DecisionRowConverter {
+@@ -21,6 +23,8 @@
+     public List<ExchangeResult> fetchTable() {
+         String content = rslService.fetchTable();
+ 
++        log.info("Received content: " + content);
++
+         return parseContent(content);
+     }
+ 
