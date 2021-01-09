@@ -1,9 +1,9 @@
 package com.example.risk.boundary;
 
 import com.example.risk.boundary.api.BuyRecommendation;
-import com.example.risk.boundary.api.RiskManagementResult;
+import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.SellRecommendation;
-import com.example.risk.control.Facade;
+import com.example.risk.control.RiskManagementFacade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
@@ -17,19 +17,19 @@ import java.util.List;
 @AllArgsConstructor
 public class RiskManagementModelController {
 
-    private final Facade facade;
+    private final RiskManagementFacade riskManagementFacade;
 
     @GetMapping(path = "/risk/1")
     public String showRiskManagement1(Model model) {
         log.info("Show risk management 1 invoked");
 
-        facade.useFirst();
+        riskManagementFacade.useFirst();
 
-        RiskManagementResult riskManagementResult = facade.doRiskManagement();
-        List<SellRecommendation> sellRecommendations = facade.doSellRecommendations();
-        List<BuyRecommendation> buyRecommendations = facade.doBuyRecommendations();
+        RiskResult riskResult = riskManagementFacade.doRiskManagement();
+        List<SellRecommendation> sellRecommendations = riskManagementFacade.doSellRecommendations();
+        List<BuyRecommendation> buyRecommendations = riskManagementFacade.doBuyRecommendations();
 
-        model.addAttribute("riskManagement", riskManagementResult);
+        model.addAttribute("riskResult", riskResult);
         model.addAttribute("sellRecommendations", sellRecommendations);
         model.addAttribute("buyRecommendations", buyRecommendations);
 
@@ -42,13 +42,13 @@ public class RiskManagementModelController {
     public String showRiskManagement2(Model model) {
         log.info("Show risk management 2 invoked");
 
-        facade.useSecond();
+        riskManagementFacade.useSecond();
 
-        RiskManagementResult riskManagementResult = facade.doRiskManagement();
-        List<SellRecommendation> sellRecommendations = facade.doSellRecommendations();
-        List<BuyRecommendation> buyRecommendations = facade.doBuyRecommendations();
+        RiskResult riskResult = riskManagementFacade.doRiskManagement();
+        List<SellRecommendation> sellRecommendations = riskManagementFacade.doSellRecommendations();
+        List<BuyRecommendation> buyRecommendations = riskManagementFacade.doBuyRecommendations();
 
-        model.addAttribute("riskManagement", riskManagementResult);
+        model.addAttribute("riskResult", riskResult);
         model.addAttribute("sellRecommendations", sellRecommendations);
         model.addAttribute("buyRecommendations", buyRecommendations);
 

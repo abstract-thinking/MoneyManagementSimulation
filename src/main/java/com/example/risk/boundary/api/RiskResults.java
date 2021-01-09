@@ -8,7 +8,7 @@ import java.util.List;
 
 @Value
 @EqualsAndHashCode(callSuper = true)
-public class RiskManagementResultList extends RepresentationModel<RiskManagementResult> {
+public class RiskResults extends RepresentationModel<RiskResult> {
 
-    List<RiskManagementResult> riskManagementResults;
+    List<RiskResult> riskResults;
 }

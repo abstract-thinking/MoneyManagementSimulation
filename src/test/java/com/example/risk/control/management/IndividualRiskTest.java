@@ -15,7 +15,7 @@ class IndividualRiskTest {
     void shouldCalculateQuantity1() {
         Investment investment = Investment.builder()
                 .purchasePrice(BigDecimal.valueOf(50))
-                .notionalSalesPrice(BigDecimal.valueOf(45))
+                .initialNotionalSalesPrice(BigDecimal.valueOf(45))
                 .transactionCosts(BigDecimal.valueOf(20))
                 .build();
 
@@ -28,7 +28,7 @@ class IndividualRiskTest {
     void shouldCalculateQuantity2() {
         Investment investment = Investment.builder()
                 .purchasePrice(BigDecimal.valueOf(65))
-                .notionalSalesPrice(BigDecimal.valueOf(60.45))
+                .initialNotionalSalesPrice(BigDecimal.valueOf(60.45))
                 .transactionCosts(BigDecimal.valueOf(20))
                 .build();
 
@@ -41,7 +41,7 @@ class IndividualRiskTest {
     void shouldCalculateQuantity3() {
         Investment investment = Investment.builder()
                 .purchasePrice(BigDecimal.valueOf(12))
-                .notionalSalesPrice(BigDecimal.valueOf(11.04))
+                .initialNotionalSalesPrice(BigDecimal.valueOf(11.04))
                 .transactionCosts(BigDecimal.valueOf(5))
                 .build();
 

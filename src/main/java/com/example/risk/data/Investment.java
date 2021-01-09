@@ -1,16 +1,10 @@
 package com.example.risk.data;
 
-import com.example.risk.boundary.api.SellRecommendation;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
-import lombok.AccessLevel;
+import com.example.risk.boundary.api.InvestmentResult;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -20,11 +14,8 @@ import java.math.BigDecimal;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@EqualsAndHashCode
-@ToString
 @Builder
 @Entity
-@JsonIgnoreProperties({"hibernateLazyInitializer"})
 public class Investment {
 
     @Id
@@ -36,35 +27,27 @@ public class Investment {
     private int quantity;
     private BigDecimal purchasePrice;
     private BigDecimal transactionCosts;
-    /**
-     * Initial notional sales prices.
-     */
-    @Getter(AccessLevel.NONE)
-    private BigDecimal notionalSalesPrice;
-    @Getter(AccessLevel.NONE)
-    private BigDecimal updatedNotionalSalesPrice;
 
-    @JsonIgnore
+    private BigDecimal initialNotionalSalesPrice;
+    private BigDecimal currentNotionalSalesPrice;
+
     private Long moneyManagementId;
-
-    public BigDecimal getHighestNotionalSalesPrice() {
-        return isUpdatedNotionalSalesPriceHigher() ? updatedNotionalSalesPrice : notionalSalesPrice;
-    }
-
-    private boolean isUpdatedNotionalSalesPriceHigher() {
-        return updatedNotionalSalesPrice != null && updatedNotionalSalesPrice.compareTo(notionalSalesPrice) > 0;
-    }
 
     public BigDecimal getInvestment() {
         return purchasePrice.multiply(BigDecimal.valueOf(quantity));
     }
 
     public BigDecimal getPositionRisk() {
-        return purchasePrice.subtract(getHighestNotionalSalesPrice());
+        return purchasePrice.subtract(currentNotionalSalesPrice);
     }
 
     public BigDecimal getNotionalRevenue() {
-        return getHighestNotionalSalesPrice().multiply(BigDecimal.valueOf(quantity));
+        return determineNotionalSalesPrice().multiply(BigDecimal.valueOf(quantity));
+    }
+
+    private BigDecimal determineNotionalSalesPrice() {
+        return initialNotionalSalesPrice.compareTo(currentNotionalSalesPrice) > 0 ?
+                initialNotionalSalesPrice : currentNotionalSalesPrice;
     }
 
     public BigDecimal getRisk() {
@@ -77,23 +60,18 @@ public class Investment {
         return getNotionalRevenue().subtract(getInvestment()).subtract(transactionCosts);
     }
 
-    public boolean shouldSell(BigDecimal individualPositionRisk, SellRecommendation sellRecommendation) {
-        return shouldSellBy(individualPositionRisk) || shouldSellBy(sellRecommendation);
-    }
-
-    private boolean shouldSellBy(BigDecimal individualPositionRisk) {
-        return isPositive() && getRisk().compareTo(individualPositionRisk) >= 0;
-    }
-
-    private boolean shouldSellBy(SellRecommendation sellRecommendation) {
-        return isNotPositive() && sellRecommendation.shouldSell();
-    }
-
-    private boolean isPositive() {
-        return getRisk().signum() == 1;
-    }
-
-    private boolean isNotPositive() {
-        return !isPositive();
+    public InvestmentResult toApi() {
+        return InvestmentResult.builder()
+                .id(id)
+                .wkn(wkn)
+                .name(name)
+                .quantity(quantity)
+                .purchasePrice(purchasePrice)
+                .transactionCosts(transactionCosts)
+                .notionalSalesPrice(determineNotionalSalesPrice())
+                .investment(getInvestment())
+                .notionalRevenue(getNotionalRevenue())
+                .positionRisk(getRisk())
+                .build();
     }
 }

@@ -1,30 +1,30 @@
 package com.example.risk.control.management;
 
-import com.example.risk.boundary.api.RiskManagementResult;
+import com.example.risk.boundary.api.InvestmentResult;
+import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import static java.math.BigDecimal.ZERO;
 
-public class RiskManagement {
+public class RiskManagementCalculator {
 
     private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
     private final IndividualRisk individualRisk;
 
-    @Setter
     @Getter
-    private List<Investment> investments = new ArrayList<>();
+    private final List<Investment> investments;
 
-    public RiskManagement(IndividualRisk individualRisk) {
+    public RiskManagementCalculator(IndividualRisk individualRisk, List<Investment> investments) {
         this.individualRisk = individualRisk;
+        this.investments = investments;
     }
 
     public BigDecimal calculatePositionRisk() {
@@ -36,7 +36,8 @@ public class RiskManagement {
     private BigDecimal calculateDepotRisk() {
         return investments.stream()
                 .map(Investment::getRisk)
-                .reduce(BigDecimal.ZERO, BigDecimal::add);
+                .reduce(BigDecimal.ZERO, BigDecimal::add)
+                .abs();
     }
 
     private double calculateDepotRiskInPercent() {
@@ -64,26 +65,24 @@ public class RiskManagement {
                 .reduce(ZERO, BigDecimal::add);
     }
 
-    private BigDecimal calculateTotalLossAbs() {
-        return investments.stream()
-                .map(Investment::getRisk)
-                .reduce(ZERO, BigDecimal::add)
-                .abs();
-    }
-
-    public RiskManagementResult toApi() {
-        return RiskManagementResult.builder()
+    public RiskResult toApi() {
+        return RiskResult.builder()
                 .id(individualRisk.getId())
                 .totalCapital(individualRisk.getTotalCapital())
                 .individualPositionRiskInPercent(individualRisk.getIndividualPositionRiskInPercent())
                 .individualPositionRisk(calculatePositionRisk())
-                .investments(investments)
+                .investments(toApi(investments))
                 .totalInvestment(calculateTotalInvestment())
                 .totalRevenue(calculateTotalNotionalRevenue())
-                .totalLossAbs(calculateTotalLossAbs())
                 .depotRisk(calculateDepotRisk())
                 .depotRiskInPercent(calculateDepotRiskInPercent())
                 .totalRiskInPercent(calculateTotalRiskInPercent())
                 .build();
+    }
+
+    private List<InvestmentResult> toApi(List<Investment> investments) {
+        return investments.stream()
+                .map(Investment::toApi)
+                .collect(Collectors.toList());
     }
 }

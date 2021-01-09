@@ -4,10 +4,10 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class RiskManagmentApplication {
+public class RiskManagementApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(RiskManagmentApplication.class, args);
+		SpringApplication.run(RiskManagementApplication.class, args);
 	}
 
 }

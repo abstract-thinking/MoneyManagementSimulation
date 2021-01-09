@@ -19,16 +19,16 @@
     <tbody>
     <tr>
         <td><b>Gesamtkapital</b></td>
-        <td style="text-align:right;" th:text="${riskManagement.totalCapital}"></td>
+        <td style="text-align:right;" th:text="${riskResult.totalCapital}"></td>
     </tr>
     <tr>
         <td><b>Einzelpositionrisiko</b></td>
-        <td style="text-align:right;" th:text="${riskManagement.individualPositionRiskInPercent}"></td>
+        <td style="text-align:right;" th:text="${riskResult.individualPositionRiskInPercent}"></td>
     </tr>
     <tr>
         <td><b>Einzelpositionrisiko</b></td>
         <td style="text-align:right;"
-            th:text="${#numbers.formatDecimal(riskManagement.individualPositionRisk, 1, 2, 'POINT')}"></td>
+            th:text="${#numbers.formatDecimal(riskResult.individualPositionRisk, 1, 2, 'POINT')}"></td>
     </tr>
     <tr align>
         <td><b>WKN</b></td>
@@ -41,39 +41,39 @@
         <td><b>Fiktiver Verkaufserlös</b></td>
         <td><b>Risiko</b></td>
     </tr>
-    <tr th:each="investment: ${riskManagement.investments}">
+    <tr th:each="investment: ${riskResult.investments}">
         <td th:text="${investment.wkn}"></td>
         <td th:text="${investment.name}"></td>
         <td style="text-align:right;" th:text="${investment.quantity}"></td>
         <td style="text-align:right;" th:text="${investment.purchasePrice}"></td>
         <td style="text-align:right;" th:text="${investment.investment}"></td>
         <td style="text-align:right;"
-            th:text="${#numbers.formatDecimal(investment.highestNotionalSalesPrice, 1, 2, 'POINT')}"></td>
+            th:text="${#numbers.formatDecimal(investment.notionalSalesPrice, 1, 2, 'POINT')}"></td>
         <td style="text-align:right;" th:text="${investment.transactionCosts}"></td>
         <td style="text-align:right;"
             th:text="${#numbers.formatDecimal(investment.notionalRevenue, 1, 2, 'POINT')}"></td>
-        <td style="text-align:right;" th:text="${#numbers.formatDecimal(investment.risk, 1, 2, 'POINT')}"></td>
+        <td style="text-align:right;" th:text="${#numbers.formatDecimal(investment.positionRisk, 1, 2, 'POINT')}"></td>
     </tr>
     <tr>
         <td><b>Depotwert</b></td>
         <td colspan="3"></td>
-        <td style="text-align:right;" th:text="${riskManagement.totalInvestment}"></td>
+        <td style="text-align:right;" th:text="${riskResult.totalInvestment}"></td>
         <td colspan="2"></td>
         <td style="text-align:right;"
-            th:text="${#numbers.formatDecimal(riskManagement.totalRevenue, 1, 2, 'POINT')}"></td>
+            th:text="${#numbers.formatDecimal(riskResult.totalRevenue, 1, 2, 'POINT')}"></td>
         <td style="text-align:right;"
-            th:text="${#numbers.formatDecimal(riskManagement.depotRisk, 1, 2, 'POINT')}"></td>
+            th:text="${#numbers.formatDecimal(riskResult.depotRisk, 1, 2, 'POINT')}"></td>
     </tr>
     <tr>
         <td><b>Depotrisiko</b></td>
         <td colspan="7"></td>
         <td style="text-align:right;"
-            th:text="${#numbers.formatDecimal(riskManagement.depotRiskInPercent, 1, 2, 'POINT')}"></td>
+            th:text="${#numbers.formatDecimal(riskResult.depotRiskInPercent, 1, 2, 'POINT')}"></td>
     </tr>
     <tr>
         <td><b>Gesamtrisiko</b></td>
         <td style="text-align:right;"
-            th:text="${#numbers.formatDecimal(riskManagement.totalRiskInPercent, 1, 2, 'POINT')}"></td>
+            th:text="${#numbers.formatDecimal(riskResult.totalRiskInPercent, 1, 2, 'POINT')}"></td>
     </tr>
     </tbody>
 </table>

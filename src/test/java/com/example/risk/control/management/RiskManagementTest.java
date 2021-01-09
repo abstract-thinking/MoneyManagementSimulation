@@ -1,24 +1,24 @@
 package com.example.risk.control.management;
 
-import com.example.risk.boundary.api.RiskManagementResult;
+import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 class RiskManagementTest {
 
-    private final RiskManagement riskManagement = new RiskManagement(
-            new IndividualRisk(BigDecimal.valueOf(15000), 1.5));
-
     @Test
     void shouldReturnPositionRisk() {
-        BigDecimal positionRisk = riskManagement.calculatePositionRisk();
+        RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(Collections.emptyList());
+
+        BigDecimal positionRisk = riskManagementCalculator.calculatePositionRisk();
 
         assertThat(positionRisk).isEqualTo(BigDecimal.valueOf(2250000, 4));
     }
@@ -38,48 +38,48 @@ class RiskManagementTest {
         return investments;
     }
 
-    private Investment createInvestment(
-            int quantity, BigDecimal purchaseCost, BigDecimal notionalSalesPrice, BigDecimal transactionCosts) {
+    private Investment createInvestment(int quantity, BigDecimal purchaseCost,
+                                        BigDecimal notionalSalesPrice, BigDecimal transactionCosts) {
         return Investment.builder()
                 .quantity(quantity)
                 .purchasePrice(purchaseCost)
-                .notionalSalesPrice(notionalSalesPrice)
+                .initialNotionalSalesPrice(notionalSalesPrice)
                 .transactionCosts(transactionCosts)
                 .build();
     }
 
     @Test
     void shouldReturnTotalRiskCalculatedStaticallyWithTwoEntries2() {
-        riskManagement.setInvestments(createInvestmentsWithTwoEntries());
+        RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithTwoEntries());
 
-        double totalRisk = riskManagement.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(2.99);
     }
 
     @Test
     void shouldReturnTotalRiskCalculatedStaticallyWithThreeEntries2() {
-        riskManagement.setInvestments(createInvestmentsWithThreeEntries());
+        RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntries());
 
-        double totalRisk = riskManagement.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(4.49);
     }
 
     @Test
     void shouldReturnTotalRiskCalculatedStaticallyWithThreeEntriesWhenPricesIncreased2() {
-        riskManagement.setInvestments(createInvestmentsWithThreeEntriesIncreased());
+        RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesIncreased());
 
-        double totalRisk = riskManagement.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(0.3);
     }
 
     @Test
     void shouldReturnTotalRiskCalculatedStaticallyWithThreeEntriesWhenPricesDecreased2() {
-        riskManagement.setInvestments(createInvestmentsWithThreeEntriesDecreased());
+        RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesDecreased());
 
-        double totalRisk = riskManagement.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(10.58);
     }
@@ -104,59 +104,65 @@ class RiskManagementTest {
 
     @Test
     void shouldReturnCalculateDepotRisk() {
-        riskManagement.setInvestments(createInvestmentsWithThreeEntries());
+        RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntries());
 
-        RiskManagementResult riskManagementResult = riskManagement.toApi();
+        RiskResult riskResult = riskManagementCalculator.toApi();
 
-        assertThat(riskManagementResult.getDepotRisk()).isEqualTo(BigDecimal.valueOf(674.59));
-        assertThat(riskManagementResult.getDepotRiskInPercent()).isEqualTo(9.51);
+        assertThat(riskResult.getDepotRisk()).isEqualTo(BigDecimal.valueOf(674.59));
+        assertThat(riskResult.getDepotRiskInPercent()).isEqualTo(9.51);
     }
 
     @Test
     void shouldReturnCalculateDepotRiskCalculatedDynamicallyWhenPricesIncreased() {
-        riskManagement.setInvestments(createInvestmentsWithThreeEntriesIncreased());
+        RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesIncreased());
 
-        RiskManagementResult riskManagementResult = riskManagement.toApi();
+        RiskResult riskResult = riskManagementCalculator.toApi();
 
-        assertThat(riskManagementResult.getDepotRisk()).isEqualTo(BigDecimal.valueOf(45));
-        assertThat(riskManagementResult.getDepotRiskInPercent()).isEqualTo(0.58);
+        assertThat(riskResult.getDepotRisk()).isEqualTo(BigDecimal.valueOf(45));
+        assertThat(riskResult.getDepotRiskInPercent()).isEqualTo(0.58);
     }
 
     @Test
     void shouldReturnCalculateDepotRiskCalculatedDynamicallyWhenPricesDecreased() {
-        riskManagement.setInvestments(createInvestmentsWithThreeEntriesDecreased());
+        RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesDecreased());
 
-        RiskManagementResult riskManagementResult = riskManagement.toApi();
+        RiskResult riskResult = riskManagementCalculator.toApi();
 
-        assertThat(riskManagementResult.getDepotRisk()).isEqualTo(BigDecimal.valueOf(1588));
-        assertThat(riskManagementResult.getDepotRiskInPercent()).isEqualTo(25.69);
+        assertThat(riskResult.getDepotRisk()).isEqualTo(BigDecimal.valueOf(1588));
+        assertThat(riskResult.getDepotRiskInPercent()).isEqualTo(25.69);
     }
 
     @Test
     void shouldReturnCalculatedTotalRisk() {
-        riskManagement.setInvestments(createInvestmentsWithThreeEntries());
+        RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntries());
 
-        double totalRisk = riskManagement.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(4.49);
     }
 
     @Test
     void shouldReturnCalculatedTotalRiskCalculatedDynamicallyWhenPricesIncreased() {
-        riskManagement.setInvestments(createInvestmentsWithThreeEntriesIncreased());
+        RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesIncreased());
 
-        double totalRisk = riskManagement.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(0.3);
     }
 
     @Test
     void shouldReturnCalculatedTotalRiskCalculatedDynamicallyWhenPricesDecreased() {
-        riskManagement.setInvestments(createInvestmentsWithThreeEntriesDecreased());
+        RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesDecreased());
 
-        double totalRisk = riskManagement.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(10.58);
+    }
+
+    private RiskManagementCalculator createRiskManagementCalculator(List<Investment> investmentsWithThreeEntriesDecreased) {
+        return new RiskManagementCalculator(
+                new IndividualRisk(BigDecimal.valueOf(15000), 1.5),
+                investmentsWithThreeEntriesDecreased);
     }
 
 }

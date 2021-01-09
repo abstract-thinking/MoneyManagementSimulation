@@ -3,23 +3,31 @@ package com.example.risk.boundary.api;
 import lombok.Builder;
 import lombok.ToString;
 import lombok.Value;
+import lombok.extern.slf4j.Slf4j;
 
 import java.math.BigDecimal;
 
+@Slf4j
 @Value
 @Builder
 @ToString
 public class SellRecommendation {
 
     String wkn;
+
     String company;
-    Double companyRsl;
     String exchange;
+
+    Double companyRsl;
     Double exchangeRsl;
+
     BigDecimal price;
+    BigDecimal initialNotionalSalesPrice;
+
+    boolean shouldSellByRslComparison;
+    boolean shouldSellByFallingBelowTheLimit;
 
     public boolean shouldSell() {
-        return exchangeRsl > companyRsl;
+        return shouldSellByFallingBelowTheLimit || shouldSellByRslComparison;
     }
-
 }

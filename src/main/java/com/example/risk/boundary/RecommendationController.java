@@ -2,7 +2,8 @@ package com.example.risk.boundary;
 
 
 import com.example.risk.boundary.api.BuyRecommendation;
-import com.example.risk.control.invest.InvestmentRecommender;
+import com.example.risk.boundary.api.SellRecommendation;
+import com.example.risk.control.RiskManagementFacade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.rest.webmvc.RepositoryLinksResource;
@@ -25,19 +26,19 @@ import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 @AllArgsConstructor
 public class RecommendationController implements RepresentationModelProcessor<RepositoryLinksResource> {
 
-    private final InvestmentRecommender recommender;
+    private final RiskManagementFacade riskManagementFacade;
 
-//    @GetMapping(path = "/sell", produces = APPLICATION_JSON_VALUE)
-//    public CollectionModel<SellRecommendation> sellRecommendations() {
-//        List<SellRecommendation> recommendations = recommender.getSellRecommendations();
-//
-//        Link link = linkTo(methodOn(RecommendationController.class).sellRecommendations()).withSelfRel();
-//        return CollectionModel.of(recommendations, link);
-//    }
+    @GetMapping(path = "/sell", produces = APPLICATION_JSON_VALUE)
+    public CollectionModel<SellRecommendation> sellRecommendations() {
+        List<SellRecommendation> recommendations = riskManagementFacade.doSellRecommendations();
+
+        Link link = linkTo(methodOn(RecommendationController.class).sellRecommendations()).withSelfRel();
+        return CollectionModel.of(recommendations, link);
+    }
 
     @GetMapping(path = "/buy", produces = APPLICATION_JSON_VALUE)
     public CollectionModel<BuyRecommendation> buyRecommendations() {
-        List<BuyRecommendation> recommendations = recommender.getBuyRecommendations();
+        List<BuyRecommendation> recommendations = riskManagementFacade.doBuyRecommendations();
 
         Link link = linkTo(methodOn(RecommendationController.class).buyRecommendations()).withSelfRel();
         return CollectionModel.of(recommendations, link);
@@ -45,8 +46,8 @@ public class RecommendationController implements RepresentationModelProcessor<Re
 
     @Override
     public RepositoryLinksResource process(RepositoryLinksResource resource) {
-        // resource.add(linkTo(RecommendationController.class).withRel("recommendations"));
-        // resource.add(linkTo(methodOn(RecommendationController.class).sellRecommendations()).withRel("sell"));
+        resource.add(linkTo(RecommendationController.class).withRel("recommendations"));
+        resource.add(linkTo(methodOn(RecommendationController.class).sellRecommendations()).withRel("sell"));
         resource.add(linkTo(methodOn(RecommendationController.class).buyRecommendations()).withRel("buy"));
 
         return resource;

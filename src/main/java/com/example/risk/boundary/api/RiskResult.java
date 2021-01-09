@@ -1,6 +1,5 @@
 package com.example.risk.boundary.api;
 
-import com.example.risk.data.Investment;
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
@@ -14,26 +13,19 @@ import java.util.List;
 @Builder
 @EqualsAndHashCode(callSuper = true)
 @ToString
-public class RiskManagementResult extends RepresentationModel<RiskManagementResult> {
+public class RiskResult extends RepresentationModel<RiskResult> {
 
     Long id;
 
     BigDecimal totalCapital;
-
     double individualPositionRiskInPercent;
-
     BigDecimal individualPositionRisk;
 
-    List<Investment> investments;
+    List<InvestmentResult> investments;
 
     BigDecimal totalInvestment;
-
     BigDecimal totalRevenue;
-
-    BigDecimal totalLossAbs;
-
     BigDecimal depotRisk;
-
     double depotRiskInPercent;
 
     double totalRiskInPercent;

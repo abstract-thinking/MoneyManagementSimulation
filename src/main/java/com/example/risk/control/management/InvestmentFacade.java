@@ -13,13 +13,13 @@ import static com.example.risk.control.management.PriceCalculator.calculateNotio
 
 @Slf4j
 @Component
-public class ManagementFacade {
+public class InvestmentFacade {
 
     private static final String EXCHANGE_NAME = "NASDAQ 100";
 
     private final DecisionRowConverter converter;
 
-    public ManagementFacade(DecisionRowConverter converter) {
+    public InvestmentFacade(DecisionRowConverter converter) {
         this.converter = converter;
     }
 
@@ -31,8 +31,11 @@ public class ManagementFacade {
                 investment -> exchangeResults.stream()
                         .filter(row -> row.getWkn().equalsIgnoreCase(investment.getWkn()))
                         .findFirst()
-                        .ifPresent(result -> investment.setUpdatedNotionalSalesPrice(
-                                calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl)))
+                        .ifPresent(result -> {
+                            log.info("Calculate notional sales price for {}", result.getName());
+                            investment.setCurrentNotionalSalesPrice(
+                                    calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl));
+                        })
         );
 
         return investments;
