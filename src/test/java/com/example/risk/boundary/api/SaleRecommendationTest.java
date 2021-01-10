@@ -6,54 +6,54 @@ import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-class SellRecommendationTest {
+class SaleRecommendationTest {
 
     @Test
     void shouldSell() {
-        SellRecommendation sellRecommendation = SellRecommendation.builder()
+        SaleRecommendation saleRecommendation = SaleRecommendation.builder()
                 .initialNotionalSalesPrice(BigDecimal.valueOf(100))
                 .price(BigDecimal.valueOf(100))
                 .build();
 
-        boolean shouldSell = sellRecommendation.shouldSell();
+        boolean shouldSell = saleRecommendation.shouldSell();
 
         assertThat(shouldSell).isTrue();
     }
 
     @Test
     void shouldNotSell() {
-        SellRecommendation sellRecommendation = SellRecommendation.builder()
+        SaleRecommendation saleRecommendation = SaleRecommendation.builder()
                 .initialNotionalSalesPrice(BigDecimal.valueOf(100))
                 .price(BigDecimal.valueOf(99))
                 .exchangeRsl(1.1)
                 .companyRsl(1.2)
                 .build();
 
-        boolean shouldSell = sellRecommendation.shouldSell();
+        boolean shouldSell = saleRecommendation.shouldSell();
 
         assertThat(shouldSell).isFalse();
     }
 
     @Test
     void shouldSellBySellRecommendation() {
-        SellRecommendation sellRecommendation = createSellRecommendation(1.02, 1.03);
+        SaleRecommendation saleRecommendation = createSellRecommendation(1.02, 1.03);
 
-        boolean shouldSell = sellRecommendation.shouldSell();
+        boolean shouldSell = saleRecommendation.shouldSell();
 
         assertThat(shouldSell).isTrue();
     }
 
     @Test
     void shouldNotSellBySellRecommendation() {
-        SellRecommendation sellRecommendation = createSellRecommendation(1.1, 1.1);
+        SaleRecommendation saleRecommendation = createSellRecommendation(1.1, 1.1);
 
-        boolean shouldSell = sellRecommendation.shouldSell();
+        boolean shouldSell = saleRecommendation.shouldSell();
 
         assertThat(shouldSell).isFalse();
     }
 
-    private SellRecommendation createSellRecommendation(double rsl, double exchangeRsl) {
-        return SellRecommendation.builder()
+    private SaleRecommendation createSellRecommendation(double rsl, double exchangeRsl) {
+        return SaleRecommendation.builder()
                 .initialNotionalSalesPrice(BigDecimal.valueOf(100))
                 .price(BigDecimal.ZERO)
                 .companyRsl(rsl)

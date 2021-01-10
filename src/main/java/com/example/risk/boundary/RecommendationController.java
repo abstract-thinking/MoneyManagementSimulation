@@ -1,8 +1,8 @@
 package com.example.risk.boundary;
 
 
-import com.example.risk.boundary.api.BuyRecommendation;
-import com.example.risk.boundary.api.SellRecommendation;
+import com.example.risk.boundary.api.PurchaseRecommendation;
+import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.control.RiskManagementFacade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,16 +29,16 @@ public class RecommendationController implements RepresentationModelProcessor<Re
     private final RiskManagementFacade riskManagementFacade;
 
     @GetMapping(path = "/sell", produces = APPLICATION_JSON_VALUE)
-    public CollectionModel<SellRecommendation> sellRecommendations() {
-        List<SellRecommendation> recommendations = riskManagementFacade.doSellRecommendations();
+    public CollectionModel<SaleRecommendation> sellRecommendations() {
+        List<SaleRecommendation> recommendations = riskManagementFacade.doSellRecommendations();
 
         Link link = linkTo(methodOn(RecommendationController.class).sellRecommendations()).withSelfRel();
         return CollectionModel.of(recommendations, link);
     }
 
     @GetMapping(path = "/buy", produces = APPLICATION_JSON_VALUE)
-    public CollectionModel<BuyRecommendation> buyRecommendations() {
-        List<BuyRecommendation> recommendations = riskManagementFacade.doBuyRecommendations();
+    public CollectionModel<PurchaseRecommendation> buyRecommendations() {
+        List<PurchaseRecommendation> recommendations = riskManagementFacade.doPurchaseRecommendations();
 
         Link link = linkTo(methodOn(RecommendationController.class).buyRecommendations()).withSelfRel();
         return CollectionModel.of(recommendations, link);

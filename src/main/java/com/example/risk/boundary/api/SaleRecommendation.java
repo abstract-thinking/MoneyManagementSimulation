@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Value
 @Builder
 @ToString
-public class SellRecommendation {
+public class SaleRecommendation {
 
     String wkn;
 

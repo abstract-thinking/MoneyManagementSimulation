@@ -89,13 +89,13 @@
     </tr>
     </thead>
     <tbody>
-    <tr align="center" th:each="sellRecommendation: ${sellRecommendations}">
-        <td th:text="${sellRecommendation.wkn}"></td>
-        <td th:text="${sellRecommendation.company}"></td>
-        <td th:text="${sellRecommendation.companyRsl}"></td>
-        <td th:text="${sellRecommendation.exchange}"></td>
-        <td th:text="${sellRecommendation.exchangeRsl}"></td>
-        <td th:text="${sellRecommendation.price}"></td>
+    <tr align="center" th:each="saleRecommendation: ${saleRecommendations}">
+        <td th:text="${saleRecommendation.wkn}"></td>
+        <td th:text="${saleRecommendation.company}"></td>
+        <td th:text="${saleRecommendation.companyRsl}"></td>
+        <td th:text="${saleRecommendation.exchange}"></td>
+        <td th:text="${saleRecommendation.exchangeRsl}"></td>
+        <td th:text="${saleRecommendation.price}"></td>
     </tr>
     </tbody>
 </table>
@@ -114,7 +114,7 @@
     </tr>
     </thead>
     <tbody>
-    <tr align="center" th:each="buyRecommendation: ${buyRecommendations}">
+    <tr align="center" th:each="buyRecommendation: ${purchaseRecommendations}">
         <td th:text="${buyRecommendation.wkn}"></td>
         <td th:text="${buyRecommendation.name}"></td>
         <td th:text="${buyRecommendation.rsl}"></td>

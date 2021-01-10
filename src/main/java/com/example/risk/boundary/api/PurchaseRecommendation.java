@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Value
 @Builder
-public class BuyRecommendation {
+public class PurchaseRecommendation {
     String wkn;
     String name;
 

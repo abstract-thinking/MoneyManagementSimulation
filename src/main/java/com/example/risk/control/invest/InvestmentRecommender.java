@@ -1,7 +1,7 @@
 package com.example.risk.control.invest;
 
-import com.example.risk.boundary.api.BuyRecommendation;
-import com.example.risk.boundary.api.SellRecommendation;
+import com.example.risk.boundary.api.PurchaseRecommendation;
+import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.control.management.MoneyManagement;
 import com.example.risk.control.management.RiskManagementCalculator;
 import com.example.risk.converter.DecisionRowConverter;
@@ -30,20 +30,20 @@ public class InvestmentRecommender {
 
     private final DecisionRowConverter converter;
 
-    public List<SellRecommendation> getSellRecommendations(RiskManagementCalculator riskManagementCalculator) {
+    public List<SaleRecommendation> getSaleRecommendations(RiskManagementCalculator riskManagementCalculator) {
         List<ExchangeResult> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
 
-        List<SellRecommendation> sellRecommendations = new ArrayList<>();
+        List<SaleRecommendation> saleRecommendations = new ArrayList<>();
         riskManagementCalculator.getInvestments().forEach(investment ->
                 results.stream()
                         .filter(result -> result.getWkn().equalsIgnoreCase(investment.getWkn()))
                         .map(result -> createSellRecommendation(result, exchangeRsl, investment))
-                        .filter(SellRecommendation::shouldSell)
+                        .filter(SaleRecommendation::shouldSell)
                         .findFirst()
-                        .ifPresent(sellRecommendations::add));
+                        .ifPresent(saleRecommendations::add));
 
-        return sellRecommendations;
+        return saleRecommendations;
     }
 
     private double findExchangeRsl(List<ExchangeResult> results) {
@@ -54,8 +54,8 @@ public class InvestmentRecommender {
                 .getRsl();
     }
 
-    private SellRecommendation createSellRecommendation(ExchangeResult result, double exchangeRsl, Investment investment) {
-        return SellRecommendation.builder()
+    private SaleRecommendation createSellRecommendation(ExchangeResult result, double exchangeRsl, Investment investment) {
+        return SaleRecommendation.builder()
                 .wkn(result.getWkn())
                 .company(result.getName())
                 .companyRsl(result.getRsl())
@@ -77,7 +77,7 @@ public class InvestmentRecommender {
     }
 
 
-    public List<BuyRecommendation> getBuyRecommendations() {
+    public List<PurchaseRecommendation> getPurchaseRecommendations() {
         List<ExchangeResult> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
 
@@ -88,7 +88,7 @@ public class InvestmentRecommender {
                 .collect(toList());
     }
 
-    public List<BuyRecommendation> getBuyRecommendations(RiskManagementCalculator riskManagementCalculator) {
+    public List<PurchaseRecommendation> getPurchaseRecommendations(RiskManagementCalculator riskManagementCalculator) {
         List<ExchangeResult> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
 
@@ -99,8 +99,8 @@ public class InvestmentRecommender {
                 .collect(toList());
     }
 
-    private BuyRecommendation createBuyRecommendation(ExchangeResult result, double exchangeRsl) {
-        return BuyRecommendation.builder()
+    private PurchaseRecommendation createBuyRecommendation(ExchangeResult result, double exchangeRsl) {
+        return PurchaseRecommendation.builder()
                 .name(result.getName())
                 .rsl(result.getRsl())
                 .wkn(result.getWkn())
@@ -112,7 +112,7 @@ public class InvestmentRecommender {
                 .build();
     }
 
-    private BuyRecommendation createBuyRecommendation(ExchangeResult result, double exchangeRsl, RiskManagementCalculator riskManagementCalculator) {
+    private PurchaseRecommendation createBuyRecommendation(ExchangeResult result, double exchangeRsl, RiskManagementCalculator riskManagementCalculator) {
         final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl);
 
         Investment possibleInvestment = Investment.builder()
@@ -123,7 +123,7 @@ public class InvestmentRecommender {
 
         int quantity = MoneyManagement.calculateQuantity(riskManagementCalculator.calculatePositionRisk(), possibleInvestment);
 
-        return BuyRecommendation.builder()
+        return PurchaseRecommendation.builder()
                 .name(result.getName())
                 .rsl(result.getRsl())
                 .wkn(result.getWkn())

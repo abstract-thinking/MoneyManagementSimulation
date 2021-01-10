@@ -1,9 +1,10 @@
 package com.example.risk.boundary;
 
 import com.example.risk.boundary.api.InvestmentResult;
+import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
-import com.example.risk.boundary.api.SellRecommendation;
+import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.control.RiskManagementFacade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -46,18 +48,18 @@ public class RiskManagementController {
 
         RiskResult riskResult = riskManagementFacade.doRiskManagement(riskId);
         addSelfLink(riskResult);
-        addSellRecommendationLink(riskResult);
+        addSaleRecommendationLink(riskResult);
 
         return riskResult;
     }
 
-    private void addSellRecommendationLink(RiskResult riskResult) {
+    private void addSaleRecommendationLink(RiskResult riskResult) {
         for (InvestmentResult investment : riskResult.getInvestments()) {
             if (investment.getHasSellRecommendation()) {
 
-                String relativePath = "/api/risks/" + riskResult.getId() + "/sell-recommendations/" + investment.getId();
+                String relativePath = "/api/risks/" + riskResult.getId() + "/recommendations/sales/" + investment.getId();
 
-                Link link = Link.of(relativePath, "sell");
+                Link link = Link.of(relativePath, "sale");
 //                Link link = linkTo(RiskManagementController.class)
 //                        .slash("api")
 //                        .slash("risks")
@@ -82,14 +84,30 @@ public class RiskManagementController {
                 .slash(riskResult.getId()).withSelfRel();
     }
 
-    @GetMapping(path = "/api/risks/{riskId}/sell-recommendations/{investmentId}", produces = APPLICATION_JSON_VALUE)
-    public SellRecommendation sellRecommendation(
+    @GetMapping(path = "/api/risks/{riskId}/recommendations/sales", produces = APPLICATION_JSON_VALUE)
+    public List<SaleRecommendation> saleRecommendations(@PathVariable("riskId") Long riskId) {
+        log.info("Sale recommendations invoked");
+
+        return riskManagementFacade.doSaleRecommendations(riskId);
+    }
+
+
+    @GetMapping(path = "/api/risks/{riskId}/recommendations/sales/{investmentId}", produces = APPLICATION_JSON_VALUE)
+    public SaleRecommendation saleRecommendation(
             @PathVariable("riskId") Long riskId,
             @PathVariable("investmentId") Long investmentId) {
-        log.info("Sell recommendation invoked");
+        log.info("Sale recommendation invoked");
 
-        return riskManagementFacade.doSellRecommendation(riskId, investmentId);
+        return riskManagementFacade.doSaleRecommendation(riskId, investmentId);
     }
+
+    @GetMapping(path = "/api/risks/{riskId}/recommendations/purchases", produces = APPLICATION_JSON_VALUE)
+    public List<PurchaseRecommendation> purchaseRecommendations(@PathVariable("riskId") Long riskId) {
+        log.info("Purchase recommendations invoked");
+
+        return riskManagementFacade.doPurchaseRecommendations(riskId);
+    }
+
 
     @ExceptionHandler({NoSuchElementException.class})
     public void handleException() {

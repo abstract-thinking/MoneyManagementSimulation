@@ -26,10 +26,10 @@ public class InvestmentResult extends RepresentationModel<RiskResult> {
     private BigDecimal notionalRevenue;
     private BigDecimal positionRisk;
 
-    private SellRecommendation sellRecommendation;
+    private SaleRecommendation saleRecommendation;
 
     public boolean getHasSellRecommendation() {
-        return sellRecommendation != null;
+        return saleRecommendation != null;
     }
 
 }

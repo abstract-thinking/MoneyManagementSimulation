@@ -1,6 +1,6 @@
 package com.example.risk.control.invest;
 
-import com.example.risk.boundary.api.SellRecommendation;
+import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.service.rsl.RslService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
@@ -49,16 +49,16 @@ public class InvestRecommenderTests {
         when(rslService.fetchTable()).thenReturn(asString(resource));
 
         // FIXME:
-        List<SellRecommendation> sellRecommendations = recommender.getSellRecommendations(null);
+        List<SaleRecommendation> saleRecommendations = recommender.getSaleRecommendations(null);
 
-        assertThat(sellRecommendations).hasSize(2);
-        assertThat(sellRecommendations).contains(
+        assertThat(saleRecommendations).hasSize(2);
+        assertThat(saleRecommendations).contains(
                 createRecommendation("PayPal Holdings Inc.", 1.08),
                 createRecommendation("Fiserv Inc.", 0.94));
     }
 
-    private SellRecommendation createRecommendation(String company, Double companyRsl) {
-        return SellRecommendation.builder()
+    private SaleRecommendation createRecommendation(String company, Double companyRsl) {
+        return SaleRecommendation.builder()
                 .company(company)
                 .companyRsl(companyRsl)
                 .exchange("NASDAQ 100")

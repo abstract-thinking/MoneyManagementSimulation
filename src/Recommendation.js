@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const SellRecommendation = () => {
+const Recommendation = () => {
   const [sellRecommendation, setSellRecommendation] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -41,13 +41,13 @@ return (
     <table>
     <thead>
     <tr>
-     <td>WKN</td>
-     <td>Name</td>
-     <td>Börse</td>
-     <td>RSL</td>
-     <td>Börse RSL</td>
-     <td>Preis 1</td>
-     <td>Preis 2</td>
+     <th>WKN</th>
+     <th>Name</th>
+     <th>Börse</th>
+     <th>RSL</th>
+     <th>Börse RSL</th>
+     <th>Preis</th>
+     <th>Verkaufspreisschwelle</th>
     </tr>
     </thead>
     <tbody>
@@ -55,10 +55,10 @@ return (
      <td>{sellRecommendation.wkn}</td>
      <td>{sellRecommendation.company}</td>
      <td>{sellRecommendation.exchange}</td>
-     <td>{sellRecommendation.companyRsl}</td>
-     <td>{sellRecommendation.exchangeRsl}</td>
-     <td>{sellRecommendation.price}</td>
-     <td>{sellRecommendation.initialNotionalSalesPrice}</td>
+     <td style={{ textAlign: 'right' }}>{sellRecommendation.companyRsl}</td>
+     <td style={{ textAlign: 'right' }}>{sellRecommendation.exchangeRsl}</td>
+     <td style={{ textAlign: 'right' }}>{sellRecommendation.price}</td>
+     <td style={{ textAlign: 'right' }}>{sellRecommendation.initialNotionalSalesPrice}</td>
     </tr>
     </tbody>
     </table>

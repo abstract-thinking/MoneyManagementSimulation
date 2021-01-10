@@ -1,9 +1,9 @@
 package com.example.risk.control;
 
-import com.example.risk.boundary.api.BuyRecommendation;
+import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
-import com.example.risk.boundary.api.SellRecommendation;
+import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.control.invest.InvestmentRecommender;
 import com.example.risk.control.management.InvestmentFacade;
 import com.example.risk.control.management.RiskManagementCalculator;
@@ -90,20 +90,20 @@ public class RiskManagementFacade {
 
         // TODO: Not sure should be done here?
         // List<SellRecommendation> sellRecommendations = doSellRecommendations();
-        List<SellRecommendation> sellRecommendations = investmentRecommender.getSellRecommendations(riskManagementCalculator);
-        if (!sellRecommendations.isEmpty()) {
-            sellRecommendations.forEach(sellRecommendation ->
+        List<SaleRecommendation> saleRecommendations = investmentRecommender.getSaleRecommendations(riskManagementCalculator);
+        if (!saleRecommendations.isEmpty()) {
+            saleRecommendations.forEach(sellRecommendation ->
                     riskResult.getInvestments().stream()
                             .filter(investment -> sellRecommendation.getWkn().equalsIgnoreCase(investment.getWkn()))
                             .findFirst()
-                            .ifPresent(investment -> investment.setSellRecommendation(sellRecommendation))
+                            .ifPresent(investment -> investment.setSaleRecommendation(sellRecommendation))
             );
         }
 
         return riskResult;
     }
 
-    public List<SellRecommendation> doSellRecommendations() {
+    public List<SaleRecommendation> doSellRecommendations() {
         IndividualRisk individualRisk;
         if (useFirst) {
             individualRisk = individualRiskRepository.findAll().iterator().next();
@@ -118,23 +118,33 @@ public class RiskManagementFacade {
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
 
-        return investmentRecommender.getSellRecommendations(
+        return investmentRecommender.getSaleRecommendations(
                 new RiskManagementCalculator(individualRisk, updatedInvestments));
     }
 
-    public SellRecommendation doSellRecommendation(Long id, Long investmentId) {
+    public List<SaleRecommendation> doSaleRecommendations(Long id) {
+        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+
+        List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
+        List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
+
+        RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
+
+        return investmentRecommender.getSaleRecommendations(riskManagementCalculator);
+    }
+
+    public SaleRecommendation doSaleRecommendation(Long id, Long investmentId) {
         IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         Investment investment = investments.stream().filter(i -> i.getId().equals(investmentId)).findFirst().orElseThrow();
         List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(Collections.singletonList(investment));
 
         RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
-        List<SellRecommendation> sellRecommendations = investmentRecommender.getSellRecommendations(riskManagementCalculator);
-        return sellRecommendations.get(0);
+        List<SaleRecommendation> saleRecommendations = investmentRecommender.getSaleRecommendations(riskManagementCalculator);
+        return saleRecommendations.get(0);
     }
 
-
-    public List<BuyRecommendation> doBuyRecommendations() {
+    public List<PurchaseRecommendation> doPurchaseRecommendations() {
         IndividualRisk individualRisk;
         if (useFirst) {
             individualRisk = individualRiskRepository.findAll().iterator().next();
@@ -149,8 +159,19 @@ public class RiskManagementFacade {
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
 
-        return new ArrayList<>(investmentRecommender.getBuyRecommendations(
+        return new ArrayList<>(investmentRecommender.getPurchaseRecommendations(
                 new RiskManagementCalculator(individualRisk, updatedInvestments)));
     }
+
+    public List<PurchaseRecommendation> doPurchaseRecommendations(Long id) {
+        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+
+        List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
+        List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
+
+        return new ArrayList<>(investmentRecommender.getPurchaseRecommendations(
+                new RiskManagementCalculator(individualRisk, updatedInvestments)));
+    }
+
 
 }

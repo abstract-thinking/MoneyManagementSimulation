@@ -8,7 +8,8 @@ const App = () => {
               <div>
                 <Router>
                   <RiskManagement path="/" />
-                  <SellRecommendation path="/risks/:riskId/sell-recommendations/:investmentId" />
+                  <SellRecommendation path="/riskManagements/:riskId/sell-recommendations/:investmentId" />
+                  <BuyRecommendation path="/riskManagements/:riskId/buy-recommendations/"
                 </Router>
               </div>
 
