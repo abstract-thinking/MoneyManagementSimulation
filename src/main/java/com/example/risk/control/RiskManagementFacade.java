@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
 @Component
@@ -27,41 +26,12 @@ public class RiskManagementFacade {
     private final InvestmentFacade investmentFacade;
     private final InvestmentRecommender investmentRecommender;
 
-    private boolean useFirst;
-
     public RiskManagementFacade(IndividualRiskRepository individualRiskRepository, InvestmentRepository investmentRepository,
                                 InvestmentFacade investmentFacade, InvestmentRecommender investmentRecommender) {
         this.individualRiskRepository = individualRiskRepository;
         this.investmentRepository = investmentRepository;
         this.investmentFacade = investmentFacade;
         this.investmentRecommender = investmentRecommender;
-    }
-
-    public void useFirst() {
-        useFirst = true;
-    }
-
-    public void useSecond() {
-        useFirst = false;
-    }
-
-    public RiskResult doRiskManagement() {
-        IndividualRisk individualRisk;
-        if (useFirst) {
-            individualRisk = individualRiskRepository.findAll().iterator().next();
-        } else {
-            Iterator<IndividualRisk> iterator = individualRiskRepository.findAll().iterator();
-            individualRisk = iterator.next();
-            while (iterator.hasNext()) {
-                individualRisk = iterator.next();
-            }
-        }
-
-        List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
-        List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
-
-
-        return new RiskManagementCalculator(individualRisk, updatedInvestments).toApi();
     }
 
     public RiskResults doRiskManagements() {
@@ -103,25 +73,6 @@ public class RiskManagementFacade {
         return riskResult;
     }
 
-    public List<SaleRecommendation> doSellRecommendations() {
-        IndividualRisk individualRisk;
-        if (useFirst) {
-            individualRisk = individualRiskRepository.findAll().iterator().next();
-        } else {
-            Iterator<IndividualRisk> iterator = individualRiskRepository.findAll().iterator();
-            individualRisk = iterator.next();
-            while (iterator.hasNext()) {
-                individualRisk = iterator.next();
-            }
-        }
-
-        List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
-        List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
-
-        return investmentRecommender.getSaleRecommendations(
-                new RiskManagementCalculator(individualRisk, updatedInvestments));
-    }
-
     public List<SaleRecommendation> doSaleRecommendations(Long id) {
         IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
 
@@ -144,25 +95,6 @@ public class RiskManagementFacade {
         return saleRecommendations.get(0);
     }
 
-    public List<PurchaseRecommendation> doPurchaseRecommendations() {
-        IndividualRisk individualRisk;
-        if (useFirst) {
-            individualRisk = individualRiskRepository.findAll().iterator().next();
-        } else {
-            Iterator<IndividualRisk> iterator = individualRiskRepository.findAll().iterator();
-            individualRisk = iterator.next();
-            while (iterator.hasNext()) {
-                individualRisk = iterator.next();
-            }
-        }
-
-        List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
-        List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
-
-        return new ArrayList<>(investmentRecommender.getPurchaseRecommendations(
-                new RiskManagementCalculator(individualRisk, updatedInvestments)));
-    }
-
     public List<PurchaseRecommendation> doPurchaseRecommendations(Long id) {
         IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
 
@@ -172,6 +104,4 @@ public class RiskManagementFacade {
         return new ArrayList<>(investmentRecommender.getPurchaseRecommendations(
                 new RiskManagementCalculator(individualRisk, updatedInvestments)));
     }
-
-
 }
