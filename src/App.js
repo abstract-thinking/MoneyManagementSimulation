@@ -1,15 +1,14 @@
 import React from 'react';
 import { Router } from "@reach/router";
 import RiskManagement from "./RiskManagement"
-import SellRecommendation from "./SellRecommendation"
+import SaleRecommendation from "./SaleRecommendation"
 
 const App = () => {
   return (
               <div>
                 <Router>
                   <RiskManagement path="/" />
-                  <SellRecommendation path="/riskManagements/:riskId/sell-recommendations/:investmentId" />
-                  <BuyRecommendation path="/riskManagements/:riskId/buy-recommendations/"
+                  <SaleRecommendation path="/riskManagements/:riskId/sales-recommendations/:investmentId" />
                 </Router>
               </div>
 
