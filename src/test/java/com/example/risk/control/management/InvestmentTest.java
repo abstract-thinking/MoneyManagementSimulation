@@ -16,12 +16,15 @@ class InvestmentTest {
             .quantity(10)
             .purchasePrice(BigDecimal.TEN)
             .transactionCosts(BigDecimal.ONE)
+            .currentNotionalSalesPrice(BigDecimal.valueOf(19))
             .initialNotionalSalesPrice(BigDecimal.valueOf(20))
             .build();
 
     @Test
     void shouldGetInvestment() {
-        assertThat(investment.getInvestment()).isEqualTo(BigDecimal.valueOf(100));
+        BigDecimal investment = this.investment.getInvestment();
+
+        assertThat(investment).isEqualTo(BigDecimal.valueOf(100));
     }
 
     @Test
@@ -36,7 +39,9 @@ class InvestmentTest {
 
     @Test
     void shouldGetNotationalRevenueResult() {
-        assertThat(investment.getNotionalRevenue()).isEqualTo(BigDecimal.valueOf(200));
+        BigDecimal notionalRevenue = investment.getNotionalRevenue();
+
+        assertThat(notionalRevenue).isEqualTo(BigDecimal.valueOf(200));
     }
 
 }
