@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-const SaleRecommendation = () => {
+
+
+const SaleRecommendation = (props) => {
   const [saleRecommendation, setSaleRecommendation] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+
+  const targetUrl = `http://localhost:8080/api/risks/${props.riskId}/recommendations/sales/${props.investmentId}`;
 
   useEffect(() => {
       const fetchSaleRecommendation = async () => {
@@ -12,7 +16,7 @@ const SaleRecommendation = () => {
             setLoading(true);
             setError('');
 
-            const response = await axios("http://localhost:8080/api/risks/1/recommendations/sale/2")
+            const response = await axios(targetUrl)
             console.log("Received data: ", response.data);
             setSaleRecommendation(response.data);
          } catch (err) {
@@ -21,8 +25,9 @@ const SaleRecommendation = () => {
          setLoading(false)
      };
 
+     console.log(targetUrl);
      fetchSaleRecommendation();
-  }, []);
+  }, [targetUrl]);
 
     if (loading) {
       return <p>loading..</p>;
@@ -35,8 +40,8 @@ const SaleRecommendation = () => {
 return (
   <div>
 
-    { saleRecommendation.shouldSellByFallingBelowTheLimit ? <h3>Current price {saleRecommendation.price} is lower then calculate position risk {sellRecommendation.initialNotionalSalesPrice}.</h3> : null }
-    { saleRecommendation.shouldSellByRslComparison ? <h3>Company RSL {saleRecommendation.companyRsl} crosses exchange RSL {sellRecommendation.exchangeRsl}.</h3> : null }
+    { saleRecommendation.shouldSellByFallingBelowTheLimit ? <h3>Current price {saleRecommendation.price} is lower then calculate position risk {saleRecommendation.initialNotionalSalesPrice}.</h3> : null }
+    { saleRecommendation.shouldSellByRslComparison ? <h3>Company RSL {saleRecommendation.companyRsl} crosses exchange RSL {saleRecommendation.exchangeRsl}.</h3> : null }
 
     <table>
     <thead>

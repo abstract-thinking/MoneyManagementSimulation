@@ -6,14 +6,14 @@ const Investment = ({riskManagementId, investment}) =>
      <td>{investment.wkn}</td>
      <td>{investment.name}</td>
      <td style={{ textAlign: 'right' }}>{investment.quantity}</td>
-     <td style={{ textAlign: 'right' }}>{investment.purchasePrice}</td>
-     <td style={{ textAlign: 'right' }}>{investment.investment}</td>
-     <td style={{ textAlign: 'right' }}>{investment.notionalSalesPrice}</td>
-     <td style={{ textAlign: 'right' }}>{investment.transactionCosts}</td>
-     <td style={{ textAlign: 'right' }}>{investment.notionalRevenue}</td>
-     <td style={{ textAlign: 'right' }}>{investment.positionRisk}</td>
+     <td style={{ textAlign: 'right' }}>{investment.purchasePrice.toFixed(2)}</td>
+     <td style={{ textAlign: 'right' }}>{investment.investment.toFixed(2)}</td>
+     <td style={{ textAlign: 'right' }}>{investment.notionalSalesPrice.toFixed(2)}</td>
+     <td style={{ textAlign: 'right' }}>{investment.transactionCosts.toFixed(2)}</td>
+     <td style={{ textAlign: 'right' }}>{investment.notionalRevenue.toFixed(2)}</td>
+     <td style={{ textAlign: 'right' }}>{investment.positionRisk.toFixed(2)}</td>
      {
-        investment._links && investment._links.sell ?
+        investment._links && investment._links.sale ?
         <td><Link to={`/riskManagements/${riskManagementId}/sell-recommendations/${investment.id}`}>*</Link></td>
          : null
      }
