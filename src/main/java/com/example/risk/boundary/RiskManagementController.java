@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
+import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @CrossOrigin
@@ -46,7 +47,13 @@ public class RiskManagementController {
     public RiskResult riskManagement(@PathVariable("riskId") Long riskId) {
         log.info("Risk management invoked");
 
-        RiskResult riskResult = riskManagementFacade.doRiskManagement(riskId);
+        RiskResult riskResult;
+        try {
+           riskResult = riskManagementFacade.doRiskManagement(riskId);
+        } catch (NoSuchElementException ex) {
+            throw new ResponseStatusException(NOT_FOUND);
+        }
+
         addSelfLink(riskResult);
         addSaleRecommendationLink(riskResult);
 
@@ -108,10 +115,10 @@ public class RiskManagementController {
         return riskManagementFacade.doPurchaseRecommendations(riskId);
     }
 
-
-    @ExceptionHandler({NoSuchElementException.class})
-    public void handleException() {
-        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-    }
+// Seems to be odd and does not work as expected
+//    @ExceptionHandler({NoSuchElementException.class})
+//    public void handleException() {
+//        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
+//    }
 
 }
