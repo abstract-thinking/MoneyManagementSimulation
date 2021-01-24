@@ -4,7 +4,7 @@ import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import static com.example.risk.control.management.PriceCalculator.calculateNotionalSalesPrice;
+import static com.example.risk.control.management.caclulate.PriceCalculator.calculateNotionalSalesPrice;
 import static org.assertj.core.api.Assertions.assertThat;
 
 class PriceCalculatorTest {

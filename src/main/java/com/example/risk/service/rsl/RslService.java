@@ -1,5 +1,6 @@
 package com.example.risk.service.rsl;
 
+import com.example.risk.util.Logged;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -16,6 +17,7 @@ public class RslService {
     private static final String URL = "https://www.finanztreff.de/indizes/einzelwerte/NASDAQ-100-Index/";
 
     @Cacheable("fetchTable")
+    @Logged
     public String fetchTable() {
         return new RestTemplate()
                 .postForEntity(URL, new HttpEntity<>(createFormData(), createHeaders()), String.class)

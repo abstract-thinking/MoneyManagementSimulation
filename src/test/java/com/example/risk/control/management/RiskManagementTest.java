@@ -1,6 +1,7 @@
 package com.example.risk.control.management;
 
 import com.example.risk.boundary.api.RiskResult;
+import com.example.risk.control.management.caclulate.RiskManagementCalculator;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import org.junit.jupiter.api.Test;

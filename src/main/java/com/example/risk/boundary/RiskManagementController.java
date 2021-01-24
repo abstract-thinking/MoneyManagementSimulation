@@ -5,13 +5,11 @@ import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
 import com.example.risk.boundary.api.SaleRecommendation;
-import com.example.risk.control.RiskManagementFacade;
+import com.example.risk.control.management.RiskManagementFacade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.hateoas.Link;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
@@ -97,7 +95,6 @@ public class RiskManagementController {
 
         return riskManagementFacade.doSaleRecommendations(riskId);
     }
-
 
     @GetMapping(path = "/api/risks/{riskId}/recommendations/sales/{investmentId}", produces = APPLICATION_JSON_VALUE)
     public SaleRecommendation saleRecommendation(
