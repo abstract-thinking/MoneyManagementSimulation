@@ -54,7 +54,7 @@ class RiskManagementTest {
     void shouldReturnTotalRiskCalculatedStaticallyWithTwoEntries2() {
         RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithTwoEntries());
 
-        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.calculate().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(2.99);
     }
@@ -63,7 +63,7 @@ class RiskManagementTest {
     void shouldReturnTotalRiskCalculatedStaticallyWithThreeEntries2() {
         RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntries());
 
-        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.calculate().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(4.49);
     }
@@ -72,7 +72,7 @@ class RiskManagementTest {
     void shouldReturnTotalRiskCalculatedStaticallyWithThreeEntriesWhenPricesIncreased2() {
         RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesIncreased());
 
-        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.calculate().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(0.3);
     }
@@ -81,7 +81,7 @@ class RiskManagementTest {
     void shouldReturnTotalRiskCalculatedStaticallyWithThreeEntriesWhenPricesDecreased2() {
         RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesDecreased());
 
-        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.calculate().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(10.58);
     }
@@ -108,7 +108,7 @@ class RiskManagementTest {
     void shouldReturnCalculateDepotRisk() {
         RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntries());
 
-        RiskResult riskResult = riskManagementCalculator.toApi();
+        RiskResult riskResult = riskManagementCalculator.calculate();
 
         assertThat(riskResult.getDepotRisk()).isEqualTo(BigDecimal.valueOf(674.59));
         assertThat(riskResult.getDepotRiskInPercent()).isEqualTo(9.51);
@@ -118,7 +118,7 @@ class RiskManagementTest {
     void shouldReturnCalculateDepotRiskCalculatedDynamicallyWhenPricesIncreased() {
         RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesIncreased());
 
-        RiskResult riskResult = riskManagementCalculator.toApi();
+        RiskResult riskResult = riskManagementCalculator.calculate();
 
         assertThat(riskResult.getDepotRisk()).isEqualTo(BigDecimal.valueOf(45));
         assertThat(riskResult.getDepotRiskInPercent()).isEqualTo(0.58);
@@ -128,7 +128,7 @@ class RiskManagementTest {
     void shouldReturnCalculateDepotRiskCalculatedDynamicallyWhenPricesDecreased() {
         RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesDecreased());
 
-        RiskResult riskResult = riskManagementCalculator.toApi();
+        RiskResult riskResult = riskManagementCalculator.calculate();
 
         assertThat(riskResult.getDepotRisk()).isEqualTo(BigDecimal.valueOf(1588));
         assertThat(riskResult.getDepotRiskInPercent()).isEqualTo(25.69);
@@ -138,7 +138,7 @@ class RiskManagementTest {
     void shouldReturnCalculatedTotalRisk() {
         RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntries());
 
-        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.calculate().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(4.49);
     }
@@ -147,7 +147,7 @@ class RiskManagementTest {
     void shouldReturnCalculatedTotalRiskCalculatedDynamicallyWhenPricesIncreased() {
         RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesIncreased());
 
-        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.calculate().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(0.3);
     }
@@ -156,7 +156,7 @@ class RiskManagementTest {
     void shouldReturnCalculatedTotalRiskCalculatedDynamicallyWhenPricesDecreased() {
         RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(createInvestmentsWithThreeEntriesDecreased());
 
-        double totalRisk = riskManagementCalculator.toApi().getTotalRiskInPercent();
+        double totalRisk = riskManagementCalculator.calculate().getTotalRiskInPercent();
 
         assertThat(totalRisk).isEqualTo(10.58);
     }

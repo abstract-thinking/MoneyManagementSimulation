@@ -52,7 +52,7 @@ return (
      <th>RSL</th>
      <th>Börse RSL</th>
      <th>Preis</th>
-     <th>Verkaufspreisschwelle</th>
+     <th>Fiktiver Verkaufspreis</th>
     </tr>
     </thead>
     <tbody>

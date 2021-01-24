@@ -27,18 +27,17 @@ public class RiskManagementFacade {
 
     private static final String EXCHANGE_NAME = "NASDAQ 100";
 
+    private final DecisionRowConverter converter;
+    private final InvestmentRecommender investmentRecommender;
     private final IndividualRiskRepository individualRiskRepository;
     private final InvestmentRepository investmentRepository;
 
-    private final DecisionRowConverter converter;
-    private final InvestmentRecommender investmentRecommender;
-
-    public RiskManagementFacade(IndividualRiskRepository individualRiskRepository, InvestmentRepository investmentRepository,
-                                DecisionRowConverter converter, InvestmentRecommender investmentRecommender) {
-        this.individualRiskRepository = individualRiskRepository;
-        this.investmentRepository = investmentRepository;
+    public RiskManagementFacade(DecisionRowConverter converter, InvestmentRecommender investmentRecommender,
+                                IndividualRiskRepository individualRiskRepository, InvestmentRepository investmentRepository) {
         this.converter = converter;
         this.investmentRecommender = investmentRecommender;
+        this.investmentRepository = investmentRepository;
+        this.individualRiskRepository = individualRiskRepository;
     }
 
     public RiskResults doRiskManagements() {
@@ -50,7 +49,7 @@ public class RiskManagementFacade {
                     List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
                     RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
-                    riskResults.add(riskManagementCalculator.toApi());
+            riskResults.add(riskManagementCalculator.calculate());
                 }
         );
 
@@ -63,10 +62,8 @@ public class RiskManagementFacade {
         List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
         RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
-        RiskResult riskResult = riskManagementCalculator.toApi();
+        RiskResult riskResult = riskManagementCalculator.calculate();
 
-        // TODO: Not sure should be done here?
-        // List<SellRecommendation> sellRecommendations = doSellRecommendations();
         List<SaleRecommendation> saleRecommendations = investmentRecommender.getSaleRecommendations(riskManagementCalculator);
         if (!saleRecommendations.isEmpty()) {
             saleRecommendations.forEach(sellRecommendation ->
@@ -87,7 +84,6 @@ public class RiskManagementFacade {
         List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
         RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
-
         return investmentRecommender.getSaleRecommendations(riskManagementCalculator);
     }
 
@@ -112,7 +108,7 @@ public class RiskManagementFacade {
                 new RiskManagementCalculator(individualRisk, updatedInvestments)));
     }
 
-    public List<Investment> updateNotionalSalesPrice(List<Investment> investments) {
+    private List<Investment> updateNotionalSalesPrice(List<Investment> investments) {
         List<ExchangeResult> exchangeResults = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(exchangeResults);
 
@@ -121,7 +117,6 @@ public class RiskManagementFacade {
                         .filter(row -> row.getWkn().equalsIgnoreCase(investment.getWkn()))
                         .findFirst()
                         .ifPresent(result -> {
-                            log.info("Calculate notional sales price for {}", result.getName());
                             investment.setCurrentNotionalSalesPrice(
                                     calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl));
                         })
@@ -137,5 +132,4 @@ public class RiskManagementFacade {
                 .orElseThrow()
                 .getRsl();
     }
-
 }

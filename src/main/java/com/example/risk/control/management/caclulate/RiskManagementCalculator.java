@@ -65,7 +65,7 @@ public class RiskManagementCalculator {
                 .reduce(ZERO, BigDecimal::add);
     }
 
-    public RiskResult toApi() {
+    public RiskResult calculate() {
         return RiskResult.builder()
                 .id(individualRisk.getId())
                 .totalCapital(individualRisk.getTotalCapital())
