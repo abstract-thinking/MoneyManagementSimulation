@@ -56,7 +56,8 @@ return (
     </tr>
     {
         riskManagement.investments && riskManagement.investments.map((investment) =>
-        <Investment riskManagementId={riskManagementId} investment={investment}/>)
+            <Investment riskManagementId={riskManagementId} investment={investment} />
+        )
     }
     <tr>
         <td><b>Depotwert</b></td>
@@ -79,4 +80,4 @@ return (
 </div>)
 };
 
-export default RiskManagement
+export default RiskManagement;

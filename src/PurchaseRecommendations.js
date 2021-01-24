@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import PurchaseRecommendation from "./PurchaseRecommendation"
 
 const PurchaseRecommendations = (props) => {
   const [purchaseRecommendations, setPurchaseRecommendation] = useState([]);
@@ -53,17 +54,8 @@ return (
     <tbody>
         {
             purchaseRecommendations && purchaseRecommendations.map((purchaseRecommendation) =>
-                <tr>
-                 <td>{purchaseRecommendation.wkn}</td>
-                 <td>{purchaseRecommendation.name}</td>
-                 <td>{purchaseRecommendation.exchange}</td>
-                 <td>{purchaseRecommendation.rsl}</td>
-                 <td>{purchaseRecommendation.exchangeRsl}</td>
-                 <td>{purchaseRecommendation.quantity}</td>
-                 <td>{purchaseRecommendation.price}</td>
-                 <td>{purchaseRecommendation.notionalSalesPrice}</td>
-                </tr>
-                )
+                <PurchaseRecommendation purchaseRecommendation={purchaseRecommendation} />
+            )
         }
     </tbody>
     </table>
