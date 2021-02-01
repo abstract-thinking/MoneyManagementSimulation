@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 @Value
 @Builder
 public class PurchaseRecommendation {
+
     String wkn;
     String name;
 

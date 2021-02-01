@@ -65,13 +65,13 @@ public class RiskManagementCalculator {
                 .reduce(ZERO, BigDecimal::add);
     }
 
-    public RiskResult toApi() {
+    public RiskResult calculate() {
         return RiskResult.builder()
                 .id(individualRisk.getId())
                 .totalCapital(individualRisk.getTotalCapital())
                 .individualPositionRiskInPercent(individualRisk.getIndividualPositionRiskInPercent())
                 .individualPositionRisk(calculatePositionRisk())
-                .investments(toApi(investments))
+                .investments(map(investments))
                 .totalInvestment(calculateTotalInvestment())
                 .totalRevenue(calculateTotalNotionalRevenue())
                 .depotRisk(calculateDepotRisk())
@@ -80,7 +80,7 @@ public class RiskManagementCalculator {
                 .build();
     }
 
-    private List<InvestmentResult> toApi(List<Investment> investments) {
+    private List<InvestmentResult> map(List<Investment> investments) {
         return investments.stream()
                 .map(Investment::toApi)
                 .collect(Collectors.toList());

@@ -67,7 +67,7 @@ public class RiskManagementController {
                 String relativePath = "/api/risks/" + riskResult.getId() + "/recommendations/sales/" + investment.getId();
 
                 Link link = Link.of(relativePath, "sale");
-//                Link link = linkTo(RiskManagementController.class)
+//                Link link = linkTo(RiskManagementControllerContractsMvvBracketIT.class)
 //                        .slash("api")
 //                        .slash("risks")
 //                        .slash(riskResult.getId())

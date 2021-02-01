@@ -5,7 +5,7 @@ import Investment from './Investment'
 
 const RiskManagement = () => {
   const [riskManagement, setRiskManagement] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   const riskManagementId = "1";
@@ -42,7 +42,7 @@ return (
     <tbody>
     <tr><td><b>Gesamtkapital</b></td><td>{riskManagement.totalCapital.toFixed(2)}</td></tr>
     <tr><td><b>Einzelpositionrisiko</b></td><td>{riskManagement.individualPositionRiskInPercent.toFixed(2)}</td></tr>
-    <tr><td/><td>{riskManagement.individualPositionRisk.toFixed(2)}</td></tr>
+    <tr><td></td><td>{riskManagement.individualPositionRisk.toFixed(2)}</td></tr>
     <tr>
         <td><b>WKN</b></td>
         <td><b>Name</b></td>
@@ -60,15 +60,15 @@ return (
     }
     <tr>
         <td><b>Depotwert</b></td>
-        <td colSpan={3}/>
+        <td colSpan={3}></td>
         <td style={{ textAlign: 'right' }}>{riskManagement.totalInvestment.toFixed(2)}</td>
-        <td colSpan={2}/>
+        <td colSpan={2}></td>
         <td style={{ textAlign: 'right' }}>{riskManagement.totalRevenue.toFixed(2)}</td>
         <td style={{ textAlign: 'right' }}>{riskManagement.depotRisk.toFixed(2)}</td>
     </tr>
     <tr>
         <td><b>Depotrisiko</b></td>
-        <td colSpan={7}/>
+        <td colSpan={7}></td>
         <td style={{ textAlign: 'right' }}>{riskManagement.depotRiskInPercent.toFixed(2)}</td>
     </tr>
     <tr>

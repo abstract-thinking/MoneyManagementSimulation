@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.NoSuchElementException;
 
@@ -28,6 +29,8 @@ class RiskManagementControllerTest {
 
     @Test
     public void shouldThrowIfUnknownRiskManagementId() {
-        assertThatExceptionOfType(NoSuchElementException.class).isThrownBy(() -> boundary.riskManagement(666L));
+        assertThatExceptionOfType(ResponseStatusException.class)
+                .isThrownBy(() -> boundary.riskManagement(666L))
+                .withMessage("404 NOT_FOUND");
     }
 }

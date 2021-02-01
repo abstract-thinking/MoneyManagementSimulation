@@ -97,11 +97,10 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 			</plugin>
 
-			<!--
 			<plugin>
 				<groupId>com.github.eirslett</groupId>
 				<artifactId>frontend-maven-plugin</artifactId>
-				<version>1.9.1</version>
+				<version>1.11.0</version>
 				<configuration>
 					<installDirectory>target</installDirectory>
 				</configuration>
@@ -112,8 +111,8 @@
 							<goal>install-node-and-npm</goal>
 						</goals>
 						<configuration>
-							<nodeVersion>v12.14.0</nodeVersion>
-							<npmVersion>6.13.4</npmVersion>
+							<nodeVersion>v12.18.3</nodeVersion>
+							<npmVersion>6.14.6</npmVersion>
 						</configuration>
 					</execution>
 					<execution>
@@ -133,7 +132,6 @@
 					</execution>
 				</executions>
 			</plugin>
-			-->
 		</plugins>
 	</build>
 

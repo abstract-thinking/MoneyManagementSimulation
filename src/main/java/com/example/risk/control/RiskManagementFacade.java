@@ -43,7 +43,7 @@ public class RiskManagementFacade {
                     List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
 
                     RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
-                    riskResults.add(riskManagementCalculator.toApi());
+                    riskResults.add(riskManagementCalculator.calculate());
                 }
         );
 
@@ -51,30 +51,31 @@ public class RiskManagementFacade {
     }
 
     public RiskResult doRiskManagement(Long id) {
-        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+        final IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
 
         RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
-        RiskResult riskResult = riskManagementCalculator.toApi();
+        RiskResult riskResult = riskManagementCalculator.calculate();
 
         // TODO: Not sure should be done here?
-        // List<SellRecommendation> sellRecommendations = doSellRecommendations();
         List<SaleRecommendation> saleRecommendations = investmentRecommender.getSaleRecommendations(riskManagementCalculator);
-        if (!saleRecommendations.isEmpty()) {
-            saleRecommendations.forEach(sellRecommendation ->
-                    riskResult.getInvestments().stream()
-                            .filter(investment -> sellRecommendation.getWkn().equalsIgnoreCase(investment.getWkn()))
-                            .findFirst()
-                            .ifPresent(investment -> investment.setSaleRecommendation(sellRecommendation))
-            );
+        if (saleRecommendations.isEmpty()) {
+            return riskResult;
         }
+
+        saleRecommendations.forEach(sellRecommendation ->
+                riskResult.getInvestments().stream()
+                        .filter(investment -> sellRecommendation.getWkn().equalsIgnoreCase(investment.getWkn()))
+                        .findFirst()
+                        .ifPresent(investment -> investment.setSaleRecommendation(sellRecommendation))
+        );
 
         return riskResult;
     }
 
     public List<SaleRecommendation> doSaleRecommendations(Long id) {
-        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+        final IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
 
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
@@ -86,7 +87,7 @@ public class RiskManagementFacade {
 
     public SaleRecommendation doSaleRecommendation(Long id, Long investmentId) {
         IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
-        List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
+        final List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         Investment investment = investments.stream().filter(i -> i.getId().equals(investmentId)).findFirst().orElseThrow();
         List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(Collections.singletonList(investment));
 

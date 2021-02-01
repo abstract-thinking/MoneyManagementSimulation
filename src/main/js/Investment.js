@@ -14,7 +14,8 @@ const Investment = ({riskManagementId, investment}) =>
      <td style={{ textAlign: 'right' }}>{investment.positionRisk.toFixed(2)}</td>
      {
         investment._links && investment._links.sale ?
-        <td><Link to={`/riskManagements/${riskManagementId}/sell-recommendations/${investment.id}`}>*</Link></td> : null
+        <td><Link to={`/riskManagements/${riskManagementId}/sell-recommendations/${investment.id}`}>*</Link></td>
+         : null
      }
     </tr>
 

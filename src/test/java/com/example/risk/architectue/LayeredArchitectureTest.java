@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Disabled;
 
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
-@Disabled
+// @Disabled
 @AnalyzeClasses(packages = "com.example.risk")
 public class LayeredArchitectureTest {
 
@@ -16,12 +16,12 @@ public class LayeredArchitectureTest {
             .layer("Boundaries").definedBy("com.example.risk.boundary..")
             .layer("Controllers").definedBy("com.example.risk.control..")
             .layer("Converters").definedBy("com.example.risk.converter..")
-            .layer("Databases").definedBy("com.example.risk.data..")
+            .layer("Persistence").definedBy("com.example.risk.data..")
             .layer("Services").definedBy("com.example.risk.service..")
 
-            .whereLayer("Boundaries").mayOnlyBeAccessedByLayers("Controllers")
-            .whereLayer("Controllers").mayOnlyBeAccessedByLayers("Databases")
-            .whereLayer("Controllers").mayOnlyBeAccessedByLayers("Converters")
-            .whereLayer("Converters").mayOnlyBeAccessedByLayers("Services")
-            .whereLayer("Services").mayNotBeAccessedByAnyLayer();
+            .whereLayer("Boundaries").mayNotBeAccessedByAnyLayer()
+            .whereLayer("Controllers").mayOnlyBeAccessedByLayers("Boundaries")
+            .whereLayer("Persistence").mayOnlyBeAccessedByLayers("Controllers")
+            .whereLayer("Converters").mayOnlyBeAccessedByLayers("Controllers")
+            .whereLayer("Services").mayOnlyBeAccessedByLayers("Converters");
 }
