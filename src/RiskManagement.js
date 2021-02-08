@@ -5,7 +5,7 @@ import Investment from './Investment'
 
 const RiskManagement = () => {
   const [riskManagement, setRiskManagement] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   const riskManagementId = "1";
@@ -56,7 +56,8 @@ return (
     </tr>
     {
         riskManagement.investments && riskManagement.investments.map((investment) =>
-        <Investment riskManagementId={riskManagementId} investment={investment}/>)
+            <Investment riskManagementId={riskManagementId} investment={investment} />
+        )
     }
     <tr>
         <td><b>Depotwert</b></td>
@@ -79,4 +80,4 @@ return (
 </div>)
 };
 
-export default RiskManagement
+export default RiskManagement;

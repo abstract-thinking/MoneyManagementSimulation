@@ -1,9 +1,7 @@
-package com.example.risk.control.invest;
+package com.example.risk.control.management.caclulate;
 
 import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.SaleRecommendation;
-import com.example.risk.control.management.MoneyManagement;
-import com.example.risk.control.management.RiskManagementCalculator;
 import com.example.risk.converter.DecisionRowConverter;
 import com.example.risk.converter.ExchangeResult;
 import com.example.risk.data.Investment;
@@ -15,7 +13,8 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.risk.control.management.PriceCalculator.calculateNotionalSalesPrice;
+import static com.example.risk.control.management.caclulate.MoneyManagement.calculateQuantity;
+import static com.example.risk.control.management.caclulate.PriceCalculator.calculateNotionalSalesPrice;
 import static java.util.Comparator.comparingDouble;
 import static java.util.stream.Collectors.toList;
 
@@ -76,7 +75,6 @@ public class InvestmentRecommender {
         return exchangeRsl > result.getRsl();
     }
 
-
     public List<PurchaseRecommendation> getPurchaseRecommendations() {
         List<ExchangeResult> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
@@ -121,7 +119,7 @@ public class InvestmentRecommender {
                 .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
                 .build();
 
-        int quantity = MoneyManagement.calculateQuantity(riskManagementCalculator.calculatePositionRisk(), possibleInvestment);
+        int quantity = calculateQuantity(riskManagementCalculator.calculatePositionRisk(), possibleInvestment);
 
         return PurchaseRecommendation.builder()
                 .name(result.getName())
