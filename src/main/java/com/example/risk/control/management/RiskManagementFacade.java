@@ -1,12 +1,11 @@
-package com.example.risk.control;
+package com.example.risk.control.management;
 
 import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
 import com.example.risk.boundary.api.SaleRecommendation;
-import com.example.risk.control.invest.InvestmentRecommender;
-import com.example.risk.control.management.InvestmentFacade;
-import com.example.risk.control.management.RiskManagementCalculator;
+import com.example.risk.control.management.caclulate.InvestmentRecommender;
+import com.example.risk.control.management.caclulate.RiskManagementCalculator;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.IndividualRiskRepository;
 import com.example.risk.data.Investment;
@@ -22,15 +21,12 @@ public class RiskManagementFacade {
 
     private final IndividualRiskRepository individualRiskRepository;
     private final InvestmentRepository investmentRepository;
-
-    private final InvestmentFacade investmentFacade;
     private final InvestmentRecommender investmentRecommender;
 
     public RiskManagementFacade(IndividualRiskRepository individualRiskRepository, InvestmentRepository investmentRepository,
-                                InvestmentFacade investmentFacade, InvestmentRecommender investmentRecommender) {
+            RiskManagementFacade investmentFacade, InvestmentRecommender investmentRecommender) {
         this.individualRiskRepository = individualRiskRepository;
         this.investmentRepository = investmentRepository;
-        this.investmentFacade = investmentFacade;
         this.investmentRecommender = investmentRecommender;
     }
 
@@ -40,7 +36,7 @@ public class RiskManagementFacade {
         Iterable<IndividualRisk> individualRisks = individualRiskRepository.findAll();
         individualRisks.forEach(individualRisk -> {
                     List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
-                    List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
+                    List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
                     RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
                     riskResults.add(riskManagementCalculator.calculate());
@@ -53,7 +49,7 @@ public class RiskManagementFacade {
     public RiskResult doRiskManagement(Long id) {
         final IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
-        List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
+        List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
         RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
         RiskResult riskResult = riskManagementCalculator.calculate();
@@ -78,7 +74,7 @@ public class RiskManagementFacade {
         final IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
 
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
-        List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
+        List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
         RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
 
@@ -89,7 +85,7 @@ public class RiskManagementFacade {
         IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
         final List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         Investment investment = investments.stream().filter(i -> i.getId().equals(investmentId)).findFirst().orElseThrow();
-        List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(Collections.singletonList(investment));
+        List<Investment> updatedInvestments = updateNotionalSalesPrice(Collections.singletonList(investment));
 
         RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
         List<SaleRecommendation> saleRecommendations = investmentRecommender.getSaleRecommendations(riskManagementCalculator);
@@ -100,9 +96,14 @@ public class RiskManagementFacade {
         IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
 
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
-        List<Investment> updatedInvestments = investmentFacade.updateNotionalSalesPrice(investments);
+        List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
         return new ArrayList<>(investmentRecommender.getPurchaseRecommendations(
                 new RiskManagementCalculator(individualRisk, updatedInvestments)));
+    }
+
+    private List<Investment> updateNotionalSalesPrice(List<Investment> investments) {
+        // TODO: logic lost
+        return investments;
     }
 }
