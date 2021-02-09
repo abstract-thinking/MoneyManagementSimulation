@@ -24,7 +24,7 @@ public class RiskManagementFacade {
     private final InvestmentRecommender investmentRecommender;
 
     public RiskManagementFacade(IndividualRiskRepository individualRiskRepository, InvestmentRepository investmentRepository,
-            RiskManagementFacade investmentFacade, InvestmentRecommender investmentRecommender) {
+            InvestmentRecommender investmentRecommender) {
         this.individualRiskRepository = individualRiskRepository;
         this.investmentRepository = investmentRepository;
         this.investmentRecommender = investmentRecommender;

@@ -3,9 +3,11 @@ import ReactDOM from 'react-dom';
 import { Router } from "@reach/router";
 import RiskManagement from "./RiskManagement"
 import SaleRecommendation from "./SaleRecommendation"
-import PurchaseRecommendations from "../../PurchaseRecommendations";
+import PurchaseRecommendations from "./PurchaseRecommendations";
 
 const App = () => {
+    console.log("hello");
+
     return (
         <div>
             <Router>
