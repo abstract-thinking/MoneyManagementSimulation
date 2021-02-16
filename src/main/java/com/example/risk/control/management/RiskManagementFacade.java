@@ -6,28 +6,38 @@ import com.example.risk.boundary.api.RiskResults;
 import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.control.management.caclulate.InvestmentRecommender;
 import com.example.risk.control.management.caclulate.RiskManagementCalculator;
+import com.example.risk.converter.DecisionRowConverter;
+import com.example.risk.converter.ExchangeResult;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.IndividualRiskRepository;
 import com.example.risk.data.Investment;
 import com.example.risk.data.InvestmentRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static com.example.risk.control.management.caclulate.PriceCalculator.calculateNotionalSalesPrice;
+
+@Slf4j
 @Component
 public class RiskManagementFacade {
+
+    private static final String EXCHANGE_NAME = "NASDAQ 100";
 
     private final IndividualRiskRepository individualRiskRepository;
     private final InvestmentRepository investmentRepository;
     private final InvestmentRecommender investmentRecommender;
+    private final DecisionRowConverter converter;
 
     public RiskManagementFacade(IndividualRiskRepository individualRiskRepository, InvestmentRepository investmentRepository,
-            InvestmentRecommender investmentRecommender) {
+                                InvestmentRecommender investmentRecommender, DecisionRowConverter converter) {
         this.individualRiskRepository = individualRiskRepository;
         this.investmentRepository = investmentRepository;
         this.investmentRecommender = investmentRecommender;
+        this.converter = converter;
     }
 
     public RiskResults doRiskManagements() {
@@ -103,7 +113,28 @@ public class RiskManagementFacade {
     }
 
     private List<Investment> updateNotionalSalesPrice(List<Investment> investments) {
-        // TODO: logic lost
+        List<ExchangeResult> exchangeResults = converter.fetchTable();
+        final double exchangeRsl = findExchangeRsl(exchangeResults);
+
+        investments.forEach(
+                investment -> exchangeResults.stream()
+                        .filter(row -> row.getWkn().equalsIgnoreCase(investment.getWkn()))
+                        .findFirst()
+                        .ifPresent(result -> {
+                            log.info("Calculate notional sales price for {}", result.getName());
+                            investment.setCurrentNotionalSalesPrice(
+                                    calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl));
+                        })
+        );
+
         return investments;
+    }
+
+    private double findExchangeRsl(List<ExchangeResult> rows) {
+        return rows.stream()
+                .filter(row -> EXCHANGE_NAME.equals(row.getName()))
+                .findFirst()
+                .orElseThrow()
+                .getRsl();
     }
 }

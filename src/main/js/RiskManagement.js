@@ -4,36 +4,40 @@ import axios from "axios";
 import Investment from './Investment'
 
 const RiskManagement = () => {
-  const [riskManagement, setRiskManagement] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [riskManagement, setRiskManagement] = useState('');
+  const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState('');
 
-  const riskManagementId = "1";
+  const riskManagementId = '1'
 
   useEffect(() => {
-      const fetchRiskManagement = async () => {
-          try {
-            setLoading(true);
-            setError('');
+            setLoading(true)
+            setError('')
 
-            const response = await axios("http://localhost:8080/api/risks/" + riskManagementId)
-            console.log("Received data: ", response.data);
-            setRiskManagement(response.data);
-         } catch (err) {
-           setError(err);
-         }
-         setLoading(false)
-     };
+            axios.get("http://localhost:8080/api/risks/" + riskManagementId)
+                .then(response => {
+                    setRiskManagement(response.data)
+                    console.log("Received data: ", response.data)
+                    setLoading(false)
+                })
+                .catch (error =>  {
+                    console.log("Error: ", error)
 
-     fetchRiskManagement();
-  }, []);
+                    setLoading(false)
+                    setError("Error: " + error)
+                })
+     }, [])
 
-    if (loading) {
+    if (isLoading) {
       return <p>loading..</p>;
     }
 
     if (error !== '') {
       return <p>ERROR: {error}</p>;
+    }
+
+    if (riskManagement === '') {
+        return <p>loading starts now</p>
     }
 
 return (
@@ -56,7 +60,7 @@ return (
     </tr>
     {
         riskManagement.investments && riskManagement.investments.map((investment) =>
-        <Investment riskManagementId={riskManagementId} investment={investment}/>)
+        <Investment key={investment.name} riskManagementId={riskManagementId} investment={investment}/>)
     }
     <tr>
         <td><b>Depotwert</b></td>
@@ -76,7 +80,8 @@ return (
     </tr>
     </tbody>
     </table>
-</div>)
+  </div>
+)
 };
 
 export default RiskManagement

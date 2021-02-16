@@ -6,8 +6,6 @@ import SaleRecommendation from "./SaleRecommendation"
 import PurchaseRecommendations from "./PurchaseRecommendations";
 
 const App = () => {
-    console.log("hello");
-
     return (
         <div>
             <Router>
@@ -16,7 +14,6 @@ const App = () => {
                 <PurchaseRecommendations path="riskManagements/:riskId/purchase-recommendations" />
             </Router>
         </div>
-
     );
 };
 
