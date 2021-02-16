@@ -37,24 +37,24 @@ const PurchaseRecommendations = (props) => {
     }
 
 return (
-  <div>
+  <div className="container">
     <table>
     <thead>
     <tr>
-     <th>WKN</th>
-     <th>Name</th>
-     <th>Börse</th>
-     <th>RSL</th>
-     <th>Börse RSL</th>
-     <th>Anzahl</th>
-     <th>Preis</th>
-     <th>Fiktiver Verkaufspreis</th>
+     <th className="header">WKN</th>
+     <th className="header">Name</th>
+     <th className="header">Börse</th>
+     <th className="header">RSL</th>
+     <th className="header">Börse RSL</th>
+     <th className="header">Anzahl</th>
+     <th className="header">Preis</th>
+     <th className="header">Fiktiver Verkaufspreis</th>
     </tr>
     </thead>
     <tbody>
         {
             purchaseRecommendations && purchaseRecommendations.map((purchaseRecommendation) =>
-                <PurchaseRecommendation purchaseRecommendation={purchaseRecommendation} />
+                <PurchaseRecommendation key={purchaseRecommendation.name} purchaseRecommendation={purchaseRecommendation} />
             )
         }
     </tbody>

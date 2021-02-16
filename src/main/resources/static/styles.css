@@ -1,0 +1,23 @@
+.container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    margin: 50px;
+}
+
+.header {
+    padding: 5px;
+    font-size: large;
+    font-weight: bold;
+}
+
+.number-content {
+    text-align: right;
+    padding: 5px;
+}
+
+.text-content {
+    text-align: left;
+    padding: 5px;
+}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from '@reach/router'
 import axios from "axios";
 
 const SaleRecommendation = (props) => {
@@ -36,35 +37,40 @@ const SaleRecommendation = (props) => {
     }
 
 return (
-  <div>
-
-    { saleRecommendation.shouldSellByFallingBelowTheLimit ? <h3>Current price {saleRecommendation.price} is lower then calculate position risk {saleRecommendation.initialNotionalSalesPrice}.</h3> : null }
-    { saleRecommendation.shouldSellByRslComparison ? <h3>Company RSL {saleRecommendation.companyRsl} crosses exchange RSL {saleRecommendation.exchangeRsl}.</h3> : null }
-
+  <div className="container">
+    <div>
     <table>
     <thead>
     <tr>
-     <th>WKN</th>
-     <th>Name</th>
-     <th>Börse</th>
-     <th>RSL</th>
-     <th>Börse RSL</th>
-     <th>Preis</th>
-     <th>Verkaufspreisschwelle</th>
+     <th className="header">WKN</th>
+     <th className="header">Name</th>
+     <th className="header">Börse</th>
+     <th className="header">Börse RSL</th>
+     <th className="header">RSL</th>
+     <th className="header">Preis</th>
+     <th className="header">Preisschwelle</th>
     </tr>
     </thead>
     <tbody>
     <tr>
-     <td>{saleRecommendation.wkn}</td>
-     <td>{saleRecommendation.company}</td>
-     <td>{saleRecommendation.exchange}</td>
-     <td style={{ textAlign: 'right' }}>{saleRecommendation.companyRsl}</td>
-     <td style={{ textAlign: 'right' }}>{saleRecommendation.exchangeRsl}</td>
-     <td style={{ textAlign: 'right' }}>{saleRecommendation.price}</td>
-     <td style={{ textAlign: 'right' }}>{saleRecommendation.initialNotionalSalesPrice}</td>
+     <td class="text-content">{saleRecommendation.wkn}</td>
+     <td class="text-content">{saleRecommendation.company}</td>
+     <td class="text-content">{saleRecommendation.exchange}</td>
+     <td class="number-content">{saleRecommendation.exchangeRsl}</td>
+     <td class="number-content">{saleRecommendation.companyRsl}</td>
+     <td class="number-content">{saleRecommendation.price}</td>
+     <td class="number-content">{saleRecommendation.initialNotionalSalesPrice}</td>
     </tr>
     </tbody>
     </table>
+    </div>
+    <div>
+        { saleRecommendation.shouldSellByFallingBelowTheLimit ?
+            <p>{saleRecommendation.company} Wochenpreis {saleRecommendation.price} liegt unter dem kalkulierten Verkaufspreis {saleRecommendation.initialNotionalSalesPrice}. <Link to={`/riskManagements/${props.riskId}/purchase-recommendations`}>*</Link></p> : null }
+        { saleRecommendation.shouldSellByRslComparison ?
+            <p>{saleRecommendation.company} RSL {saleRecommendation.companyRsl} liegt unter dem {saleRecommendation.exchange} RSL {saleRecommendation.exchangeRsl}. <Link to={`/riskManagements/${props.riskId}/purchase-recommendations`}>*</Link></p> : null }
+
+    </div>
   </div>
 );
 }
