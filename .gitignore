@@ -42,13 +42,12 @@ target/
 *.iws
 *.iml
 *.ipr
+.cache
+dist
 
 ### VS Code ###
 .vscode/
 
-/src/main/java/com/example/risk/data/DatabaseLoader.java
-
 .eslintcache
-/transaction.log
-/src/main/resources/static/built/bundle.js
-/src/main/resources/static/built/bundle.js.map
+
+/src/main/java/com/example/risk/data/DatabaseLoader.java
