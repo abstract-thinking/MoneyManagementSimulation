@@ -108,26 +108,33 @@ public class RiskManagementFacade {
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
-        return new ArrayList<>(investmentRecommender.getPurchaseRecommendations(
-                new RiskManagementCalculator(individualRisk, updatedInvestments)));
+        List<PurchaseRecommendation> purchaseRecommendations = investmentRecommender.getPurchaseRecommendations(
+                new RiskManagementCalculator(individualRisk, updatedInvestments));
+
+        removeIfAlreadyInvested(investments, purchaseRecommendations);
+
+        return purchaseRecommendations;
     }
 
     private List<Investment> updateNotionalSalesPrice(List<Investment> investments) {
         List<ExchangeResult> exchangeResults = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(exchangeResults);
 
-        investments.forEach(
-                investment -> exchangeResults.stream()
-                        .filter(row -> row.getWkn().equalsIgnoreCase(investment.getWkn()))
-                        .findFirst()
-                        .ifPresent(result -> {
-                            log.info("Calculate notional sales price for {}", result.getName());
-                            investment.setCurrentNotionalSalesPrice(
-                                    calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl));
-                        })
+        investments.forEach(inv -> exchangeResults.stream()
+                .filter(row -> row.getWkn().equalsIgnoreCase(inv.getWkn()))
+                .findFirst()
+                .ifPresent(result -> {
+                    log.info("Calculate notional sales price for {}", result.getName());
+                    inv.setCurrentNotionalSalesPrice(
+                            calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl));
+                })
         );
 
         return investments;
+    }
+
+    private void removeIfAlreadyInvested(List<Investment> investments, List<PurchaseRecommendation> purchaseRecommendations) {
+        investments.forEach(inv -> purchaseRecommendations.removeIf(rec -> rec.getWkn().equalsIgnoreCase(inv.getWkn())));
     }
 
     private double findExchangeRsl(List<ExchangeResult> rows) {
