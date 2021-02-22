@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static com.example.risk.control.management.caclulate.MoneyManagement.calculateQuantity;
@@ -42,7 +43,21 @@ public class InvestmentRecommender {
                         .findFirst()
                         .ifPresent(saleRecommendations::add));
 
+        if (saleRecommendations.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        saleRecommendations.add(createExchangeRow(exchangeRsl));
+
         return saleRecommendations;
+    }
+
+    private SaleRecommendation createExchangeRow(double exchangeRsl) {
+        return SaleRecommendation.builder()
+                .wkn("A0AE1X")
+                .name(EXCHANGE_NAME)
+                .rsl(exchangeRsl)
+                .build();
     }
 
     private double findExchangeRsl(List<ExchangeResult> results) {
@@ -56,10 +71,8 @@ public class InvestmentRecommender {
     private SaleRecommendation createSellRecommendation(ExchangeResult result, double exchangeRsl, Investment investment) {
         return SaleRecommendation.builder()
                 .wkn(result.getWkn())
-                .company(result.getName())
-                .companyRsl(result.getRsl())
-                .exchange(EXCHANGE_NAME)
-                .exchangeRsl(exchangeRsl)
+                .name(result.getName())
+                .rsl(result.getRsl())
                 .price(result.getPrice())
                 .initialNotionalSalesPrice(investment.getInitialNotionalSalesPrice())
                 .shouldSellByFallingBelowTheLimit(isCurrentPriceLowerThanInitialNotionalSalesPrice(investment, result))
@@ -75,38 +88,32 @@ public class InvestmentRecommender {
         return exchangeRsl > result.getRsl();
     }
 
-    public List<PurchaseRecommendation> getPurchaseRecommendations() {
-        List<ExchangeResult> results = converter.fetchTable();
-        final double exchangeRsl = findExchangeRsl(results);
-
-        return results.stream()
-                .filter(result -> result.getRsl() > exchangeRsl)
-                .sorted(comparingDouble(ExchangeResult::getRsl).reversed())
-                .map(result -> createBuyRecommendation(result, exchangeRsl))
-                .collect(toList());
-    }
-
     public List<PurchaseRecommendation> getPurchaseRecommendations(RiskManagementCalculator riskManagementCalculator) {
         List<ExchangeResult> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
 
-        return results.stream()
+        List<PurchaseRecommendation> purchaseRecommendations = results.stream()
                 .filter(result -> result.getRsl() > exchangeRsl)
                 .sorted(comparingDouble(ExchangeResult::getRsl).reversed())
                 .map(result -> createBuyRecommendation(result, exchangeRsl, riskManagementCalculator))
                 .collect(toList());
+
+        if (purchaseRecommendations.isEmpty()) {
+            return Collections.emptyList();
+        }
+
+        purchaseRecommendations.add(createExchangeRow2(exchangeRsl));
+
+        return purchaseRecommendations;
     }
 
-    private PurchaseRecommendation createBuyRecommendation(ExchangeResult result, double exchangeRsl) {
+    private PurchaseRecommendation createExchangeRow2(double exchangeRsl) {
         return PurchaseRecommendation.builder()
-                .name(result.getName())
-                .rsl(result.getRsl())
-                .wkn(result.getWkn())
-                .vola30Day(result.getVola30Day())
-                .price(result.getPrice())
-                .exchange(EXCHANGE_NAME)
-                .exchangeRsl(exchangeRsl)
-                .notionalSalesPrice(calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl))
+                .wkn("A0AE1X")
+                .name(EXCHANGE_NAME)
+                .rsl(exchangeRsl)
+                .price(BigDecimal.ZERO)
+                .notionalSalesPrice(BigDecimal.ZERO)
                 .build();
     }
 
@@ -127,8 +134,6 @@ public class InvestmentRecommender {
                 .wkn(result.getWkn())
                 .vola30Day(result.getVola30Day())
                 .price(result.getPrice())
-                .exchange(EXCHANGE_NAME)
-                .exchangeRsl(exchangeRsl)
                 .notionalSalesPrice(notionalSalesPrice)
                 .quantity(quantity)
                 .build();

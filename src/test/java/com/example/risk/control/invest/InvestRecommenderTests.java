@@ -60,10 +60,8 @@ public class InvestRecommenderTests {
 
     private SaleRecommendation createRecommendation(String company, Double companyRsl) {
         return SaleRecommendation.builder()
-                .company(company)
-                .companyRsl(companyRsl)
-                .exchange("NASDAQ 100")
-                .exchangeRsl(1.05)
+                .name(company)
+                .rsl(companyRsl)
                 .build();
     }
 }

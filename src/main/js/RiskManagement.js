@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+import NavigationBar from "./NavigationBar";
 import Investment from "./Investment";
 
 const RiskManagement = () => {
@@ -43,6 +44,7 @@ const RiskManagement = () => {
 
   return (
     <div className="container">
+      <NavigationBar riskManagementId={riskManagementId} />
       <table>
         <tbody>
           <tr>
@@ -77,9 +79,7 @@ const RiskManagement = () => {
               />
             ))}
           <tr>
-            <td>
-              <b>Depotwert</b>
-            </td>
+            <td className="header">Depotwert</td>
             <td colSpan={3}></td>
             <td className="number-content">
               {riskManagement.totalInvestment.toFixed(2)}
@@ -101,7 +101,9 @@ const RiskManagement = () => {
           </tr>
           <tr>
             <td className="header">Gesamtrisiko</td>
-            <td>{riskManagement.totalRiskInPercent.toFixed(2)}</td>
+            <td className="number-content">
+              {riskManagement.totalRiskInPercent.toFixed(2)}
+            </td>
           </tr>
         </tbody>
       </table>

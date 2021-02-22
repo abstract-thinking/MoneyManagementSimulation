@@ -20,6 +20,4 @@ public class PurchaseRecommendation {
     double vola30Day;
 
     double rsl;
-    String exchange;
-    double exchangeRsl;
 }

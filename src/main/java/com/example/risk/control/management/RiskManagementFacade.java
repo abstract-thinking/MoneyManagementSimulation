@@ -113,7 +113,7 @@ public class RiskManagementFacade {
 
         removeIfAlreadyInvested(investments, purchaseRecommendations);
 
-        return purchaseRecommendations;
+        return cutOffTail(purchaseRecommendations);
     }
 
     private List<Investment> updateNotionalSalesPrice(List<Investment> investments) {
@@ -135,6 +135,13 @@ public class RiskManagementFacade {
 
     private void removeIfAlreadyInvested(List<Investment> investments, List<PurchaseRecommendation> purchaseRecommendations) {
         investments.forEach(inv -> purchaseRecommendations.removeIf(rec -> rec.getWkn().equalsIgnoreCase(inv.getWkn())));
+    }
+
+    private List<PurchaseRecommendation> cutOffTail(List<PurchaseRecommendation> purchaseRecommendations) {
+        PurchaseRecommendation exchangeRow = purchaseRecommendations.get(purchaseRecommendations.size() - 1);
+        List<PurchaseRecommendation> tempPurchaseRecommendations = purchaseRecommendations.subList(0, Math.min(purchaseRecommendations.size(), 7));
+        tempPurchaseRecommendations.add(exchangeRow);
+        return tempPurchaseRecommendations;
     }
 
     private double findExchangeRsl(List<ExchangeResult> rows) {

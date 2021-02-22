@@ -15,11 +15,8 @@ public class SaleRecommendation {
 
     String wkn;
 
-    String company;
-    String exchange;
-
-    Double companyRsl;
-    Double exchangeRsl;
+    String name;
+    Double rsl;
 
     BigDecimal price;
     BigDecimal initialNotionalSalesPrice;

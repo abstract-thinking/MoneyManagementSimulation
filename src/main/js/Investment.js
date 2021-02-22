@@ -14,15 +14,15 @@ const Investment = ({ riskManagementId, investment }) => (
     <td className="number-content">{investment.transactionCosts.toFixed(2)}</td>
     <td className="number-content">{investment.notionalRevenue.toFixed(2)}</td>
     <td className="number-content">{investment.positionRisk.toFixed(2)}</td>
-    {investment._links && investment._links.sale ? (
-      <td>
+    <td>
+      {investment._links && investment._links.sale ? (
         <Link
           to={`/riskManagements/${riskManagementId}/sell-recommendations/${investment.id}`}
         >
           *
         </Link>
-      </td>
-    ) : null}
+      ) : null}
+    </td>
   </tr>
 );
 

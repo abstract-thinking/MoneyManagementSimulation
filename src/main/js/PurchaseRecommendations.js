@@ -43,9 +43,7 @@ const PurchaseRecommendations = props => {
           <tr>
             <th className="header">WKN</th>
             <th className="header">Name</th>
-            <th className="header">Börse</th>
             <th className="header">RSL</th>
-            <th className="header">Börse RSL</th>
             <th className="header">Anzahl</th>
             <th className="header">Preis</th>
             <th className="header">Fiktiver Verkaufspreis</th>

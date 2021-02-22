@@ -44,8 +44,6 @@ const SaleRecommendation = props => {
             <tr>
               <th className="header">WKN</th>
               <th className="header">Name</th>
-              <th className="header">Börse</th>
-              <th className="header">Börse RSL</th>
               <th className="header">RSL</th>
               <th className="header">Preis</th>
               <th className="header">Preisschwelle</th>
@@ -54,10 +52,10 @@ const SaleRecommendation = props => {
           <tbody>
             <tr>
               <td className="text-content">{saleRecommendation.wkn}</td>
-              <td className="text-content">{saleRecommendation.company}</td>
-              <td className="text-content">{saleRecommendation.exchange}</td>
-              <td className="number-content">{saleRecommendation.exchangeRsl}</td>
-              <td className="number-content">{saleRecommendation.companyRsl}</td>
+              <td className="text-content">{saleRecommendation.name}</td>
+              <td className="number-content">
+                {saleRecommendation.rsl}
+              </td>
               <td className="number-content">{saleRecommendation.price}</td>
               <td className="number-content">
                 {saleRecommendation.initialNotionalSalesPrice}
