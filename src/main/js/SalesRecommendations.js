@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const SalesRecommendations = props => {
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -34,8 +34,8 @@ const SalesRecommendations = props => {
     return <p>ERROR: {error}</p>;
   }
 
-  if (result === "") {
-      return <p>loading starts now</p>;
+  if (result === null) {
+    return <p>loading starts now</p>;
   }
 
   if (result.saleRecommendations.length == 0) {

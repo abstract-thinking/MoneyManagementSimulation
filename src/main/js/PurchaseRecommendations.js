@@ -3,7 +3,7 @@ import axios from "axios";
 import PurchaseRecommendation from "./PurchaseRecommendation";
 
 const PurchaseRecommendations = props => {
-  const [result, setResult] = useState("");
+  const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -24,7 +24,6 @@ const PurchaseRecommendations = props => {
       setLoading(false);
     };
 
-    console.log(targetUrl);
     fetchPurchaseRecommendations();
   }, [targetUrl]);
 
@@ -36,7 +35,7 @@ const PurchaseRecommendations = props => {
     return <p>ERROR: {error}</p>;
   }
 
-  if (result === "") {
+  if (result === null) {
     return <p>loading starts now</p>;
   }
 

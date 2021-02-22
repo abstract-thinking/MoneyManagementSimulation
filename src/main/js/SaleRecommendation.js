@@ -3,7 +3,7 @@ import { Link } from "@reach/router";
 import axios from "axios";
 
 const SaleRecommendation = props => {
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -33,6 +33,10 @@ const SaleRecommendation = props => {
 
   if (error !== "") {
     return <p>ERROR: {error}</p>;
+  }
+
+  if (result === null) {
+    return <p>loading starts now</p>;
   }
 
   return (
