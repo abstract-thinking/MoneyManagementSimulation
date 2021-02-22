@@ -27,7 +27,7 @@
     grid-template-columns: repeat(3, 1fr);
 }
 
-.purchase-rec-row:last-child {
+.exchange-row:last-child {
                    background-color: lime;
                  }
 

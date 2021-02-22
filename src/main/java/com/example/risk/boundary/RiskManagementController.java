@@ -1,10 +1,10 @@
 package com.example.risk.boundary;
 
 import com.example.risk.boundary.api.InvestmentResult;
-import com.example.risk.boundary.api.PurchaseRecommendation;
+import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
-import com.example.risk.boundary.api.SaleRecommendation;
+import com.example.risk.boundary.api.SalesRecommendationMetadata;
 import com.example.risk.control.management.RiskManagementFacade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 
-import java.util.List;
 import java.util.NoSuchElementException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
@@ -90,14 +89,14 @@ public class RiskManagementController {
     }
 
     @GetMapping(path = "/api/risks/{riskId}/recommendations/sales", produces = APPLICATION_JSON_VALUE)
-    public List<SaleRecommendation> saleRecommendations(@PathVariable("riskId") Long riskId) {
+    public SalesRecommendationMetadata saleRecommendations(@PathVariable("riskId") Long riskId) {
         log.info("Sale recommendations invoked");
 
         return riskManagementFacade.doSaleRecommendations(riskId);
     }
 
     @GetMapping(path = "/api/risks/{riskId}/recommendations/sales/{investmentId}", produces = APPLICATION_JSON_VALUE)
-    public SaleRecommendation saleRecommendation(
+    public SalesRecommendationMetadata saleRecommendation(
             @PathVariable("riskId") Long riskId,
             @PathVariable("investmentId") Long investmentId) {
         log.info("Sale recommendation invoked");
@@ -106,16 +105,10 @@ public class RiskManagementController {
     }
 
     @GetMapping(path = "/api/risks/{riskId}/recommendations/purchases", produces = APPLICATION_JSON_VALUE)
-    public List<PurchaseRecommendation> purchaseRecommendations(@PathVariable("riskId") Long riskId) {
+    public PurchaseRecommendationMetadata purchaseRecommendations(@PathVariable("riskId") Long riskId) {
         log.info("Purchase recommendations invoked");
 
         return riskManagementFacade.doPurchaseRecommendations(riskId);
     }
-
-// Seems to be odd and does not work as expected
-//    @ExceptionHandler({NoSuchElementException.class})
-//    public void handleException() {
-//        throw new ResponseStatusException(HttpStatus.NOT_FOUND);
-//    }
 
 }

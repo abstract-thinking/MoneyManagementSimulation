@@ -1,9 +1,10 @@
 package com.example.risk.control.management;
 
 import com.example.risk.boundary.api.PurchaseRecommendation;
+import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
-import com.example.risk.boundary.api.SaleRecommendation;
+import com.example.risk.boundary.api.SalesRecommendationMetadata;
 import com.example.risk.control.management.caclulate.InvestmentRecommender;
 import com.example.risk.control.management.caclulate.RiskManagementCalculator;
 import com.example.risk.converter.DecisionRowConverter;
@@ -64,13 +65,12 @@ public class RiskManagementFacade {
         RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
         RiskResult riskResult = riskManagementCalculator.calculate();
 
-        // TODO: Not sure should be done here?
-        List<SaleRecommendation> saleRecommendations = investmentRecommender.getSaleRecommendations(riskManagementCalculator);
-        if (saleRecommendations.isEmpty()) {
+        SalesRecommendationMetadata saleRecommendations = investmentRecommender.getSaleRecommendations(riskManagementCalculator);
+        if (saleRecommendations.getSaleRecommendations().isEmpty()) {
             return riskResult;
         }
 
-        saleRecommendations.forEach(sellRecommendation ->
+        saleRecommendations.getSaleRecommendations().forEach(sellRecommendation ->
                 riskResult.getInvestments().stream()
                         .filter(investment -> sellRecommendation.getWkn().equalsIgnoreCase(investment.getWkn()))
                         .findFirst()
@@ -80,40 +80,41 @@ public class RiskManagementFacade {
         return riskResult;
     }
 
-    public List<SaleRecommendation> doSaleRecommendations(Long id) {
+    public SalesRecommendationMetadata doSaleRecommendations(Long id) {
         final IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
-
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
         RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
-
         return investmentRecommender.getSaleRecommendations(riskManagementCalculator);
     }
 
-    public SaleRecommendation doSaleRecommendation(Long id, Long investmentId) {
+    public SalesRecommendationMetadata doSaleRecommendation(Long id, Long investmentId) {
         IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
         final List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
-        Investment investment = investments.stream().filter(i -> i.getId().equals(investmentId)).findFirst().orElseThrow();
+        Investment investment = investments.stream()
+                .filter(i -> i.getId().equals(investmentId))
+                .findFirst()
+                .orElseThrow();
         List<Investment> updatedInvestments = updateNotionalSalesPrice(Collections.singletonList(investment));
 
         RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
-        List<SaleRecommendation> saleRecommendations = investmentRecommender.getSaleRecommendations(riskManagementCalculator);
-        return saleRecommendations.get(0);
+        return investmentRecommender.getSaleRecommendations(riskManagementCalculator);
     }
 
-    public List<PurchaseRecommendation> doPurchaseRecommendations(Long id) {
+    public PurchaseRecommendationMetadata doPurchaseRecommendations(Long id) {
         IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
 
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
-        List<PurchaseRecommendation> purchaseRecommendations = investmentRecommender.getPurchaseRecommendations(
+        PurchaseRecommendationMetadata purchaseRecommendations = investmentRecommender.getPurchaseRecommendations(
                 new RiskManagementCalculator(individualRisk, updatedInvestments));
 
         removeIfAlreadyInvested(investments, purchaseRecommendations);
+        cutOffTail(purchaseRecommendations);
 
-        return cutOffTail(purchaseRecommendations);
+        return purchaseRecommendations;
     }
 
     private List<Investment> updateNotionalSalesPrice(List<Investment> investments) {
@@ -133,15 +134,18 @@ public class RiskManagementFacade {
         return investments;
     }
 
-    private void removeIfAlreadyInvested(List<Investment> investments, List<PurchaseRecommendation> purchaseRecommendations) {
-        investments.forEach(inv -> purchaseRecommendations.removeIf(rec -> rec.getWkn().equalsIgnoreCase(inv.getWkn())));
+    private void removeIfAlreadyInvested(List<Investment> investments, PurchaseRecommendationMetadata purchaseRecommendations) {
+        investments.forEach(inv -> purchaseRecommendations
+                .getPurchaseRecommendations().removeIf(rec -> rec.getWkn().equalsIgnoreCase(inv.getWkn())));
     }
 
-    private List<PurchaseRecommendation> cutOffTail(List<PurchaseRecommendation> purchaseRecommendations) {
-        PurchaseRecommendation exchangeRow = purchaseRecommendations.get(purchaseRecommendations.size() - 1);
-        List<PurchaseRecommendation> tempPurchaseRecommendations = purchaseRecommendations.subList(0, Math.min(purchaseRecommendations.size(), 7));
-        tempPurchaseRecommendations.add(exchangeRow);
-        return tempPurchaseRecommendations;
+    private void cutOffTail(PurchaseRecommendationMetadata metadata) {
+        List<PurchaseRecommendation> purchaseRecommendations = metadata.getPurchaseRecommendations();
+        if (purchaseRecommendations.size() < 7) {
+            return;
+        }
+
+        purchaseRecommendations.subList(7, purchaseRecommendations.size()).clear();
     }
 
     private double findExchangeRsl(List<ExchangeResult> rows) {

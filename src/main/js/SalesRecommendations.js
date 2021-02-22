@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import PurchaseRecommendation from "./PurchaseRecommendation";
 
 const SalesRecommendations = props => {
-  const [salesRecommendation, setSalesRecommendation] = useState([]);
+  const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -17,14 +16,13 @@ const SalesRecommendations = props => {
 
         const response = await axios(targetUrl);
         console.log("Received data: ", response.data);
-        setSalesRecommendation(response.data);
+        setResult(response.data);
       } catch (err) {
         setError(err);
       }
       setLoading(false);
     };
 
-    console.log(targetUrl);
     fetchSalesRecommendations();
   }, [targetUrl]);
 
@@ -36,7 +34,7 @@ const SalesRecommendations = props => {
     return <p>ERROR: {error}</p>;
   }
 
-  if (salesRecommendation.length == 0) {
+  if (result.salesRecommendation.length == 0) {
     return (
       <div className="container">
         <p>Keine Verkaufsempfehlung</p>
@@ -59,14 +57,12 @@ const SalesRecommendations = props => {
             </tr>
           </thead>
           <tbody>
-            {salesRecommendation.map(saleRecommendation => {
+            {result.salesRecommendations.map(saleRecommendation => {
               return (
                 <tr key={saleRecommendation.company}>
                   <td className="text-content">{saleRecommendation.wkn}</td>
                   <td className="text-content">{saleRecommendation.name}</td>
-                  <td className="number-content">
-                    {saleRecommendation.rsl}
-                  </td>
+                  <td className="number-content">{saleRecommendation.rsl}</td>
                   <td className="number-content">{saleRecommendation.price}</td>
                   <td className="number-content">
                     {saleRecommendation.initialNotionalSalesPrice}
@@ -74,7 +70,7 @@ const SalesRecommendations = props => {
                   <td>
                     {saleRecommendation.shouldSellByFallingBelowTheLimit ? (
                       <div>
-                        {saleRecommendation.company} wöchentlicher Schlusskurs{" "}
+                        {saleRecommendation.name} wöchentlicher Schlusskurs{" "}
                         {saleRecommendation.price} liegt unter dem kalkulierten
                         Verkaufspreis{" "}
                         {saleRecommendation.initialNotionalSalesPrice}.
@@ -82,9 +78,8 @@ const SalesRecommendations = props => {
                     ) : null}
                     {saleRecommendation.shouldSellByRslComparison ? (
                       <div>
-                        {saleRecommendation.company} RSL{" "}
-                        {saleRecommendation.companyRsl} liegt unter dem RSL{" "}
-                        {saleRecommendation.exchangeRsl}
+                        {saleRecommendation.name} RSL {result.rsl} liegt unter
+                        dem RSL {result.exchangeRsl}
                       </div>
                     ) : null}
                   </td>

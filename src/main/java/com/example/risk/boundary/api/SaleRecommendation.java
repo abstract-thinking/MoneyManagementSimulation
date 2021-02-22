@@ -16,7 +16,7 @@ public class SaleRecommendation {
     String wkn;
 
     String name;
-    Double rsl;
+    double rsl;
 
     BigDecimal price;
     BigDecimal initialNotionalSalesPrice;

@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 import NavigationBar from "./NavigationBar";
-import Investment from "./Investment";
 
 const EditRiskManagement = () => {
   const [riskManagement, setRiskManagement] = useState("");

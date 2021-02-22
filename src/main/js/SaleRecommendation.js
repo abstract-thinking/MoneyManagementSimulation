@@ -3,7 +3,7 @@ import { Link } from "@reach/router";
 import axios from "axios";
 
 const SaleRecommendation = props => {
-  const [saleRecommendation, setSaleRecommendation] = useState([]);
+  const [result, setResult] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -17,14 +17,13 @@ const SaleRecommendation = props => {
 
         const response = await axios(targetUrl);
         console.log("Received data: ", response.data);
-        setSaleRecommendation(response.data);
+        setResult(response.data);
       } catch (err) {
         setError(err);
       }
       setLoading(false);
     };
 
-    console.log(targetUrl);
     fetchSaleRecommendation();
   }, [targetUrl]);
 
@@ -51,25 +50,31 @@ const SaleRecommendation = props => {
           </thead>
           <tbody>
             <tr>
-              <td className="text-content">{saleRecommendation.wkn}</td>
-              <td className="text-content">{saleRecommendation.name}</td>
-              <td className="number-content">
-                {saleRecommendation.rsl}
+              <td className="text-content">
+                {result.saleRecommendations[0].wkn}
               </td>
-              <td className="number-content">{saleRecommendation.price}</td>
+              <td className="text-content">
+                {result.saleRecommendations[0].name}
+              </td>
               <td className="number-content">
-                {saleRecommendation.initialNotionalSalesPrice}
+                {result.saleRecommendations[0].rsl}
+              </td>
+              <td className="number-content">
+                {result.saleRecommendations[0].price}
+              </td>
+              <td className="number-content">
+                {result.saleRecommendations[0].initialNotionalSalesPrice}
               </td>
             </tr>
           </tbody>
         </table>
       </div>
       <div>
-        {saleRecommendation.shouldSellByFallingBelowTheLimit ? (
+        {result.saleRecommendations[0].shouldSellByFallingBelowTheLimit ? (
           <p>
-            {saleRecommendation.company} Wochenpreis {saleRecommendation.price}{" "}
+            {result.name} Wochenpreis {result.saleRecommendations[0].price}{" "}
             liegt unter dem kalkulierten Verkaufspreis{" "}
-            {saleRecommendation.initialNotionalSalesPrice}.{" "}
+            {result.saleRecommendations[0].initialNotionalSalesPrice}.{" "}
             <Link
               to={`/riskManagements/${props.riskId}/purchase-recommendations`}
             >
@@ -77,11 +82,11 @@ const SaleRecommendation = props => {
             </Link>
           </p>
         ) : null}
-        {saleRecommendation.shouldSellByRslComparison ? (
+        {result.saleRecommendations[0].shouldSellByRslComparison ? (
           <p>
-            {saleRecommendation.company} RSL {saleRecommendation.companyRsl}{" "}
-            liegt unter dem {saleRecommendation.exchange} RSL{" "}
-            {saleRecommendation.exchangeRsl}.{" "}
+            {result.saleRecommendations[0].name} RSL{" "}
+            {result.saleRecommendations[0].rsl} liegt unter dem{" "}
+            {result.exchange} RSL {result.exchangeRsl}.{" "}
             <Link
               to={`/riskManagements/${props.riskId}/purchase-recommendations`}
             >

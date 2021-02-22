@@ -1,6 +1,7 @@
 package com.example.risk.control.invest;
 
 import com.example.risk.boundary.api.SaleRecommendation;
+import com.example.risk.boundary.api.SalesRecommendationMetadata;
 import com.example.risk.control.management.caclulate.InvestmentRecommender;
 import com.example.risk.service.rsl.RslService;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +19,6 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.UncheckedIOException;
-import java.util.List;
 
 import static java.nio.charset.StandardCharsets.UTF_8;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,10 +50,10 @@ public class InvestRecommenderTests {
         when(rslService.fetchTable()).thenReturn(asString(resource));
 
         // FIXME:
-        List<SaleRecommendation> saleRecommendations = recommender.getSaleRecommendations(null);
+        SalesRecommendationMetadata saleRecommendations = recommender.getSaleRecommendations(null);
 
-        assertThat(saleRecommendations).hasSize(2);
-        assertThat(saleRecommendations).contains(
+        assertThat(saleRecommendations.getSaleRecommendations()).hasSize(2);
+        assertThat(saleRecommendations.getSaleRecommendations()).contains(
                 createRecommendation("PayPal Holdings Inc.", 1.08),
                 createRecommendation("Fiserv Inc.", 0.94));
     }

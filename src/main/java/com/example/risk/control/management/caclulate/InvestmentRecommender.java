@@ -1,7 +1,9 @@
 package com.example.risk.control.management.caclulate;
 
 import com.example.risk.boundary.api.PurchaseRecommendation;
+import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
 import com.example.risk.boundary.api.SaleRecommendation;
+import com.example.risk.boundary.api.SalesRecommendationMetadata;
 import com.example.risk.converter.DecisionRowConverter;
 import com.example.risk.converter.ExchangeResult;
 import com.example.risk.data.Investment;
@@ -11,7 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.example.risk.control.management.caclulate.MoneyManagement.calculateQuantity;
@@ -30,34 +31,20 @@ public class InvestmentRecommender {
 
     private final DecisionRowConverter converter;
 
-    public List<SaleRecommendation> getSaleRecommendations(RiskManagementCalculator riskManagementCalculator) {
+    public SalesRecommendationMetadata getSaleRecommendations(RiskManagementCalculator riskManagementCalculator) {
         List<ExchangeResult> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
 
-        List<SaleRecommendation> saleRecommendations = new ArrayList<>();
+        List<SaleRecommendation> salesRecommendations = new ArrayList<>();
         riskManagementCalculator.getInvestments().forEach(investment ->
                 results.stream()
                         .filter(result -> result.getWkn().equalsIgnoreCase(investment.getWkn()))
                         .map(result -> createSellRecommendation(result, exchangeRsl, investment))
                         .filter(SaleRecommendation::shouldSell)
                         .findFirst()
-                        .ifPresent(saleRecommendations::add));
+                        .ifPresent(salesRecommendations::add));
 
-        if (saleRecommendations.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        saleRecommendations.add(createExchangeRow(exchangeRsl));
-
-        return saleRecommendations;
-    }
-
-    private SaleRecommendation createExchangeRow(double exchangeRsl) {
-        return SaleRecommendation.builder()
-                .wkn("A0AE1X")
-                .name(EXCHANGE_NAME)
-                .rsl(exchangeRsl)
-                .build();
+        return new SalesRecommendationMetadata(EXCHANGE_NAME, exchangeRsl, salesRecommendations);
     }
 
     private double findExchangeRsl(List<ExchangeResult> results) {
@@ -88,7 +75,7 @@ public class InvestmentRecommender {
         return exchangeRsl > result.getRsl();
     }
 
-    public List<PurchaseRecommendation> getPurchaseRecommendations(RiskManagementCalculator riskManagementCalculator) {
+    public PurchaseRecommendationMetadata getPurchaseRecommendations(RiskManagementCalculator riskManagementCalculator) {
         List<ExchangeResult> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
 
@@ -98,23 +85,7 @@ public class InvestmentRecommender {
                 .map(result -> createBuyRecommendation(result, exchangeRsl, riskManagementCalculator))
                 .collect(toList());
 
-        if (purchaseRecommendations.isEmpty()) {
-            return Collections.emptyList();
-        }
-
-        purchaseRecommendations.add(createExchangeRow2(exchangeRsl));
-
-        return purchaseRecommendations;
-    }
-
-    private PurchaseRecommendation createExchangeRow2(double exchangeRsl) {
-        return PurchaseRecommendation.builder()
-                .wkn("A0AE1X")
-                .name(EXCHANGE_NAME)
-                .rsl(exchangeRsl)
-                .price(BigDecimal.ZERO)
-                .notionalSalesPrice(BigDecimal.ZERO)
-                .build();
+        return new PurchaseRecommendationMetadata(EXCHANGE_NAME, exchangeRsl, purchaseRecommendations);
     }
 
     private PurchaseRecommendation createBuyRecommendation(ExchangeResult result, double exchangeRsl, RiskManagementCalculator riskManagementCalculator) {

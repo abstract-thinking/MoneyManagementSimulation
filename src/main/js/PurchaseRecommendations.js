@@ -3,7 +3,7 @@ import axios from "axios";
 import PurchaseRecommendation from "./PurchaseRecommendation";
 
 const PurchaseRecommendations = props => {
-  const [purchaseRecommendations, setPurchaseRecommendation] = useState([]);
+  const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -17,7 +17,7 @@ const PurchaseRecommendations = props => {
 
         const response = await axios(targetUrl);
         console.log("Received data: ", response.data);
-        setPurchaseRecommendation(response.data);
+        setResult(response.data);
       } catch (err) {
         setError(err);
       }
@@ -36,6 +36,10 @@ const PurchaseRecommendations = props => {
     return <p>ERROR: {error}</p>;
   }
 
+  if (result === "") {
+    return <p>loading starts now</p>;
+  }
+
   return (
     <div className="container">
       <table>
@@ -50,13 +54,21 @@ const PurchaseRecommendations = props => {
           </tr>
         </thead>
         <tbody>
-          {purchaseRecommendations &&
-            purchaseRecommendations.map(purchaseRecommendation => (
+          {result.purchaseRecommendations &&
+            result.purchaseRecommendations.map(purchaseRecommendation => (
               <PurchaseRecommendation
                 key={purchaseRecommendation.name}
                 purchaseRecommendation={purchaseRecommendation}
               />
             ))}
+          <tr className="exchange-row">
+            <td></td>
+            <td className="text-content">{result.exchange}</td>
+            <td className="number-content">{result.exchangeRsl.toFixed(2)}</td>
+            <td></td>
+            <td></td>
+            <td></td>
+          </tr>
         </tbody>
       </table>
     </div>
