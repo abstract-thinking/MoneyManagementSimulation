@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 const SalesRecommendations = props => {
-  const [result, setResult] = useState([]);
+  const [result, setResult] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -34,7 +34,11 @@ const SalesRecommendations = props => {
     return <p>ERROR: {error}</p>;
   }
 
-  if (result.salesRecommendation.length == 0) {
+  if (result === "") {
+      return <p>loading starts now</p>;
+  }
+
+  if (result.saleRecommendations.length == 0) {
     return (
       <div className="container">
         <p>Keine Verkaufsempfehlung</p>
@@ -57,7 +61,7 @@ const SalesRecommendations = props => {
             </tr>
           </thead>
           <tbody>
-            {result.salesRecommendations.map(saleRecommendation => {
+            {result.saleRecommendations.map(saleRecommendation => {
               return (
                 <tr key={saleRecommendation.company}>
                   <td className="text-content">{saleRecommendation.wkn}</td>
