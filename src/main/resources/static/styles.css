@@ -28,7 +28,5 @@
 }
 
 .exchange-row:last-child {
-                   background-color: lime;
-                 }
-
+    background-color: lime;
 }

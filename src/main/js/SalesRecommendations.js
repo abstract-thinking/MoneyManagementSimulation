@@ -38,7 +38,7 @@ const SalesRecommendations = props => {
     return <p>loading starts now</p>;
   }
 
-  if (result.saleRecommendations.length == 0) {
+  if (result.saleRecommendations.length === 0) {
     return (
       <div className="container">
         <p>Keine Verkaufsempfehlung</p>
@@ -56,7 +56,7 @@ const SalesRecommendations = props => {
               <th className="header">Name</th>
               <th className="header">Börse</th>
               <th className="header">Preis</th>
-              <th className="header">Preisschwelle</th>
+              <th className="header">Fiktiver Verkaufspreis</th>
               <th className="header">Begründung</th>
             </tr>
           </thead>

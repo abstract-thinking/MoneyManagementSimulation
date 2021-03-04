@@ -3,6 +3,7 @@ import axios from "axios";
 
 import NavigationBar from "./NavigationBar";
 import Investment from "./Investment";
+import Spinner from 'react-bootstrap/Spinner';
 
 const RiskManagement = () => {
   const [riskManagement, setRiskManagement] = useState("");
@@ -31,7 +32,7 @@ const RiskManagement = () => {
   }, []);
 
   if (isLoading) {
-    return <p>loading..</p>;
+    return <Spinner animation="border" />
   }
 
   if (error !== "") {
@@ -56,7 +57,7 @@ const RiskManagement = () => {
             <td>{riskManagement.individualPositionRiskInPercent.toFixed(2)}</td>
           </tr>
           <tr>
-            <td></td>
+            <td/>
             <td>{riskManagement.individualPositionRisk.toFixed(2)}</td>
           </tr>
           <tr>
@@ -80,11 +81,11 @@ const RiskManagement = () => {
             ))}
           <tr>
             <td className="header">Depotwert</td>
-            <td colSpan={3}></td>
+            <td colSpan={3}/>
             <td className="number-content">
               {riskManagement.totalInvestment.toFixed(2)}
             </td>
-            <td colSpan={2}></td>
+            <td colSpan={2}/>
             <td className="number-content">
               {riskManagement.totalRevenue.toFixed(2)}
             </td>
@@ -94,7 +95,7 @@ const RiskManagement = () => {
           </tr>
           <tr>
             <td className="header">Depotrisiko</td>
-            <td colSpan={7}></td>
+            <td colSpan={7}/>
             <td className="number-content">
               {riskManagement.depotRiskInPercent.toFixed(2)}
             </td>
