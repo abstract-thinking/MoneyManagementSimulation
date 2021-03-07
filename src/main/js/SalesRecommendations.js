@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import Spinner from "react-bootstrap/Spinner";
+import Container from "react-bootstrap/Container";
+
 
 const SalesRecommendations = props => {
   const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const targetUrl = `http://localhost:8080/api/risks/${props.riskId}/recommendations/sales`;
@@ -26,8 +29,17 @@ const SalesRecommendations = props => {
     fetchSalesRecommendations();
   }, [targetUrl]);
 
-  if (loading) {
-    return <p>loading..</p>;
+  if (isLoading) {
+    return (
+      <Container
+        className="d-flex align-items-center justify-content-center"
+        style={{ minHeight: "100vh" }}
+      >
+        <Spinner animation="grow" role="status">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+      </Container>
+    );
   }
 
   if (error !== "") {
@@ -72,20 +84,23 @@ const SalesRecommendations = props => {
                     {saleRecommendation.initialNotionalSalesPrice}
                   </td>
                   <td>
-                    {saleRecommendation.shouldSellByFallingBelowTheLimit ? (
+                    <button>-</button>
+                  </td>
+                  <td>
+                    {saleRecommendation.shouldSellByFallingBelowTheLimit && (
                       <div>
                         {saleRecommendation.name} wöchentlicher Schlusskurs{" "}
                         {saleRecommendation.price} liegt unter dem kalkulierten
                         Verkaufspreis{" "}
                         {saleRecommendation.initialNotionalSalesPrice}.
                       </div>
-                    ) : null}
-                    {saleRecommendation.shouldSellByRslComparison ? (
+                    )}
+                    {saleRecommendation.shouldSellByRslComparison && (
                       <div>
                         {saleRecommendation.name} RSL {result.rsl} liegt unter
                         dem RSL {result.exchangeRsl}
                       </div>
-                    ) : null}
+                    )}
                   </td>
                 </tr>
               );

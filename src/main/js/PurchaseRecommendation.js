@@ -1,6 +1,9 @@
 import React from "react";
 
-const PurchaseRecommendation = ({ purchaseRecommendation }) => (
+const PurchaseRecommendation = ({
+  purchaseRecommendation,
+  showPurchaseButton
+}) => (
   <tr className="purchase-rec-row">
     <td className="text-content">{purchaseRecommendation.wkn}</td>
     <td className="text-content">{purchaseRecommendation.name}</td>
@@ -12,6 +15,11 @@ const PurchaseRecommendation = ({ purchaseRecommendation }) => (
     <td className="number-content">
       {purchaseRecommendation.notionalSalesPrice.toFixed(2)}
     </td>
+    {showPurchaseButton && (
+      <td>
+        <button>+</button>
+      </td>
+    )}
   </tr>
 );
 

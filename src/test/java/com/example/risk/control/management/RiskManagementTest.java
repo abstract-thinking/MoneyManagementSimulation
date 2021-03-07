@@ -44,8 +44,7 @@ class RiskManagementTest {
         return Investment.builder()
                 .quantity(quantity)
                 .purchasePrice(purchaseCost)
-                .currentNotionalSalesPrice(notionalSalesPrice)
-                .initialNotionalSalesPrice(notionalSalesPrice)
+                .notionalSalesPrice(notionalSalesPrice)
                 .transactionCosts(transactionCosts)
                 .build();
     }

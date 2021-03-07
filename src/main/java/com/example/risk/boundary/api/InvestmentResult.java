@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 @EqualsAndHashCode(callSuper = true)
 @ToString
 @Builder
-public class InvestmentResult extends RepresentationModel<RiskResult> {
+public class InvestmentResult extends RepresentationModel<InvestmentResult> {
 
     private Long id;
 

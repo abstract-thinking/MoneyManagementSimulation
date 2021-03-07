@@ -11,8 +11,8 @@ class NavigationBar extends React.Component {
       `/riskManagements/${this.props.riskManagementId}/purchase-recommendations`
     );
 
-  activateEditMode = () =>
-    navigate(`/riskManagements/${this.props.riskManagementId}/edit`);
+  navigateToSearch = () =>
+    navigate(`/riskManagements/${this.props.riskManagementId}/search`);
 
   render() {
     return (
@@ -23,7 +23,6 @@ class NavigationBar extends React.Component {
         <button onClick={this.navigateToPurchaseRecommendation}>
           Purchase Recommendation
         </button>
-        <button onClick={this.activateEditMode}>Edit</button>
       </div>
     );
   }

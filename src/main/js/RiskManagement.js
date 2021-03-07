@@ -3,7 +3,8 @@ import axios from "axios";
 
 import NavigationBar from "./NavigationBar";
 import Investment from "./Investment";
-import Spinner from 'react-bootstrap/Spinner';
+import Spinner from "react-bootstrap/Spinner";
+import Container from "react-bootstrap/Container";
 
 const RiskManagement = () => {
   const [riskManagement, setRiskManagement] = useState("");
@@ -32,7 +33,16 @@ const RiskManagement = () => {
   }, []);
 
   if (isLoading) {
-    return <Spinner animation="border" />
+    return (
+      <Container
+        className="d-flex align-items-center justify-content-center"
+        style={{ minHeight: "100vh" }}
+      >
+        <Spinner animation="grow" role="status">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+      </Container>
+    );
   }
 
   if (error !== "") {
@@ -57,7 +67,7 @@ const RiskManagement = () => {
             <td>{riskManagement.individualPositionRiskInPercent.toFixed(2)}</td>
           </tr>
           <tr>
-            <td/>
+            <td />
             <td>{riskManagement.individualPositionRisk.toFixed(2)}</td>
           </tr>
           <tr>
@@ -81,11 +91,11 @@ const RiskManagement = () => {
             ))}
           <tr>
             <td className="header">Depotwert</td>
-            <td colSpan={3}/>
+            <td colSpan={3} />
             <td className="number-content">
               {riskManagement.totalInvestment.toFixed(2)}
             </td>
-            <td colSpan={2}/>
+            <td colSpan={2} />
             <td className="number-content">
               {riskManagement.totalRevenue.toFixed(2)}
             </td>
@@ -95,7 +105,7 @@ const RiskManagement = () => {
           </tr>
           <tr>
             <td className="header">Depotrisiko</td>
-            <td colSpan={7}/>
+            <td colSpan={7} />
             <td className="number-content">
               {riskManagement.depotRiskInPercent.toFixed(2)}
             </td>

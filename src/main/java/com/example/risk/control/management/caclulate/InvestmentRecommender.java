@@ -61,14 +61,14 @@ public class InvestmentRecommender {
                 .name(result.getName())
                 .rsl(result.getRsl())
                 .price(result.getPrice())
-                .initialNotionalSalesPrice(investment.getInitialNotionalSalesPrice())
+                .notionalSalesPrice(investment.getNotionalSalesPrice())
                 .shouldSellByFallingBelowTheLimit(isCurrentPriceLowerThanInitialNotionalSalesPrice(investment, result))
                 .shouldSellByRslComparison(isCompanyRslLowerThanExchangeRsl(exchangeRsl, result))
                 .build();
     }
 
     private boolean isCurrentPriceLowerThanInitialNotionalSalesPrice(Investment investment, ExchangeResult result) {
-        return investment.getInitialNotionalSalesPrice().compareTo(result.getPrice()) >= 0;
+        return investment.getNotionalSalesPrice().compareTo(result.getPrice()) >= 0;
     }
 
     private boolean isCompanyRslLowerThanExchangeRsl(double exchangeRsl, ExchangeResult result) {
@@ -93,7 +93,7 @@ public class InvestmentRecommender {
 
         Investment possibleInvestment = Investment.builder()
                 .purchasePrice(result.getPrice())
-                .currentNotionalSalesPrice(notionalSalesPrice)
+                .notionalSalesPrice(notionalSalesPrice)
                 .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
                 .build();
 

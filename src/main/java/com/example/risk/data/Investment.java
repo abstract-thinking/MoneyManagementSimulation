@@ -5,12 +5,14 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.math.BigDecimal;
 
+@Slf4j
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -28,8 +30,8 @@ public class Investment {
     private BigDecimal purchasePrice;
     private BigDecimal transactionCosts;
 
-    private BigDecimal initialNotionalSalesPrice;
-    private BigDecimal currentNotionalSalesPrice;
+    private BigDecimal notionalSalesPrice;
+    private BigDecimal currentPrice;
 
     private Long moneyManagementId;
 
@@ -38,19 +40,32 @@ public class Investment {
     }
 
     public BigDecimal getPositionRisk() {
-        return purchasePrice.subtract(currentNotionalSalesPrice);
+        return purchasePrice.subtract(notionalSalesPrice);
     }
 
     public BigDecimal getNotionalRevenue() {
-        return determineNotionalSalesPrice().multiply(BigDecimal.valueOf(quantity));
+        return determineSalesPrice().multiply(BigDecimal.valueOf(quantity));
     }
 
-    private BigDecimal determineNotionalSalesPrice() {
-        return initialNotionalSalesPrice.compareTo(currentNotionalSalesPrice) > 0 ?
-                initialNotionalSalesPrice : currentNotionalSalesPrice;
+    private BigDecimal determineSalesPrice() {
+        log.info("Determine notional sales price for {}. Initial {} or current {}.", name, notionalSalesPrice,
+                currentPrice);
+        if (notionalSalesPrice.compareTo(currentPrice) < 0) {
+            log.info("Determine initial as sales price {}", notionalSalesPrice);
+            return currentPrice;
+        } else {
+            log.info("Determine current as sales price {}", currentPrice);
+            return currentPrice;
+        }
     }
 
     public BigDecimal getRisk() {
+        final BigDecimal profitOrLoss = getProfitOrLoss().negate();
+
+        return profitOrLoss.compareTo(BigDecimal.ZERO) > 0 ? profitOrLoss : BigDecimal.ZERO;
+    }
+
+    public BigDecimal getCurrentRisk() {
         final BigDecimal profitOrLoss = getProfitOrLoss().negate();
 
         return profitOrLoss.compareTo(BigDecimal.ZERO) > 0 ? profitOrLoss : BigDecimal.ZERO;
@@ -67,8 +82,8 @@ public class Investment {
                 .name(name)
                 .quantity(quantity)
                 .purchasePrice(purchasePrice)
+                .notionalSalesPrice(notionalSalesPrice)
                 .transactionCosts(transactionCosts)
-                .notionalSalesPrice(determineNotionalSalesPrice())
                 .investment(getInvestment())
                 .notionalRevenue(getNotionalRevenue())
                 .positionRisk(getRisk())

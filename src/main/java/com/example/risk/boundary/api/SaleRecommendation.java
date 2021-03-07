@@ -19,7 +19,7 @@ public class SaleRecommendation {
     double rsl;
 
     BigDecimal price;
-    BigDecimal initialNotionalSalesPrice;
+    BigDecimal notionalSalesPrice;
 
     boolean shouldSellByRslComparison;
     boolean shouldSellByFallingBelowTheLimit;

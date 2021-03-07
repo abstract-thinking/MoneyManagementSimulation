@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "@reach/router";
 import axios from "axios";
+import Spinner from "react-bootstrap/Spinner";
+import Container from "react-bootstrap/Container";
 
 const SaleRecommendation = props => {
   const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const targetUrl = `http://localhost:8080/api/risks/${props.riskId}/recommendations/sales/${props.investmentId}`;
@@ -27,8 +29,17 @@ const SaleRecommendation = props => {
     fetchSaleRecommendation();
   }, [targetUrl]);
 
-  if (loading) {
-    return <p>loading..</p>;
+  if (isLoading) {
+    return (
+      <Container
+        className="d-flex align-items-center justify-content-center"
+        style={{ minHeight: "100vh" }}
+      >
+        <Spinner animation="grow" role="status">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+      </Container>
+    );
   }
 
   if (error !== "") {
@@ -67,14 +78,14 @@ const SaleRecommendation = props => {
                 {result.saleRecommendations[0].price}
               </td>
               <td className="number-content">
-                {result.saleRecommendations[0].initialNotionalSalesPrice}
+                {result.saleRecommendations[0].notionalSalesPrice}
               </td>
             </tr>
           </tbody>
         </table>
       </div>
       <div>
-        {result.saleRecommendations[0].shouldSellByFallingBelowTheLimit ? (
+        {result.saleRecommendations[0].shouldSellByFallingBelowTheLimit && (
           <p>
             {result.name} Wochenpreis {result.saleRecommendations[0].price}{" "}
             liegt unter dem kalkulierten Verkaufspreis{" "}
@@ -85,8 +96,8 @@ const SaleRecommendation = props => {
               *
             </Link>
           </p>
-        ) : null}
-        {result.saleRecommendations[0].shouldSellByRslComparison ? (
+        )}
+        {result.saleRecommendations[0].shouldSellByRslComparison && (
           <p>
             {result.saleRecommendations[0].name} RSL{" "}
             {result.saleRecommendations[0].rsl} liegt unter dem{" "}
@@ -97,7 +108,7 @@ const SaleRecommendation = props => {
               *
             </Link>
           </p>
-        ) : null}
+        )}
       </div>
     </div>
   );

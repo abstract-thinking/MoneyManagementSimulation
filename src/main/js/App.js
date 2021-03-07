@@ -5,7 +5,7 @@ import RiskManagement from "./RiskManagement";
 import SaleRecommendations from "./SalesRecommendations";
 import SaleRecommendation from "./SaleRecommendation";
 import PurchaseRecommendations from "./PurchaseRecommendations";
-import EditRiskManagement from "./EditRiskManagement";
+import Search from "./Search";
 
 const App = () => {
   return (
@@ -15,7 +15,7 @@ const App = () => {
         <SaleRecommendations path="riskManagements/:riskId/sell-recommendations" />
         <SaleRecommendation path="riskManagements/:riskId/sell-recommendations/:investmentId" />
         <PurchaseRecommendations path="riskManagements/:riskId/purchase-recommendations" />
-        <EditRiskManagement path="/riskManagements/:riskId/edit" />
+        <Search path="/riskManagements/:riskId/search" />
       </Router>
     </div>
   );

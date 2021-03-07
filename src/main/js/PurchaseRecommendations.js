@@ -1,10 +1,13 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import PurchaseRecommendation from "./PurchaseRecommendation";
+import Spinner from "react-bootstrap/Spinner";
+import Container from "react-bootstrap/Container";
+
 
 const PurchaseRecommendations = props => {
   const [result, setResult] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
   const targetUrl = `http://localhost:8080/api/risks/${props.riskId}/recommendations/purchases`;
@@ -27,8 +30,17 @@ const PurchaseRecommendations = props => {
     fetchPurchaseRecommendations();
   }, [targetUrl]);
 
-  if (loading) {
-    return <p>loading..</p>;
+  if (isLoading) {
+    return (
+      <Container
+        className="d-flex align-items-center justify-content-center"
+        style={{ minHeight: "100vh" }}
+      >
+        <Spinner animation="grow" role="status">
+          <span className="sr-only">Loading...</span>
+        </Spinner>
+      </Container>
+    );
   }
 
   if (error !== "") {
@@ -58,13 +70,14 @@ const PurchaseRecommendations = props => {
               <PurchaseRecommendation
                 key={purchaseRecommendation.name}
                 purchaseRecommendation={purchaseRecommendation}
+                showPurchaseButton="true"
               />
             ))}
           <tr className="exchange-row">
-            <td/>
+            <td />
             <td className="text-content">{result.exchange}</td>
             <td className="number-content">{result.exchangeRsl.toFixed(2)}</td>
-            <td colSpan={3}/>
+            <td colSpan={3} />
           </tr>
         </tbody>
       </table>
