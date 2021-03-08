@@ -77,7 +77,7 @@ const PurchaseRecommendations = props => {
             <td />
             <td className="text-content">{result.exchange}</td>
             <td className="number-content">{result.exchangeRsl.toFixed(2)}</td>
-            <td colSpan={3} />
+            <td colSpan={4} />
           </tr>
         </tbody>
       </table>
