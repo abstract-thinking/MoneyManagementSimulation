@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from "react";
+import {Container, Spinner, Table} from "react-bootstrap";
 import axios from "axios";
-
 import Investment from "./Investment";
-import Spinner from "react-bootstrap/Spinner";
-import Container from "react-bootstrap/Container";
-import {Table} from "react-bootstrap";
+
 
 const RiskManagement = ({riskManagementId}) => {
 

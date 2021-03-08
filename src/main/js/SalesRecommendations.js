@@ -2,9 +2,7 @@ import React, {useState, useEffect} from "react";
 import axios from "axios";
 
 import SaleRecommendation from "./SaleRecommendation";
-import Spinner from "react-bootstrap/Spinner";
-import Container from "react-bootstrap/Container";
-import {Table} from "react-bootstrap";
+import {Container, Spinner, Table} from "react-bootstrap";
 
 const SalesRecommendations = ({riskId}) => {
     const [result, setResult] = useState(null);

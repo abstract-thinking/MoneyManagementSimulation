@@ -1,7 +1,4 @@
-import React, {useState, useEffect} from "react";
-import axios from "axios";
-import Spinner from "react-bootstrap/Spinner";
-import Container from "react-bootstrap/Container";
+import React, {useState} from "react";
 import {Button, Modal} from "react-bootstrap";
 
 const SaleRecommendation = ({
