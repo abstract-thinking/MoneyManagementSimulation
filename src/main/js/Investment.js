@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "@reach/router";
+import {Button} from "react-bootstrap";
 
 const Investment = ({ riskManagementId, investment }) => (
   <tr className="investment-data">
@@ -17,9 +18,9 @@ const Investment = ({ riskManagementId, investment }) => (
     <td>
       {investment._links && investment._links.sale ? (
         <Link
-          to={`/riskManagements/${riskManagementId}/sell-recommendations/${investment.id}`}
+          to={`/riskManagements/${riskManagementId}/sell-recommendations/`}
         >
-          *
+          <Button>Sell</Button>
         </Link>
       ) : null}
     </td>

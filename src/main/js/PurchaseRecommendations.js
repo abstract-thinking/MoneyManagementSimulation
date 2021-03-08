@@ -3,31 +3,33 @@ import axios from "axios";
 import PurchaseRecommendation from "./PurchaseRecommendation";
 import Spinner from "react-bootstrap/Spinner";
 import Container from "react-bootstrap/Container";
+import {Table} from "react-bootstrap";
 
 
-const PurchaseRecommendations = props => {
+const PurchaseRecommendations = ({riskId}) => {
   const [result, setResult] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const targetUrl = `http://localhost:8080/api/risks/${props.riskId}/recommendations/purchases`;
+  const targetUrl = `http://localhost:8080/api/risks/${riskId}/recommendations/purchases`;
 
   useEffect(() => {
-    const fetchPurchaseRecommendations = async () => {
-      try {
-        setLoading(true);
-        setError("");
+    setLoading(true);
+    setError("");
 
-        const response = await axios(targetUrl);
-        console.log("Received data: ", response.data);
-        setResult(response.data);
-      } catch (err) {
-        setError(err);
-      }
-      setLoading(false);
-    };
+    axios
+        .get(targetUrl)
+        .then(response => {
+          setResult(response.data);
+          console.log("Received data: ", response.data);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.log("Error: ", error);
 
-    fetchPurchaseRecommendations();
+          setLoading(false);
+          setError("Error: " + error);
+        });
   }, [targetUrl]);
 
   if (isLoading) {
@@ -53,7 +55,7 @@ const PurchaseRecommendations = props => {
 
   return (
     <div className="container">
-      <table>
+      <Table striped bordered>
         <thead>
           <tr>
             <th className="header">WKN</th>
@@ -80,7 +82,7 @@ const PurchaseRecommendations = props => {
             <td colSpan={4} />
           </tr>
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 };

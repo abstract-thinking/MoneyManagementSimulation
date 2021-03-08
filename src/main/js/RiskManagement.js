@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import NavigationBar from "./NavigationBar";
 import Investment from "./Investment";
 import Spinner from "react-bootstrap/Spinner";
 import Container from "react-bootstrap/Container";
+import {Table} from "react-bootstrap";
 
-const RiskManagement = () => {
+const RiskManagement = ({riskManagementId}) => {
+
   const [riskManagement, setRiskManagement] = useState("");
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
-
-  const riskManagementId = "1";
 
   useEffect(() => {
     setLoading(true);
@@ -55,8 +54,7 @@ const RiskManagement = () => {
 
   return (
     <div className="container">
-      <NavigationBar riskManagementId={riskManagementId} />
-      <table>
+      <Table striped bordered>
         <tbody>
           <tr>
             <td className="header">Gesamtkapital</td>
@@ -117,7 +115,7 @@ const RiskManagement = () => {
             </td>
           </tr>
         </tbody>
-      </table>
+      </Table>
     </div>
   );
 };
