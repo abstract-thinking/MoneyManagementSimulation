@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {Container, Spinner, Table} from "react-bootstrap";
+import { Container, Spinner, Table } from "react-bootstrap";
 import axios from "axios";
 import PurchaseRecommendation from "./PurchaseRecommendation";
 
-
-
-const PurchaseRecommendations = ({riskId}) => {
+const PurchaseRecommendations = ({ riskId }) => {
   const [result, setResult] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -17,18 +15,18 @@ const PurchaseRecommendations = ({riskId}) => {
     setError("");
 
     axios
-        .get(targetUrl)
-        .then(response => {
-          setResult(response.data);
-          console.log("Received data: ", response.data);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.log("Error: ", error);
+      .get(targetUrl)
+      .then(response => {
+        setResult(response.data);
+        console.log("Received data: ", response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.log("Error: ", error);
 
-          setLoading(false);
-          setError("Error: " + error);
-        });
+        setLoading(false);
+        setError("Error: " + error);
+      });
   }, [targetUrl]);
 
   if (isLoading) {

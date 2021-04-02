@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from "react";
-import {Container, Spinner, Table} from "react-bootstrap";
+import { Container, Spinner, Table } from "react-bootstrap";
 import axios from "axios";
 import Investment from "./Investment";
 
-
-const RiskManagement = ({riskManagementId}) => {
-
+const RiskManagement = ({ riskManagementId }) => {
   const [riskManagement, setRiskManagement] = useState("");
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
