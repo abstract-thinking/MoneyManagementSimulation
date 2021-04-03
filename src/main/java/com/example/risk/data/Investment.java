@@ -35,12 +35,22 @@ public class Investment {
 
     private Long moneyManagementId;
 
-    public BigDecimal getInvestment() {
-        return purchasePrice.multiply(BigDecimal.valueOf(quantity));
+    private BigDecimal risk;
+
+    public BigDecimal getPriceRisk() {
+        return purchasePrice.subtract(notionalSalesPrice);
     }
 
-    public BigDecimal getPositionRisk() {
-        return purchasePrice.subtract(notionalSalesPrice);
+    public BigDecimal getInvestmentRisk() {
+        if (risk == null) {
+            throw new RuntimeException("Illegal use: Risk must calculated! " + name);
+        }
+
+        return risk;
+    }
+
+    public BigDecimal getInvestment() {
+        return purchasePrice.multiply(BigDecimal.valueOf(quantity));
     }
 
     public BigDecimal getNotionalRevenue() {
@@ -59,19 +69,7 @@ public class Investment {
         }
     }
 
-    public BigDecimal getRisk() {
-        final BigDecimal profitOrLoss = getProfitOrLoss().negate();
-
-        return profitOrLoss.compareTo(BigDecimal.ZERO) > 0 ? profitOrLoss : BigDecimal.ZERO;
-    }
-
-    public BigDecimal getCurrentRisk() {
-        final BigDecimal profitOrLoss = getProfitOrLoss().negate();
-
-        return profitOrLoss.compareTo(BigDecimal.ZERO) > 0 ? profitOrLoss : BigDecimal.ZERO;
-    }
-
-    private BigDecimal getProfitOrLoss() {
+    public BigDecimal getProfitOrLoss() {
         return getNotionalRevenue().subtract(getInvestment()).subtract(transactionCosts);
     }
 
@@ -86,7 +84,7 @@ public class Investment {
                 .transactionCosts(transactionCosts)
                 .investment(getInvestment())
                 .notionalRevenue(getNotionalRevenue())
-                .positionRisk(getRisk())
+                .positionRisk(getInvestmentRisk())
                 .build();
     }
 }

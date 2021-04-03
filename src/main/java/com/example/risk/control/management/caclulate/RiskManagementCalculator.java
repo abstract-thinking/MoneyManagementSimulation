@@ -32,8 +32,10 @@ public class RiskManagementCalculator {
     }
 
     private BigDecimal calculateDepotRisk() {
+        calculateInvestmentRisk();
+
         return investments.stream()
-                .map(Investment::getRisk)
+                .map(Investment::getInvestmentRisk)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .abs();
     }
@@ -64,6 +66,9 @@ public class RiskManagementCalculator {
     }
 
     public RiskResult calculate() {
+        // TOOD: Where should be the logic where the investment risk will be calculated
+        calculateInvestmentRisk();
+
         return RiskResult.builder()
                 .id(individualRisk.getId())
                 .totalCapital(individualRisk.getTotalCapital())
@@ -78,9 +83,43 @@ public class RiskManagementCalculator {
                 .build();
     }
 
+    private void calculateInvestmentRisk() {
+        investments.forEach(this::setInvestmentRisk);
+    }
+
+    // TODO: Still not sure how this money management should work.
+    // Mark isPossiblePurchaseCandidate with full risk
+    // Seems to be four phases at the moment
+    private void setInvestmentRisk(Investment investment) {
+        if (isPurchaseCandidate(investment)) {
+            investment.setRisk(investment.getProfitOrLoss().negate());
+        } else if (isPossiblePurchaseCandidate(investment)) {
+            investment.setRisk(individualRisk.calculatePositionRisk());
+        } else if (isPossibleProfitCandidate(investment)) {
+            investment.setRisk(individualRisk.calculatePositionRisk().add(investment.getProfitOrLoss().negate()));
+        } else {
+            investment.setRisk(ZERO);
+        }
+    }
+
+    private boolean isPurchaseCandidate(Investment investment) {
+        return investment.getProfitOrLoss().compareTo(individualRisk.calculatePositionRisk().negate()) < 0;
+    }
+
+    private boolean isPossiblePurchaseCandidate(Investment investment) {
+        return investment.getProfitOrLoss().compareTo(individualRisk.calculatePositionRisk()) <= 0 &&
+                investment.getProfitOrLoss().compareTo(ZERO) < 0;
+    }
+
+    private boolean isPossibleProfitCandidate(Investment investment) {
+        return investment.getProfitOrLoss().compareTo(individualRisk.calculatePositionRisk()) <= 0 &&
+                investment.getProfitOrLoss().compareTo(ZERO) >= 0;
+    }
+
     private List<InvestmentResult> map(List<Investment> investments) {
         return investments.stream()
                 .map(Investment::toApi)
                 .collect(Collectors.toList());
     }
+
 }

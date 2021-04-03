@@ -160,10 +160,12 @@ public class RiskManagementFacade {
         purchaseRecommendations.subList(7, purchaseRecommendations.size()).clear();
     }
 
-
     public InvestmentResult doCreate(Long riskId, InvestmentResult newInvestment) {
-        log.error(newInvestment.toString());
-        return investmentRepository.save(Investment.builder()
+        return investmentRepository.save(toInvestment(riskId, newInvestment)).toApi();
+    }
+
+    private Investment toInvestment(Long riskId, InvestmentResult newInvestment) {
+        return Investment.builder()
                 .wkn(newInvestment.getWkn())
                 .name(newInvestment.getName())
                 .quantity(newInvestment.getQuantity())
@@ -172,8 +174,7 @@ public class RiskManagementFacade {
                 .notionalSalesPrice(newInvestment.getNotionalSalesPrice())
                 .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
                 .moneyManagementId(riskId)
-                .build())
-                .toApi();
+                .build();
     }
 
     public void doDelete(Long id) {
