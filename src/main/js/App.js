@@ -6,6 +6,7 @@ import RiskManagement from "./RiskManagement";
 import SaleRecommendations from "./SalesRecommendations";
 import SaleRecommendation from "./SaleRecommendation";
 import PurchaseRecommendations from "./PurchaseRecommendations";
+import CalculationExplanation from "./CalculationExplanation";
 
 const App = () => {
   return (
@@ -29,6 +30,7 @@ const App = () => {
         <SaleRecommendations path="riskManagements/:riskId/sell-recommendations" />
         <SaleRecommendation path="riskManagements/:riskId/sell-recommendations/:investmentId" />
         <PurchaseRecommendations path="riskManagements/:riskId/purchase-recommendations" />
+        <CalculationExplanation path="riskManagements/:riskId/calculation" />
       </Router>
     </>
   );

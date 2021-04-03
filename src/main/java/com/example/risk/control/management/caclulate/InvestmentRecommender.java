@@ -27,7 +27,7 @@ public class InvestmentRecommender {
 
     public static final BigDecimal EXCHANGE_TRANSACTION_COSTS = BigDecimal.valueOf(35.50);
 
-    private static final String EXCHANGE_NAME = "NASDAQ 100";
+    public static final String EXCHANGE_NAME = "NASDAQ 100";
 
     private final DecisionRowConverter converter;
 

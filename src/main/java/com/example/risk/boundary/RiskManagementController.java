@@ -1,5 +1,6 @@
 package com.example.risk.boundary;
 
+import com.example.risk.boundary.api.CalculationResult;
 import com.example.risk.boundary.api.InvestmentResult;
 import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
 import com.example.risk.boundary.api.RiskResult;
@@ -26,7 +27,7 @@ import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
 import static org.springframework.http.HttpStatus.NOT_FOUND;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
-@CrossOrigin(origins = {"http://localhost:1234", "http://localhost:8080"})
+@CrossOrigin
 @Slf4j
 @RestController
 @AllArgsConstructor
@@ -131,4 +132,12 @@ public class RiskManagementController {
     public void delete(@PathVariable Long investmentId) {
         riskManagementFacade.doDelete(investmentId);
     }
+
+    @GetMapping(path = "/api/risks/{riskId}/calc", produces = APPLICATION_JSON_VALUE)
+    public CalculationResult positionCalculation(
+            @PathVariable Long riskId,
+            @RequestParam String wkn) {
+        return riskManagementFacade.doPositionCalculation(riskId, wkn);
+    }
+
 }

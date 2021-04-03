@@ -1,5 +1,6 @@
 package com.example.risk.control.management;
 
+import com.example.risk.boundary.api.CalculationResult;
 import com.example.risk.boundary.api.InvestmentResult;
 import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
@@ -10,6 +11,7 @@ import com.example.risk.boundary.api.SearchResult;
 import com.example.risk.control.management.caclulate.InvestmentRecommender;
 import com.example.risk.control.management.caclulate.RiskManagementCalculator;
 import com.example.risk.converter.DecisionRowConverter;
+import com.example.risk.converter.ExchangeResult;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.IndividualRiskRepository;
 import com.example.risk.data.Investment;
@@ -17,12 +19,16 @@ import com.example.risk.data.InvestmentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.risk.control.management.caclulate.InvestmentRecommender.EXCHANGE_NAME;
 import static com.example.risk.control.management.caclulate.InvestmentRecommender.EXCHANGE_TRANSACTION_COSTS;
+import static com.example.risk.control.management.caclulate.MoneyManagement.calculateQuantity;
+import static com.example.risk.control.management.caclulate.PriceCalculator.calculateNotionalSalesPrice;
 
 @Slf4j
 @Component
@@ -203,5 +209,47 @@ public class RiskManagementFacade {
 
     public void doDelete(Long id) {
         investmentRepository.deleteById(id);
+    }
+
+    private double findExchangeRsl(List<ExchangeResult> results) {
+        return results.stream()
+                .filter(result -> result.getName().equals(EXCHANGE_NAME))
+                .findFirst()
+                .orElseThrow()
+                .getRsl();
+    }
+
+    public CalculationResult doPositionCalculation(long id, String wkn) {
+        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+
+        List<ExchangeResult> results = converter.fetchTable();
+        final double exchangeRsl = findExchangeRsl(results);
+
+        ExchangeResult result = results.stream()
+                .filter(row -> row.getWkn().equalsIgnoreCase(wkn))
+                .findFirst()
+                .orElseThrow();
+
+        BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl);
+
+        Investment possibleInvestment = Investment.builder()
+                .purchasePrice(result.getPrice())
+                .notionalSalesPrice(notionalSalesPrice)
+                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
+                .build();
+
+        int quantity = calculateQuantity(individualRisk.calculatePositionRisk(), possibleInvestment);
+
+        return CalculationResult.builder()
+                .wkn(result.getWkn())
+                .name(result.getName())
+                .price(result.getPrice())
+                .quantity(quantity)
+                .notionalSalesPrice(notionalSalesPrice)
+                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
+                .rsl(result.getRsl())
+                .exchangeRsl(exchangeRsl)
+                .positionRisk(individualRisk.calculatePositionRisk())
+                .build();
     }
 }

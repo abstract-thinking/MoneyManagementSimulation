@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 
 @Data
 @NoArgsConstructor
@@ -28,5 +29,11 @@ public class IndividualRisk {
     public IndividualRisk(BigDecimal totalCapital, double individualPositionRiskInPercent) {
         this.totalCapital = totalCapital;
         this.individualPositionRiskInPercent = individualPositionRiskInPercent;
+    }
+
+    public BigDecimal calculatePositionRisk() {
+        return totalCapital
+                .multiply(BigDecimal.valueOf(individualPositionRiskInPercent))
+                .divide(BigDecimal.valueOf(100), 4, RoundingMode.DOWN);
     }
 }

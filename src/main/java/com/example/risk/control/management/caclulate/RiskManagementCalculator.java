@@ -28,9 +28,7 @@ public class RiskManagementCalculator {
     }
 
     public BigDecimal calculatePositionRisk() {
-        return individualRisk.getTotalCapital()
-                .multiply(BigDecimal.valueOf(individualRisk.getIndividualPositionRiskInPercent()))
-                .divide(ONE_HUNDRED, 4, RoundingMode.DOWN);
+        return individualRisk.calculatePositionRisk();
     }
 
     private BigDecimal calculateDepotRisk() {
