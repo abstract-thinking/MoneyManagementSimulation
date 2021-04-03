@@ -7,7 +7,7 @@ const CalculationExplanation = ({ riskId }) => {
   const [result, setResult] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
-  const [searchTerm, setSearchTerm] = useState("884437");
+  const [searchTerm, setSearchTerm] = useState("");
 
   const targetUrl = `http://localhost:8080/api/risks/${riskId}/calc?wkn=`;
 
