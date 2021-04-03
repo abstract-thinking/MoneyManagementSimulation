@@ -187,10 +187,12 @@ public class RiskManagementFacade {
     }
 
     public InvestmentResult doCreate(Long riskId, InvestmentResult newInvestment) {
+        log.error(newInvestment.toString());
         return investmentRepository.save(Investment.builder()
                 .wkn(newInvestment.getWkn())
                 .name(newInvestment.getName())
                 .quantity(newInvestment.getQuantity())
+                .currentPrice(newInvestment.getPurchasePrice())
                 .purchasePrice(newInvestment.getPurchasePrice())
                 .notionalSalesPrice(newInvestment.getNotionalSalesPrice())
                 .transactionCosts(EXCHANGE_TRANSACTION_COSTS)

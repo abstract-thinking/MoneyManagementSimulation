@@ -1,14 +1,40 @@
 import React, { useState } from "react";
-import { Button, Modal } from "react-bootstrap";
+import { Button, Form, Modal } from "react-bootstrap";
+import axios from "axios";
 
 const PurchaseRecommendation = ({
   purchaseRecommendation,
-  showPurchaseButton
+  showPurchaseButton,
+  riskManagementId,
+  updateView
 }) => {
   const [show, setShow] = useState(false);
+  const [data, setData] = useState({
+    wkn: purchaseRecommendation.wkn,
+    name: purchaseRecommendation.name,
+    quantity: purchaseRecommendation.quantity,
+    purchasePrice: purchaseRecommendation.price,
+    notionalSalesPrice: purchaseRecommendation.notionalSalesPrice
+  });
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const handleSave = () => {
+    const targetUrl = `http://localhost:8080/api/risks/${riskManagementId}`;
+
+    axios
+      .post(targetUrl, data)
+      .then(response => {
+        console.log(response);
+        updateView();
+      })
+      .catch(error => {
+        console.log("Error: ", error);
+      });
+
+    handleClose();
+  };
 
   return (
     <>
@@ -25,26 +51,80 @@ const PurchaseRecommendation = ({
         <td className="number-content">
           {purchaseRecommendation.notionalSalesPrice.toFixed(2)}
         </td>
-        {showPurchaseButton && (
-          <td>
-            <Button variant="primary" onClick={handleShow}>
-              +
-            </Button>
-          </td>
-        )}
+        <td>
+          <Button variant="primary" onClick={handleShow}>
+            +
+          </Button>
+        </td>
       </tr>
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Invement hinzufügen</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+        <Modal.Body>
+          <Form>
+            <Form.Group controlId="formBasicWkn">
+              <Form.Label>WKN</Form.Label>
+              <Form.Control
+                type="text"
+                value={purchaseRecommendation.wkn}
+                readOnly
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicName">
+              <Form.Label>Name</Form.Label>
+              <Form.Control
+                type="text"
+                value={purchaseRecommendation.name}
+                readOnly
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicRsl">
+              <Form.Label>RSL</Form.Label>
+              <Form.Control
+                type="text"
+                value={purchaseRecommendation.rsl}
+                readOnly
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicQuantity">
+              <Form.Label>Anzahl</Form.Label>
+              <Form.Control
+                type="text"
+                value={data.quantity}
+                onChange={e => setData({ ...data, quantity: e.target.value })}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicPrice">
+              <Form.Label>Preis</Form.Label>
+              <Form.Control
+                type="text"
+                value={data.purchasePrice}
+                onChange={e => setData({ ...data, purchasePrice: e.target.value })}
+              />
+            </Form.Group>
+
+            <Form.Group controlId="formBasicNotionalPrice">
+              <Form.Label>Fiktiver Verkaufspreis</Form.Label>
+              <Form.Control
+                type="text"
+                value={purchaseRecommendation.notionalSalesPrice.toFixed(2)}
+                readOnly
+              />
+            </Form.Group>
+          </Form>
+        </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Schließen
           </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
+          <Button variant="primary" onClick={handleSave}>
+            Hinzufügen
           </Button>
         </Modal.Footer>
       </Modal>

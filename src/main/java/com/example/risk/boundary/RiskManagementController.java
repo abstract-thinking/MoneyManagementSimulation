@@ -122,7 +122,8 @@ public class RiskManagementController {
     }
 
     @PostMapping("/api/risks/{riskId}")
-    public InvestmentResult create(@PathVariable("riskId") Long riskId, @RequestBody InvestmentResult newInvestment) {
+    public InvestmentResult create(@PathVariable("riskId") Long riskId,
+                                   @RequestBody InvestmentResult newInvestment) {
         return riskManagementFacade.doCreate(riskId, newInvestment);
     }
 

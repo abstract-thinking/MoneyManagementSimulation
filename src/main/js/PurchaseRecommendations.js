@@ -11,6 +11,10 @@ const PurchaseRecommendations = ({ riskId }) => {
   const targetUrl = `http://localhost:8080/api/risks/${riskId}/recommendations/purchases`;
 
   useEffect(() => {
+    fetchData();
+  }, [targetUrl]);
+
+  const fetchData = () => {
     setLoading(true);
     setError("");
 
@@ -27,8 +31,7 @@ const PurchaseRecommendations = ({ riskId }) => {
         setLoading(false);
         setError("Error: " + error);
       });
-  }, [targetUrl]);
-
+  };
   if (isLoading) {
     return (
       <Container
@@ -69,7 +72,8 @@ const PurchaseRecommendations = ({ riskId }) => {
               <PurchaseRecommendation
                 key={purchaseRecommendation.name}
                 purchaseRecommendation={purchaseRecommendation}
-                showPurchaseButton="true"
+                riskManagementId={riskId}
+                updateView={fetchData}
               />
             ))}
           <tr className="exchange-row">

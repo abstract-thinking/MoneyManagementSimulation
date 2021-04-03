@@ -12,26 +12,26 @@ const SalesRecommendations = ({ riskId }) => {
   const targetUrl = `http://localhost:8080/api/risks/${riskId}/recommendations/sales`;
 
   useEffect(() => {
-   fetchData();
+    fetchData();
   }, [targetUrl]);
 
   const fetchData = () => {
-      setLoading(true);
-      setError("");
+    setLoading(true);
+    setError("");
 
-      axios
-        .get(targetUrl)
-        .then(response => {
-          setResult(response.data);
-          console.log("Received data: ", response.data);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.log("Error: ", error);
+    axios
+      .get(targetUrl)
+      .then(response => {
+        setResult(response.data);
+        console.log("Received data: ", response.data);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.log("Error: ", error);
 
-          setLoading(false);
-          setError("Error: " + error);
-        });
+        setLoading(false);
+        setError("Error: " + error);
+      });
   };
 
   if (isLoading) {
