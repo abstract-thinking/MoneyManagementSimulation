@@ -12,23 +12,27 @@ const SalesRecommendations = ({ riskId }) => {
   const targetUrl = `http://localhost:8080/api/risks/${riskId}/recommendations/sales`;
 
   useEffect(() => {
-    setLoading(true);
-    setError("");
-
-    axios
-      .get(targetUrl)
-      .then(response => {
-        setResult(response.data);
-        console.log("Received data: ", response.data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.log("Error: ", error);
-
-        setLoading(false);
-        setError("Error: " + error);
-      });
+   fetchData();
   }, [targetUrl]);
+
+  const fetchData = () => {
+      setLoading(true);
+      setError("");
+
+      axios
+        .get(targetUrl)
+        .then(response => {
+          setResult(response.data);
+          console.log("Received data: ", response.data);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.log("Error: ", error);
+
+          setLoading(false);
+          setError("Error: " + error);
+        });
+  };
 
   if (isLoading) {
     return (
@@ -77,8 +81,10 @@ const SalesRecommendations = ({ riskId }) => {
             result.saleRecommendations.map(saleRecommendation => (
               <SaleRecommendation
                 key={saleRecommendation.name}
+                riskManagementId={riskId}
                 saleRecommendation={saleRecommendation}
                 exchangeRsl={result.exchangeRsl}
+                updateView={fetchData}
               />
             ))}
         </tbody>

@@ -1,11 +1,33 @@
 import React, { useState } from "react";
 import { Button, Modal } from "react-bootstrap";
+import axios from "axios";
 
-const SaleRecommendation = ({ saleRecommendation, exchangeRsl }) => {
+const SaleRecommendation = ({
+  saleRecommendation,
+  riskManagementId,
+  exchangeRsl,
+  updateView
+}) => {
   const [show, setShow] = useState(false);
 
   const handleClose = () => setShow(false);
   const handleShow = () => setShow(true);
+
+  const handleDelete = () => {
+    const targetUrl = `http://localhost:8080/api/risks/${riskManagementId}/investments/${saleRecommendation.id}`;
+
+    axios
+      .delete(targetUrl)
+      .then(response => {
+        console.log(response);
+        updateView();
+      })
+      .catch(error => {
+        console.log("Error: ", error);
+      });
+
+    handleClose();
+  };
 
   return (
     <>
@@ -40,15 +62,15 @@ const SaleRecommendation = ({ saleRecommendation, exchangeRsl }) => {
       </tr>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal heading</Modal.Title>
+          <Modal.Title>Eintrag löschen</Modal.Title>
         </Modal.Header>
-        <Modal.Body>Woohoo, you're reading this text in a modal!</Modal.Body>
+        <Modal.Body>Soll {saleRecommendation.name} gelöscht werden?</Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleClose}>
-            Close
+            Schließen
           </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
+          <Button variant="primary" onClick={handleDelete}>
+            Löschen
           </Button>
         </Modal.Footer>
       </Modal>

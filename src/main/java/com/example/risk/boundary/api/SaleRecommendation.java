@@ -13,6 +13,8 @@ import java.math.BigDecimal;
 @ToString
 public class SaleRecommendation {
 
+    Long id;
+
     String wkn;
 
     String name;

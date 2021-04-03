@@ -22,6 +22,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.risk.control.management.caclulate.InvestmentRecommender.EXCHANGE_TRANSACTION_COSTS;
+
 @Slf4j
 @Component
 public class RiskManagementFacade {
@@ -182,5 +184,22 @@ public class RiskManagementFacade {
                     .notionalSalesPrice(purchaseRecommendation.getNotionalSalesPrice())
                     .build();
         }
+    }
+
+    public InvestmentResult doCreate(Long riskId, InvestmentResult newInvestment) {
+        return investmentRepository.save(Investment.builder()
+                .wkn(newInvestment.getWkn())
+                .name(newInvestment.getName())
+                .quantity(newInvestment.getQuantity())
+                .purchasePrice(newInvestment.getPurchasePrice())
+                .notionalSalesPrice(newInvestment.getNotionalSalesPrice())
+                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
+                .moneyManagementId(riskId)
+                .build())
+                .toApi();
+    }
+
+    public void doDelete(Long id) {
+        investmentRepository.deleteById(id);
     }
 }

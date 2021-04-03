@@ -57,6 +57,7 @@ public class InvestmentRecommender {
 
     private SaleRecommendation createSellRecommendation(ExchangeResult result, double exchangeRsl, Investment investment) {
         return SaleRecommendation.builder()
+                .id(investment.getId())
                 .wkn(result.getWkn())
                 .name(result.getName())
                 .rsl(result.getRsl())
