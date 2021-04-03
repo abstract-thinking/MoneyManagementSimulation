@@ -7,7 +7,6 @@ import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
 import com.example.risk.boundary.api.SalesRecommendationMetadata;
-import com.example.risk.boundary.api.SearchResult;
 import com.example.risk.control.management.caclulate.InvestmentRecommender;
 import com.example.risk.control.management.caclulate.RiskManagementCalculator;
 import com.example.risk.converter.DecisionRowConverter;
@@ -23,7 +22,6 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 
 import static com.example.risk.control.management.caclulate.InvestmentRecommender.EXCHANGE_NAME;
 import static com.example.risk.control.management.caclulate.InvestmentRecommender.EXCHANGE_TRANSACTION_COSTS;
@@ -162,35 +160,6 @@ public class RiskManagementFacade {
         purchaseRecommendations.subList(7, purchaseRecommendations.size()).clear();
     }
 
-    public SearchResult doSearch(long id, String wkn) {
-        RiskResult riskResult = doRiskManagement(id);
-        Optional<InvestmentResult> foundInvestment = riskResult.getInvestments().stream()
-                .filter(investmentResult -> investmentResult.getWkn().equalsIgnoreCase(wkn))
-                .findFirst();
-        if (foundInvestment.isPresent()) {
-            InvestmentResult investmentResult = foundInvestment.get();
-            return SearchResult.builder()
-                    .id(investmentResult.getId())
-                    .wkn(investmentResult.getWkn())
-                    .name(investmentResult.getName())
-                    .quantity(investmentResult.getQuantity())
-                    .transactionCosts(investmentResult.getTransactionCosts())
-                    .purchasePrice(investmentResult.getPurchasePrice())
-                    .positionRisk(investmentResult.getPositionRisk())
-                    .notionalRevenue(investmentResult.getNotionalRevenue())
-                    .notionalSalesPrice(investmentResult.getNotionalSalesPrice())
-                    .build();
-        } else {
-            PurchaseRecommendation purchaseRecommendation = doPurchaseRecommendation(id, wkn);
-
-            return SearchResult.builder()
-                    .wkn(purchaseRecommendation.getWkn())
-                    .name(purchaseRecommendation.getName())
-                    .quantity(purchaseRecommendation.getQuantity())
-                    .notionalSalesPrice(purchaseRecommendation.getNotionalSalesPrice())
-                    .build();
-        }
-    }
 
     public InvestmentResult doCreate(Long riskId, InvestmentResult newInvestment) {
         log.error(newInvestment.toString());

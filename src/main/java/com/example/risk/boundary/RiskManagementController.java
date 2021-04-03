@@ -6,7 +6,6 @@ import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
 import com.example.risk.boundary.api.SalesRecommendationMetadata;
-import com.example.risk.boundary.api.SearchResult;
 import com.example.risk.control.management.RiskManagementFacade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -115,11 +114,6 @@ public class RiskManagementController {
         log.info("Purchase recommendations invoked");
 
         return riskManagementFacade.doPurchaseRecommendations(riskId);
-    }
-
-    @GetMapping(path = "/api/search", produces = APPLICATION_JSON_VALUE)
-    public SearchResult search(@RequestParam String wkn) {
-        return riskManagementFacade.doSearch(1L, wkn);
     }
 
     @PostMapping("/api/risks/{riskId}")

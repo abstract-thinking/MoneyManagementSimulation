@@ -100,11 +100,11 @@ const CalculationExplanation = ({ riskId }) => {
               <td>{result.notionalSalesPrice.toFixed(2)}</td>
             </tr>
             <tr>
-              <td>Positionsrisiko</td>
+              <td>Relatives Positionsrisiko</td>
               <td>{result.positionRisk.toFixed(2)}</td>
             </tr>
             <tr>
-              <td>Gesamte Transaktionskosten</td>
+              <td>Komplette Transaktionskosten</td>
               <td>{result.transactionCosts.toFixed(2)}</td>
             </tr>
             <tr>
