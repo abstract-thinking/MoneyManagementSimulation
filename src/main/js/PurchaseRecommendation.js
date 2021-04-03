@@ -105,7 +105,9 @@ const PurchaseRecommendation = ({
               <Form.Control
                 type="text"
                 value={data.purchasePrice}
-                onChange={e => setData({ ...data, purchasePrice: e.target.value })}
+                onChange={e =>
+                  setData({ ...data, purchasePrice: e.target.value })
+                }
               />
             </Form.Group>
 
