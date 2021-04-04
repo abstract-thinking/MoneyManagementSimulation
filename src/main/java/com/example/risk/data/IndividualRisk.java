@@ -26,9 +26,12 @@ public class IndividualRisk {
 
     private double individualPositionRiskInPercent;
 
-    public IndividualRisk(BigDecimal totalCapital, double individualPositionRiskInPercent) {
+    private String name;
+
+    public IndividualRisk(BigDecimal totalCapital, double individualPositionRiskInPercent, String name) {
         this.totalCapital = totalCapital;
         this.individualPositionRiskInPercent = individualPositionRiskInPercent;
+        this.name = name;
     }
 
     public BigDecimal calculatePositionRisk() {

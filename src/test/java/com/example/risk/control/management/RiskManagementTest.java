@@ -162,7 +162,7 @@ class RiskManagementTest {
 
     private RiskManagementCalculator createRiskManagementCalculator(List<Investment> investmentsWithThreeEntriesDecreased) {
         return new RiskManagementCalculator(
-                new IndividualRisk(BigDecimal.valueOf(15000), 1.5),
+                new IndividualRisk(BigDecimal.valueOf(15000), 1.5, "BLA"),
                 investmentsWithThreeEntriesDecreased);
     }
 

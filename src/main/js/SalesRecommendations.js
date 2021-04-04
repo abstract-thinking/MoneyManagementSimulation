@@ -3,6 +3,7 @@ import axios from "axios";
 
 import SaleRecommendation from "./SaleRecommendation";
 import { Container, Spinner, Table } from "react-bootstrap";
+import NavigationBar from "./NavigationBar";
 
 const SalesRecommendations = ({ riskId }) => {
   const [result, setResult] = useState(null);
@@ -58,6 +59,7 @@ const SalesRecommendations = ({ riskId }) => {
   if (result.saleRecommendations.length === 0) {
     return (
       <div className="container">
+        <NavigationBar riskManagementId={riskId} />
         <p>Keine Verkaufsempfehlung</p>
       </div>
     );
@@ -65,6 +67,7 @@ const SalesRecommendations = ({ riskId }) => {
 
   return (
     <div className="container">
+      <NavigationBar riskManagementId={riskId} />
       <Table striped bordered>
         <thead>
           <tr>

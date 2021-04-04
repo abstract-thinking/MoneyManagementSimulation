@@ -72,6 +72,7 @@ public class RiskManagementCalculator {
         return RiskResult.builder()
                 .id(individualRisk.getId())
                 .totalCapital(individualRisk.getTotalCapital())
+                .name(individualRisk.getName())
                 .individualPositionRiskInPercent(individualRisk.getIndividualPositionRiskInPercent())
                 .individualPositionRisk(calculatePositionRisk())
                 .investments(map(investments))

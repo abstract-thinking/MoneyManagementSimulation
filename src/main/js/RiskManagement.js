@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Spinner, Table } from "react-bootstrap";
 import axios from "axios";
 import Investment from "./Investment";
+import NavigationBar from "./NavigationBar";
 
 const RiskManagement = ({ riskManagementId }) => {
   const [riskManagement, setRiskManagement] = useState("");
@@ -50,6 +51,7 @@ const RiskManagement = ({ riskManagementId }) => {
 
   return (
     <div className="container">
+      <NavigationBar riskManagementId={riskManagementId} />
       <Table striped bordered>
         <tbody>
           <tr>

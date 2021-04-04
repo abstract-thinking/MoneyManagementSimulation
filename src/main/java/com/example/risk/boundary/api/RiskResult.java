@@ -17,6 +17,8 @@ public class RiskResult extends RepresentationModel<RiskResult> {
 
     Long id;
 
+    String name;
+
     BigDecimal totalCapital;
     double individualPositionRiskInPercent;
     BigDecimal individualPositionRisk;

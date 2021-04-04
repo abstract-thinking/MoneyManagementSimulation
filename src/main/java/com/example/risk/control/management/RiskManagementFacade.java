@@ -4,6 +4,7 @@ import com.example.risk.boundary.api.CalculationResult;
 import com.example.risk.boundary.api.InvestmentResult;
 import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
+import com.example.risk.boundary.api.RiskData;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
 import com.example.risk.boundary.api.SalesRecommendationMetadata;
@@ -53,7 +54,8 @@ public class RiskManagementFacade {
                     List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
                     List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
-                    RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
+                    RiskManagementCalculator riskManagementCalculator =
+                            new RiskManagementCalculator(individualRisk, updatedInvestments);
                     riskResults.add(riskManagementCalculator.calculate());
                 }
         );
@@ -160,7 +162,7 @@ public class RiskManagementFacade {
         purchaseRecommendations.subList(7, purchaseRecommendations.size()).clear();
     }
 
-    public InvestmentResult doCreate(Long riskId, InvestmentResult newInvestment) {
+    public InvestmentResult doCreateInvestment(Long riskId, InvestmentResult newInvestment) {
         return investmentRepository.save(toInvestment(riskId, newInvestment)).toApi();
     }
 
@@ -177,7 +179,7 @@ public class RiskManagementFacade {
                 .build();
     }
 
-    public void doDelete(Long id) {
+    public void doDeleteInvestment(Long id) {
         investmentRepository.deleteById(id);
     }
 
@@ -221,5 +223,19 @@ public class RiskManagementFacade {
                 .exchangeRsl(exchangeRsl)
                 .positionRisk(individualRisk.calculatePositionRisk())
                 .build();
+    }
+
+    public void doUpdateCoreData(Long id, RiskData riskData) {
+        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+
+        if (riskData.getTotalCapital() != null) {
+            individualRisk.setTotalCapital(riskData.getTotalCapital());
+        }
+
+        if (!Double.isNaN(riskData.getIndividualPositionRiskInPercent())) {
+            individualRisk.setIndividualPositionRiskInPercent(riskData.getIndividualPositionRiskInPercent());
+        }
+
+        individualRiskRepository.save(individualRisk);
     }
 }

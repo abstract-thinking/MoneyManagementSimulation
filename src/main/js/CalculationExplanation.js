@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { Container, Spinner, Table } from "react-bootstrap";
 import axios from "axios";
-import PurchaseRecommendation from "./PurchaseRecommendation";
+import NavigationBar from "./NavigationBar";
 
 const CalculationExplanation = ({ riskId }) => {
   const [result, setResult] = useState(null);
@@ -51,6 +51,7 @@ const CalculationExplanation = ({ riskId }) => {
 
   return (
     <>
+      <NavigationBar riskManagementId={riskId} />
       <form className="row g-3">
         <div className="col-auto">
           <label htmlFor="search">WKN</label>

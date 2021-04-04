@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Container, Spinner, Table } from "react-bootstrap";
 import axios from "axios";
 import PurchaseRecommendation from "./PurchaseRecommendation";
+import NavigationBar from "./NavigationBar";
 
 const PurchaseRecommendations = ({ riskId }) => {
   const [result, setResult] = useState(null);
@@ -32,6 +33,7 @@ const PurchaseRecommendations = ({ riskId }) => {
         setError("Error: " + error);
       });
   };
+
   if (isLoading) {
     return (
       <Container
@@ -55,6 +57,7 @@ const PurchaseRecommendations = ({ riskId }) => {
 
   return (
     <div className="container">
+      <NavigationBar riskManagementId={riskId} />
       <Table striped bordered>
         <thead>
           <tr>
