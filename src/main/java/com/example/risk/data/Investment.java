@@ -33,8 +33,11 @@ public class Investment {
     private BigDecimal notionalSalesPrice;
     private BigDecimal currentPrice;
 
+    // TODO: This seems to be wrong the investment should not know about the riskManagementId
+    // Do I need relation table between?
     private Long riskManagementId;
 
+    // TODO: Maybe into another table as well.
     private BigDecimal risk;
 
     public BigDecimal getPriceRisk() {
