@@ -52,27 +52,39 @@ const CalculationExplanation = ({ riskId }) => {
   return (
     <>
       <NavigationBar riskManagementId={riskId} />
-      <form className="row g-3">
-        <div className="col-auto">
-          <label htmlFor="search">WKN</label>
-          <input
-            type="search"
-            className="form-control"
-            placeholder="Search..."
-            value={searchTerm}
-            onChange={e => setSearchTerm(e.target.value)}
-          />
-        </div>
-        <div className="col-auto">
-          <button
-            type="submit"
-            className="btn btn-primary mb-3"
-            onClick={() => fetchData()}
-          >
-            Suche
-          </button>
-        </div>
+      <form>
+        <Table striped bordered>
+          <tbody>
+            <tr>
+              <td className="header">WKN</td>
+              <td>
+                {" "}
+                <input
+                  type="search"
+                  className="form-control"
+                  placeholder="Search..."
+                  value={searchTerm}
+                  onChange={e => setSearchTerm(e.target.value)}
+                />
+              </td>
+            </tr>
+            <tr>
+              <td />
+              <td>
+                {" "}
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  onClick={() => fetchData()}
+                >
+                  Suchen
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </Table>
       </form>
+      <br />
       {result && (
         <Table striped bordered>
           <tbody>

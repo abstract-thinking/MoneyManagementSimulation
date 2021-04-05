@@ -54,12 +54,12 @@ const RiskManagementChooser = () => {
   }
 
   return (
-    <div className="btn-group-vertical" role="group" aria-label="Basic example">
+    <div className="position-absolute top-50 start-50 translate-middle btn-group-vertical" role="group" aria-label="Basic outlined">
       {riskManagements.riskResults.map(riskManagement => {
         return (
           <button
             type="button"
-            className="btn btn-primary"
+            className="btn btn-outline-primary"
             key={riskManagement.id}
             onClick={() => navigate(`/riskManagements/${riskManagement.id}`)}
           >

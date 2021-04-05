@@ -60,7 +60,9 @@ const SalesRecommendations = ({ riskId }) => {
     return (
       <>
         <NavigationBar riskManagementId={riskId} />
-        <p>Keine Verkaufsempfehlung</p>
+        <p className="position-absolute top-50 start-50 translate-middle fs-2">
+          Zur Zeit nichts zum Empfehlen
+        </p>
       </>
     );
   }

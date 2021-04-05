@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Spinner } from "react-bootstrap";
+import { Container, Spinner, Table } from "react-bootstrap";
 import axios from "axios";
 import NavigationBar from "./NavigationBar";
 
@@ -82,45 +82,68 @@ const RiskManagementModifier = ({ riskId }) => {
   return (
     <>
       <NavigationBar riskManagementId={riskId} />
-      <form className="row g-3">
-        <div className="col-auto">
-          <label htmlFor="search">Gesamtkapital</label>
-          <input
-            type="text"
-            value={data.totalCapital}
-            onChange={e => setData({ ...data, totalCapital: e.target.value })}
-          />
-        </div>
-        <div className="col-auto">
-          <label htmlFor="search">Einzelpositionrisiko</label>
-          <input
-            type="text"
-            value={data.individualPositionRiskInPercent}
-            onChange={e =>
-              setData({
-                ...data,
-                individualPositionRiskInPercent: e.target.value
-              })
-            }
-          />
-          <input
-            type="text"
-            value={
-              (data.totalCapital * data.individualPositionRiskInPercent) / 100
-            }
-            readOnly
-          />
-        </div>
-
-        <div className="col-auto">
-          <button
-            type="submit"
-            className="btn btn-primary mb-3"
-            onClick={() => updateData()}
-          >
-            Ändern
-          </button>
-        </div>
+      <form>
+        <Table striped bordered>
+          <tbody>
+            <tr>
+              <td className="header">Gesamtkapital</td>
+              <td>
+                {" "}
+                <input
+                  type="text"
+                  value={data.totalCapital}
+                  onChange={e =>
+                    setData({ ...data, totalCapital: e.target.value })
+                  }
+                />
+              </td>
+            </tr>
+            <tr>
+              <td className="header">Einzelpositionrisiko</td>
+              <td>
+                {" "}
+                <input
+                  type="text"
+                  value={data.individualPositionRiskInPercent}
+                  onChange={e =>
+                    setData({
+                      ...data,
+                      individualPositionRiskInPercent: e.target.value
+                    })
+                  }
+                />
+              </td>
+            </tr>
+            <tr>
+              <td />
+              <td>
+                {" "}
+                <input
+                  readOnly
+                  type="text"
+                  className="form-control-plaintext"
+                  value={
+                    (data.totalCapital * data.individualPositionRiskInPercent) /
+                    100
+                  }
+                />
+              </td>
+            </tr>
+            <tr>
+              <td />
+              <td>
+                {" "}
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  onClick={() => updateData()}
+                >
+                  Ändern
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </Table>
       </form>
     </>
   );
