@@ -165,7 +165,7 @@ public class RiskManagementFacade {
                 .purchasePrice(newInvestment.getPurchasePrice())
                 .notionalSalesPrice(newInvestment.getNotionalSalesPrice())
                 .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
-                .moneyManagementId(riskManagementId)
+                .riskManagementId(riskManagementId)
                 .build();
     }
 

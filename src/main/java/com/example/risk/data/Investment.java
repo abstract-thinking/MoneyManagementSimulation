@@ -33,7 +33,7 @@ public class Investment {
     private BigDecimal notionalSalesPrice;
     private BigDecimal currentPrice;
 
-    private Long moneyManagementId;
+    private Long riskManagementId;
 
     private BigDecimal risk;
 

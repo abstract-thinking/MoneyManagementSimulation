@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Spinner, Table } from "react-bootstrap";
+import { Container, Table } from "react-bootstrap";
 import axios from "axios";
 import Investment from "./Investment";
 import NavigationBar from "./NavigationBar";
@@ -34,9 +34,10 @@ const RiskManagement = ({ riskManagementId }) => {
         className="d-flex align-items-center justify-content-center"
         style={{ minHeight: "100vh" }}
       >
-        <Spinner animation="grow" role="status">
-          <span className="sr-only">Loading...</span>
-        </Spinner>
+      <div className="spinner-grow" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+
       </Container>
     );
   }

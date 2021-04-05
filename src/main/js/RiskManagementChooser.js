@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Spinner } from "react-bootstrap";
+import { Container } from "react-bootstrap";
 import axios from "axios";
 import { navigate } from "@reach/router";
 
@@ -33,9 +33,10 @@ const RiskManagementChooser = () => {
         className="d-flex align-items-center justify-content-center"
         style={{ minHeight: "100vh" }}
       >
-        <Spinner animation="grow" role="status">
-          <span className="sr-only">Loading...</span>
-        </Spinner>
+      <div className="spinner-grow" role="status">
+        <span className="visually-hidden">Loading...</span>
+      </div>
+
       </Container>
     );
   }
@@ -49,12 +50,16 @@ const RiskManagementChooser = () => {
   }
 
   if (riskManagements.riskResults.length === 1) {
-    navigate(`/riskManagements/${riskManagement.id}`);
+    navigate(`/riskManagements/${riskManagements.riskResults[0].id}`);
     return;
   }
 
   return (
-    <div className="position-absolute top-50 start-50 translate-middle btn-group-vertical" role="group" aria-label="Basic outlined">
+    <div
+      className="position-absolute top-50 start-50 translate-middle btn-group-vertical"
+      role="group"
+      aria-label="Basic outlined"
+    >
       {riskManagements.riskResults.map(riskManagement => {
         return (
           <button
