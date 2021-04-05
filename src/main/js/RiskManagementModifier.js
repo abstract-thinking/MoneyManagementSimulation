@@ -3,13 +3,13 @@ import { Container, Spinner, Table } from "react-bootstrap";
 import axios from "axios";
 import NavigationBar from "./NavigationBar";
 
-const RiskManagementModifier = ({ riskId }) => {
+const RiskManagementModifier = ({ riskManagementId }) => {
   const [result, setResult] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [data, setData] = useState(null);
 
-  const targetUrl = `http://localhost:8080/api/risks/${riskId}`;
+  const targetUrl = `http://localhost:8080/api/risks/${riskManagementId}`;
 
   useEffect(() => {
     fetchData();
@@ -81,7 +81,7 @@ const RiskManagementModifier = ({ riskId }) => {
 
   return (
     <>
-      <NavigationBar riskManagementId={riskId} />
+      <NavigationBar riskManagementId={riskManagementId} />
       <form>
         <Table striped bordered>
           <tbody>

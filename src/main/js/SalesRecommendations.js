@@ -5,12 +5,12 @@ import SaleRecommendation from "./SaleRecommendation";
 import { Container, Spinner, Table } from "react-bootstrap";
 import NavigationBar from "./NavigationBar";
 
-const SalesRecommendations = ({ riskId }) => {
+const SalesRecommendations = ({ riskManagementId }) => {
   const [result, setResult] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const targetUrl = `http://localhost:8080/api/risks/${riskId}/recommendations/sales`;
+  const targetUrl = `http://localhost:8080/api/risks/${riskManagementId}/recommendations/sales`;
 
   useEffect(() => {
     fetchData();
@@ -59,7 +59,7 @@ const SalesRecommendations = ({ riskId }) => {
   if (result.saleRecommendations.length === 0) {
     return (
       <>
-        <NavigationBar riskManagementId={riskId} />
+        <NavigationBar riskManagementId={riskManagementId} />
         <p className="position-absolute top-50 start-50 translate-middle fs-2">
           Zur Zeit keine Empfehlung vorhanden!
         </p>
@@ -69,7 +69,7 @@ const SalesRecommendations = ({ riskId }) => {
 
   return (
     <>
-      <NavigationBar riskManagementId={riskId} />
+      <NavigationBar riskManagementId={riskManagementId} />
       <Table striped bordered>
         <thead>
           <tr>
@@ -86,7 +86,7 @@ const SalesRecommendations = ({ riskId }) => {
             result.saleRecommendations.map(saleRecommendation => (
               <SaleRecommendation
                 key={saleRecommendation.name}
-                riskManagementId={riskId}
+                riskManagementId={riskManagementId}
                 saleRecommendation={saleRecommendation}
                 exchangeRsl={result.exchangeRsl}
                 updateView={fetchData}

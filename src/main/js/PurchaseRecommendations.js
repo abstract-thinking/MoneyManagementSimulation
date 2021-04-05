@@ -4,12 +4,12 @@ import axios from "axios";
 import PurchaseRecommendation from "./PurchaseRecommendation";
 import NavigationBar from "./NavigationBar";
 
-const PurchaseRecommendations = ({ riskId }) => {
+const PurchaseRecommendations = ({ riskManagementId }) => {
   const [result, setResult] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const targetUrl = `http://localhost:8080/api/risks/${riskId}/recommendations/purchases`;
+  const targetUrl = `http://localhost:8080/api/risks/${riskManagementId}/recommendations/purchases`;
 
   useEffect(() => {
     fetchData();
@@ -58,7 +58,7 @@ const PurchaseRecommendations = ({ riskId }) => {
   if (result.purchaseRecommendations.length === 0) {
     return (
       <>
-        <NavigationBar riskManagementId={riskId} />
+        <NavigationBar riskManagementId={riskManagementId} />
         <p className="position-absolute top-50 start-50 translate-middle fs-2">
           Alles interessante schon gekauft - keine Empfehlung vorhanden!
         </p>
@@ -68,7 +68,7 @@ const PurchaseRecommendations = ({ riskId }) => {
 
   return (
     <>
-      <NavigationBar riskManagementId={riskId} />
+      <NavigationBar riskManagementId={riskManagementId} />
       <Table striped bordered>
         <thead>
           <tr>
@@ -86,7 +86,7 @@ const PurchaseRecommendations = ({ riskId }) => {
               <PurchaseRecommendation
                 key={purchaseRecommendation.name}
                 purchaseRecommendation={purchaseRecommendation}
-                riskManagementId={riskId}
+                riskManagementId={riskManagementId}
                 updateView={fetchData}
               />
             ))}

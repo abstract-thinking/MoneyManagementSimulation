@@ -15,11 +15,11 @@ const App = () => {
       <Router>
         <RiskManagementChooser path="/" />
         <RiskManagement path="riskManagements/:riskManagementId" />
-        <SaleRecommendations path="riskManagements/:riskId/sell-recommendations" />
-        <SaleRecommendation path="riskManagements/:riskId/sell-recommendations/:investmentId" />
-        <PurchaseRecommendations path="riskManagements/:riskId/purchase-recommendations" />
-        <RiskManagementModifier path="riskManagements/:riskId/modifier" />
-        <CalculationExplanation path="riskManagements/:riskId/calculation" />
+        <SaleRecommendations path="riskManagements/:riskManagementId/sell-recommendations" />
+        <SaleRecommendation path="riskManagements/:riskManagementId/sell-recommendations/:investmentId" />
+        <PurchaseRecommendations path="riskManagements/:riskManagementId/purchase-recommendations" />
+        <RiskManagementModifier path="riskManagements/:riskManagementId/modifier" />
+        <CalculationExplanation path="riskManagements/:riskManagementId/calculation" />
       </Router>
     </>
   );

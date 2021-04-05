@@ -47,13 +47,13 @@ public class RiskManagementController {
         return riskManagementResults;
     }
 
-    @GetMapping(path = "/api/risks/{riskId}", produces = APPLICATION_JSON_VALUE)
-    public RiskResult riskManagement(@PathVariable("riskId") Long riskId) {
+    @GetMapping(path = "/api/risks/{riskManagementId}", produces = APPLICATION_JSON_VALUE)
+    public RiskResult riskManagement(@PathVariable("riskManagementId") Long riskManagementId) {
         log.info("Risk management invoked");
 
         RiskResult riskResult;
         try {
-           riskResult = riskManagementFacade.doRiskManagement(riskId);
+            riskResult = riskManagementFacade.doRiskManagement(riskManagementId);
         } catch (NoSuchElementException ex) {
             throw new ResponseStatusException(NOT_FOUND);
         }
@@ -95,51 +95,51 @@ public class RiskManagementController {
                 .slash(riskResult.getId()).withSelfRel();
     }
 
-    @GetMapping(path = "/api/risks/{riskId}/recommendations/sales", produces = APPLICATION_JSON_VALUE)
-    public SalesRecommendationMetadata saleRecommendations(@PathVariable("riskId") Long riskId) {
+    @GetMapping(path = "/api/risks/{riskManagementId}/recommendations/sales", produces = APPLICATION_JSON_VALUE)
+    public SalesRecommendationMetadata saleRecommendations(@PathVariable("riskManagementId") Long riskManagementId) {
         log.info("Sale recommendations invoked");
 
-        return riskManagementFacade.doSaleRecommendations(riskId);
+        return riskManagementFacade.doSaleRecommendations(riskManagementId);
     }
 
-    @GetMapping(path = "/api/risks/{riskId}/recommendations/sales/{investmentId}", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/api/risks/{riskManagementId}/recommendations/sales/{investmentId}", produces = APPLICATION_JSON_VALUE)
     public SalesRecommendationMetadata saleRecommendation(
-            @PathVariable("riskId") Long riskId,
+            @PathVariable("riskManagementId") Long riskManagementId,
             @PathVariable("investmentId") Long investmentId) {
         log.info("Sale recommendation invoked");
 
-        return riskManagementFacade.doSaleRecommendation(riskId, investmentId);
+        return riskManagementFacade.doSaleRecommendation(riskManagementId, investmentId);
     }
 
-    @GetMapping(path = "/api/risks/{riskId}/recommendations/purchases", produces = APPLICATION_JSON_VALUE)
-    public PurchaseRecommendationMetadata purchaseRecommendations(@PathVariable("riskId") Long riskId) {
+    @GetMapping(path = "/api/risks/{riskManagementId}/recommendations/purchases", produces = APPLICATION_JSON_VALUE)
+    public PurchaseRecommendationMetadata purchaseRecommendations(@PathVariable Long riskManagementId) {
         log.info("Purchase recommendations invoked");
 
-        return riskManagementFacade.doPurchaseRecommendations(riskId);
+        return riskManagementFacade.doPurchaseRecommendations(riskManagementId);
     }
 
-    @PostMapping("/api/risks/{riskId}")
-    public InvestmentResult create(@PathVariable("riskId") Long riskId,
+    @PostMapping("/api/risks/{riskManagementId}")
+    public InvestmentResult create(@PathVariable Long riskManagementId,
                                    @RequestBody InvestmentResult newInvestment) {
-        return riskManagementFacade.doCreateInvestment(riskId, newInvestment);
+        return riskManagementFacade.doCreateInvestment(riskManagementId, newInvestment);
     }
 
-    @DeleteMapping("/api/risks/{riskId}/investments/{investmentId}")
+    @DeleteMapping("/api/risks/{riskManagementId}/investments/{investmentId}")
     public void delete(@PathVariable Long investmentId) {
         riskManagementFacade.doDeleteInvestment(investmentId);
     }
 
-    @GetMapping(path = "/api/risks/{riskId}/calc", produces = APPLICATION_JSON_VALUE)
+    @GetMapping(path = "/api/risks/{riskManagementId}/calc", produces = APPLICATION_JSON_VALUE)
     public CalculationResult positionCalculation(
-            @PathVariable Long riskId,
+            @PathVariable Long riskManagementId,
             @RequestParam String wkn) {
-        return riskManagementFacade.doPositionCalculation(riskId, wkn);
+        return riskManagementFacade.doPositionCalculation(riskManagementId, wkn);
     }
 
-    @PutMapping("/api/risks/{riskId}")
-    public void updateCoreData(@PathVariable("riskId") Long riskId,
+    @PutMapping("/api/risks/{riskManagementId}")
+    public void updateCoreData(@PathVariable Long riskManagementId,
                                @RequestBody RiskData riskData) {
-        riskManagementFacade.doUpdateCoreData(riskId, riskData);
+        riskManagementFacade.doUpdateCoreData(riskManagementId, riskData);
     }
 
 }

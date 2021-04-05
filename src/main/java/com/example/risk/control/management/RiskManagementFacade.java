@@ -63,8 +63,8 @@ public class RiskManagementFacade {
         return new RiskResults(riskResults);
     }
 
-    public RiskResult doRiskManagement(Long id) {
-        final IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+    public RiskResult doRiskManagement(Long riskManagementId) {
+        final IndividualRisk individualRisk = individualRiskRepository.findById(riskManagementId).orElseThrow();
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
@@ -86,8 +86,8 @@ public class RiskManagementFacade {
         return riskResult;
     }
 
-    public SalesRecommendationMetadata doSaleRecommendations(Long id) {
-        final IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+    public SalesRecommendationMetadata doSaleRecommendations(Long riskManagementId) {
+        final IndividualRisk individualRisk = individualRiskRepository.findById(riskManagementId).orElseThrow();
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
@@ -95,8 +95,8 @@ public class RiskManagementFacade {
         return investmentRecommender.getSaleRecommendations(riskManagementCalculator);
     }
 
-    public SalesRecommendationMetadata doSaleRecommendation(Long id, Long investmentId) {
-        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+    public SalesRecommendationMetadata doSaleRecommendation(Long riskManagementId, Long investmentId) {
+        IndividualRisk individualRisk = individualRiskRepository.findById(riskManagementId).orElseThrow();
         final List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         Investment investment = investments.stream()
                 .filter(i -> i.getId().equals(investmentId))
@@ -108,8 +108,8 @@ public class RiskManagementFacade {
         return investmentRecommender.getSaleRecommendations(riskManagementCalculator);
     }
 
-    public PurchaseRecommendationMetadata doPurchaseRecommendations(Long id) {
-        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+    public PurchaseRecommendationMetadata doPurchaseRecommendations(Long riskManagementId) {
+        IndividualRisk individualRisk = individualRiskRepository.findById(riskManagementId).orElseThrow();
 
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
@@ -122,8 +122,8 @@ public class RiskManagementFacade {
         return purchaseRecommendations;
     }
 
-    public PurchaseRecommendation doPurchaseRecommendation(Long id, String wkn) {
-        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+    public PurchaseRecommendation doPurchaseRecommendation(Long riskManagementId, String wkn) {
+        IndividualRisk individualRisk = individualRiskRepository.findById(riskManagementId).orElseThrow();
 
         List<Investment> investments = investmentRepository.findAllByMoneyManagementId(individualRisk.getId());
         List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
@@ -152,11 +152,11 @@ public class RiskManagementFacade {
                 .getPurchaseRecommendations().removeIf(rec -> rec.getWkn().equalsIgnoreCase(inv.getWkn())));
     }
 
-    public InvestmentResult doCreateInvestment(Long riskId, InvestmentResult newInvestment) {
-        return investmentRepository.save(toInvestment(riskId, newInvestment)).toApi();
+    public InvestmentResult doCreateInvestment(Long riskManagementId, InvestmentResult newInvestment) {
+        return investmentRepository.save(toInvestment(riskManagementId, newInvestment)).toApi();
     }
 
-    private Investment toInvestment(Long riskId, InvestmentResult newInvestment) {
+    private Investment toInvestment(Long riskManagementId, InvestmentResult newInvestment) {
         return Investment.builder()
                 .wkn(newInvestment.getWkn())
                 .name(newInvestment.getName())
@@ -165,12 +165,12 @@ public class RiskManagementFacade {
                 .purchasePrice(newInvestment.getPurchasePrice())
                 .notionalSalesPrice(newInvestment.getNotionalSalesPrice())
                 .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
-                .moneyManagementId(riskId)
+                .moneyManagementId(riskManagementId)
                 .build();
     }
 
-    public void doDeleteInvestment(Long id) {
-        investmentRepository.deleteById(id);
+    public void doDeleteInvestment(Long investmentId) {
+        investmentRepository.deleteById(investmentId);
     }
 
     private double findExchangeRsl(List<ExchangeResult> results) {
@@ -181,8 +181,8 @@ public class RiskManagementFacade {
                 .getRsl();
     }
 
-    public CalculationResult doPositionCalculation(long id, String wkn) {
-        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+    public CalculationResult doPositionCalculation(long riskManagementId, String wkn) {
+        IndividualRisk individualRisk = individualRiskRepository.findById(riskManagementId).orElseThrow();
 
         List<ExchangeResult> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
@@ -215,8 +215,8 @@ public class RiskManagementFacade {
                 .build();
     }
 
-    public void doUpdateCoreData(Long id, RiskData riskData) {
-        IndividualRisk individualRisk = individualRiskRepository.findById(id).orElseThrow();
+    public void doUpdateCoreData(Long riskManagementId, RiskData riskData) {
+        IndividualRisk individualRisk = individualRiskRepository.findById(riskManagementId).orElseThrow();
 
         if (riskData.getTotalCapital() != null) {
             individualRisk.setTotalCapital(riskData.getTotalCapital());

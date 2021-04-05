@@ -3,13 +3,13 @@ import { Container, Spinner, Table } from "react-bootstrap";
 import axios from "axios";
 import NavigationBar from "./NavigationBar";
 
-const CalculationExplanation = ({ riskId }) => {
+const CalculationExplanation = ({ riskManagementId }) => {
   const [result, setResult] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const targetUrl = `http://localhost:8080/api/risks/${riskId}/calc?wkn=`;
+  const targetUrl = `http://localhost:8080/api/risks/${riskManagementId}/calc?wkn=`;
 
   const fetchData = () => {
     setLoading(true);
@@ -51,7 +51,7 @@ const CalculationExplanation = ({ riskId }) => {
 
   return (
     <>
-      <NavigationBar riskManagementId={riskId} />
+      <NavigationBar riskManagementId={riskManagementId} />
       <form>
         <Table striped bordered>
           <tbody>
