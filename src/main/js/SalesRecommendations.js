@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 
 import SaleRecommendation from "./SaleRecommendation";
-import { Container, Spinner, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import NavigationBar from "./NavigationBar";
 
 const SalesRecommendations = ({ riskManagementId }) => {
@@ -37,14 +37,12 @@ const SalesRecommendations = ({ riskManagementId }) => {
 
   if (isLoading) {
     return (
-      <Container
-        className="d-flex align-items-center justify-content-center"
-        style={{ minHeight: "100vh" }}
+      <div
+        className="position-absolute top-50 start-50 translate-middle spinner-grow"
+        role="status"
       >
-      <div className="spinner-grow" role="status">
         <span className="visually-hidden">Loading...</span>
       </div>
-      </Container>
     );
   }
 
@@ -75,7 +73,7 @@ const SalesRecommendations = ({ riskManagementId }) => {
           <tr>
             <th className="header">WKN</th>
             <th className="header">Name</th>
-            <th className="header">Börse</th>
+            <th className="header">RSL</th>
             <th className="header">Preis</th>
             <th className="header">Fiktiver Verkaufspreis</th>
             <th className="header">Begründung</th>

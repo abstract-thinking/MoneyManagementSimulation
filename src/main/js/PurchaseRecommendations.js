@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Container, Table } from "react-bootstrap";
+import { Table } from "react-bootstrap";
 import axios from "axios";
 import PurchaseRecommendation from "./PurchaseRecommendation";
 import NavigationBar from "./NavigationBar";
@@ -36,15 +36,12 @@ const PurchaseRecommendations = ({ riskManagementId }) => {
 
   if (isLoading) {
     return (
-      <Container
-        className="d-flex align-items-center justify-content-center"
-        style={{ minHeight: "100vh" }}
+      <div
+        className="position-absolute top-50 start-50 translate-middle spinner-grow"
+        role="status"
       >
-      <div className="spinner-grow" role="status">
         <span className="visually-hidden">Loading...</span>
       </div>
-
-      </Container>
     );
   }
 
