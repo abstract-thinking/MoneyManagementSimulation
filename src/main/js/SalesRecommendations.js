@@ -58,15 +58,15 @@ const SalesRecommendations = ({ riskId }) => {
 
   if (result.saleRecommendations.length === 0) {
     return (
-      <div className="container">
+      <>
         <NavigationBar riskManagementId={riskId} />
         <p>Keine Verkaufsempfehlung</p>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="container">
+    <>
       <NavigationBar riskManagementId={riskId} />
       <Table striped bordered>
         <thead>
@@ -92,7 +92,7 @@ const SalesRecommendations = ({ riskId }) => {
             ))}
         </tbody>
       </Table>
-    </div>
+    </>
   );
 };
 

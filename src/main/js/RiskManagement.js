@@ -50,7 +50,7 @@ const RiskManagement = ({ riskManagementId }) => {
   }
 
   return (
-    <div className="container">
+    <>
       <NavigationBar riskManagementId={riskManagementId} />
       <Table striped bordered>
         <tbody>
@@ -114,7 +114,7 @@ const RiskManagement = ({ riskManagementId }) => {
           </tr>
         </tbody>
       </Table>
-    </div>
+    </>
   );
 };
 
