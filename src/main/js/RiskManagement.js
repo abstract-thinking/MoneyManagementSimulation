@@ -14,7 +14,7 @@ const RiskManagement = ({ riskManagementId }) => {
     setError("");
 
     axios
-      .get("http://localhost:8080/api/risks/" + riskManagementId)
+      .get("http://localhost:8080/api/riskManagements/" + riskManagementId)
       .then(response => {
         setRiskManagement(response.data);
         console.log("Received data: ", response.data);

@@ -9,7 +9,7 @@ const RiskManagementModifier = ({ riskManagementId }) => {
   const [error, setError] = useState("");
   const [data, setData] = useState(null);
 
-  const targetUrl = `http://localhost:8080/api/risks/${riskManagementId}`;
+  const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}`;
 
   useEffect(() => {
     fetchData();

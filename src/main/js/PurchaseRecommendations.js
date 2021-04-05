@@ -9,7 +9,7 @@ const PurchaseRecommendations = ({ riskManagementId }) => {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const targetUrl = `http://localhost:8080/api/risks/${riskManagementId}/recommendations/purchases`;
+  const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}/recommendations/purchases`;
 
   useEffect(() => {
     fetchData();

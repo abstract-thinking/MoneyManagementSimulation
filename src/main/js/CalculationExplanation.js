@@ -9,7 +9,7 @@ const CalculationExplanation = ({ riskManagementId }) => {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const targetUrl = `http://localhost:8080/api/risks/${riskManagementId}/calc?wkn=`;
+  const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}/calc?wkn=`;
 
   const fetchData = () => {
     setLoading(true);

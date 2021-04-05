@@ -14,7 +14,7 @@ const SaleRecommendation = ({
   const handleShow = () => setShow(true);
 
   const handleDelete = () => {
-    const targetUrl = `http://localhost:8080/api/risks/${riskManagementId}/investments/${saleRecommendation.id}`;
+    const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}/investments/${saleRecommendation.id}`;
 
     axios
       .delete(targetUrl)

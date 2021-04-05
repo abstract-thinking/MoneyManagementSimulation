@@ -20,7 +20,7 @@ const PurchaseRecommendation = ({
   const handleShow = () => setShow(true);
 
   const handleSave = () => {
-    const targetUrl = `http://localhost:8080/api/risks/${riskManagementId}`;
+    const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}`;
 
     axios
       .post(targetUrl, data)
