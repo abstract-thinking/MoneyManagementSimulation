@@ -60,7 +60,7 @@ const PurchaseRecommendations = ({ riskId }) => {
       <>
         <NavigationBar riskManagementId={riskId} />
         <p className="position-absolute top-50 start-50 translate-middle fs-2">
-          Alles interessante schon gekauft - nichts zum Empfehlen!
+          Alles interessante schon gekauft - keine Empfehlung vorhanden!
         </p>
       </>
     );

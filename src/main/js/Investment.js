@@ -18,7 +18,7 @@ const Investment = ({ riskManagementId, investment }) => (
     <td>
       {investment._links && investment._links.sale ? (
         <Link to={`/riskManagements/${riskManagementId}/sell-recommendations/`}>
-          <Button>Sell</Button>
+          <Button><span class="badge bg-secondary">Verkaufen</span></Button>
         </Link>
       ) : null}
     </td>
