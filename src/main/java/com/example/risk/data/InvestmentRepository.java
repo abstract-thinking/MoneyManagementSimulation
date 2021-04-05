@@ -6,5 +6,5 @@ import java.util.List;
 
 public interface InvestmentRepository extends CrudRepository<Investment, Long> {
 
-    List<Investment> findAllByMoneyManagementId(Long id);
+    List<Investment> findAllByRiskManagementId(Long id);
 }
