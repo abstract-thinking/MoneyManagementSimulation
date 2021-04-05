@@ -83,6 +83,7 @@ public class InvestmentRecommender {
         List<PurchaseRecommendation> purchaseRecommendations = results.stream()
                 .filter(result -> result.getRsl() > exchangeRsl)
                 .sorted(comparingDouble(ExchangeResult::getRsl).reversed())
+                .limit(7)
                 .map(result -> createBuyRecommendation(result, exchangeRsl, riskManagementCalculator))
                 .collect(toList());
 

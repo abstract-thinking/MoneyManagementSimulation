@@ -55,6 +55,15 @@ const PurchaseRecommendations = ({ riskId }) => {
     return <p>loading starts now</p>;
   }
 
+  if (result.purchaseRecommendations.length === 0) {
+    return (
+      <div className="container">
+        <NavigationBar riskManagementId={riskId} />
+        <p>Alles schon gekauft - nichts zu empfehlen</p>
+      </div>
+    );
+  }
+
   return (
     <div className="container">
       <NavigationBar riskManagementId={riskId} />

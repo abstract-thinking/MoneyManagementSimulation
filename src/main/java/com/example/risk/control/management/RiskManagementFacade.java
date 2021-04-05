@@ -118,7 +118,6 @@ public class RiskManagementFacade {
                 new RiskManagementCalculator(individualRisk, updatedInvestments));
 
         removeIfAlreadyInvested(investments, purchaseRecommendations);
-        cutOffTail(purchaseRecommendations);
 
         return purchaseRecommendations;
     }
@@ -151,15 +150,6 @@ public class RiskManagementFacade {
     private void removeIfAlreadyInvested(List<Investment> investments, PurchaseRecommendationMetadata purchaseRecommendations) {
         investments.forEach(inv -> purchaseRecommendations
                 .getPurchaseRecommendations().removeIf(rec -> rec.getWkn().equalsIgnoreCase(inv.getWkn())));
-    }
-
-    private void cutOffTail(PurchaseRecommendationMetadata metadata) {
-        List<PurchaseRecommendation> purchaseRecommendations = metadata.getPurchaseRecommendations();
-        if (purchaseRecommendations.size() < 7) {
-            return;
-        }
-
-        purchaseRecommendations.subList(7, purchaseRecommendations.size()).clear();
     }
 
     public InvestmentResult doCreateInvestment(Long riskId, InvestmentResult newInvestment) {

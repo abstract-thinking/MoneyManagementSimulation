@@ -48,6 +48,11 @@ const RiskManagementChooser = () => {
     return <p>loading starts now</p>;
   }
 
+  if (riskManagements.riskResults.length === 1) {
+    navigate(`/riskManagements/${riskManagement.id}`);
+    return;
+  }
+
   return (
     <div className="btn-group-vertical" role="group" aria-label="Basic example">
       {riskManagements.riskResults.map(riskManagement => {
