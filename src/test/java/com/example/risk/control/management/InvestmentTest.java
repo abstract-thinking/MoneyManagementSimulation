@@ -36,11 +36,5 @@ class InvestmentTest {
         assertThat(investment.getInvestment()).isEqualTo(BigDecimal.valueOf(2050));
     }
 
-    @Test
-    void shouldGetNotationalRevenueResult() {
-        BigDecimal notionalRevenue = investment.calculateNotionalRevenue();
-
-        assertThat(notionalRevenue).isEqualTo(BigDecimal.valueOf(200));
-    }
 
 }

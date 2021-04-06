@@ -5,7 +5,7 @@ import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
 import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.boundary.api.SalesRecommendationMetadata;
 import com.example.risk.converter.DecisionRowConverter;
-import com.example.risk.converter.ExchangeResult;
+import com.example.risk.converter.ExchangeData;
 import com.example.risk.data.Investment;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -32,7 +32,7 @@ public class InvestmentRecommender {
     private final DecisionRowConverter converter;
 
     public SalesRecommendationMetadata getSaleRecommendations(RiskManagementCalculator riskManagementCalculator) {
-        List<ExchangeResult> results = converter.fetchTable();
+        List<ExchangeData> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
 
         List<SaleRecommendation> salesRecommendations = new ArrayList<>();
@@ -47,7 +47,7 @@ public class InvestmentRecommender {
         return new SalesRecommendationMetadata(EXCHANGE_NAME, exchangeRsl, salesRecommendations);
     }
 
-    private double findExchangeRsl(List<ExchangeResult> results) {
+    private double findExchangeRsl(List<ExchangeData> results) {
         return results.stream()
                 .filter(result -> result.getName().equals(EXCHANGE_NAME))
                 .findFirst()
@@ -55,7 +55,7 @@ public class InvestmentRecommender {
                 .getRsl();
     }
 
-    private SaleRecommendation createSellRecommendation(ExchangeResult result, double exchangeRsl, Investment investment) {
+    private SaleRecommendation createSellRecommendation(ExchangeData result, double exchangeRsl, Investment investment) {
         return SaleRecommendation.builder()
                 .id(investment.getId())
                 .wkn(result.getWkn())
@@ -68,21 +68,21 @@ public class InvestmentRecommender {
                 .build();
     }
 
-    private boolean isCurrentPriceLowerThanInitialNotionalSalesPrice(Investment investment, ExchangeResult result) {
+    private boolean isCurrentPriceLowerThanInitialNotionalSalesPrice(Investment investment, ExchangeData result) {
         return investment.getNotionalSalesPrice().compareTo(result.getPrice()) >= 0;
     }
 
-    private boolean isCompanyRslLowerThanExchangeRsl(double exchangeRsl, ExchangeResult result) {
+    private boolean isCompanyRslLowerThanExchangeRsl(double exchangeRsl, ExchangeData result) {
         return exchangeRsl > result.getRsl();
     }
 
     public PurchaseRecommendationMetadata getPurchaseRecommendations(RiskManagementCalculator riskManagementCalculator) {
-        List<ExchangeResult> results = converter.fetchTable();
+        List<ExchangeData> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
 
         List<PurchaseRecommendation> purchaseRecommendations = results.stream()
                 .filter(result -> result.getRsl() > exchangeRsl)
-                .sorted(comparingDouble(ExchangeResult::getRsl).reversed())
+                .sorted(comparingDouble(ExchangeData::getRsl).reversed())
                 .limit(7)
                 .map(result -> createBuyRecommendation(result, exchangeRsl, riskManagementCalculator))
                 .collect(toList());
@@ -90,7 +90,7 @@ public class InvestmentRecommender {
         return new PurchaseRecommendationMetadata(EXCHANGE_NAME, exchangeRsl, purchaseRecommendations);
     }
 
-    private PurchaseRecommendation createBuyRecommendation(ExchangeResult result, double exchangeRsl, RiskManagementCalculator riskManagementCalculator) {
+    private PurchaseRecommendation createBuyRecommendation(ExchangeData result, double exchangeRsl, RiskManagementCalculator riskManagementCalculator) {
         final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl);
 
         Investment possibleInvestment = Investment.builder()

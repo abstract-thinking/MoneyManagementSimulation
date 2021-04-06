@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 
 @Value
 @Builder
-public class ExchangeResult {
+public class ExchangeData {
     String wkn;
     String name;
     BigDecimal price;

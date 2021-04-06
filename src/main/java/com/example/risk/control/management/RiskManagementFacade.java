@@ -11,7 +11,7 @@ import com.example.risk.boundary.api.SalesRecommendationMetadata;
 import com.example.risk.control.management.caclulate.InvestmentRecommender;
 import com.example.risk.control.management.caclulate.RiskManagementCalculator;
 import com.example.risk.converter.DecisionRowConverter;
-import com.example.risk.converter.ExchangeResult;
+import com.example.risk.converter.ExchangeData;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import com.example.risk.data.InvestmentRepository;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import static com.example.risk.control.management.caclulate.InvestmentRecommender.EXCHANGE_NAME;
@@ -52,10 +51,9 @@ public class RiskManagementFacade {
         Iterable<IndividualRisk> riskManagements = riskManagementRepository.findAll();
         riskManagements.forEach(risk -> {
                     List<Investment> investments = investmentRepository.findAllByRiskManagementId(risk.getId());
-                    List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
-                    RiskManagementCalculator riskManagementCalculator =
-                            new RiskManagementCalculator(risk, updatedInvestments);
+            RiskManagementCalculator riskManagementCalculator =
+                    new RiskManagementCalculator(risk, investments, fetchExchangeData());
                     riskResults.add(riskManagementCalculator.calculate());
                 }
         );
@@ -66,9 +64,8 @@ public class RiskManagementFacade {
     public RiskResult doRiskManagement(Long riskManagementId) {
         final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
         List<Investment> investments = investmentRepository.findAllByRiskManagementId(individualRisk.getId());
-        List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
-        RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
+        RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, investments, fetchExchangeData());
         RiskResult riskResult = riskManagementCalculator.calculate();
 
         SalesRecommendationMetadata saleRecommendations = investmentRecommender.getSaleRecommendations(riskManagementCalculator);
@@ -89,9 +86,8 @@ public class RiskManagementFacade {
     public SalesRecommendationMetadata doSaleRecommendations(Long riskManagementId) {
         final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
         List<Investment> investments = investmentRepository.findAllByRiskManagementId(individualRisk.getId());
-        List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
-        RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
+        RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, investments, fetchExchangeData());
         return investmentRecommender.getSaleRecommendations(riskManagementCalculator);
     }
 
@@ -102,9 +98,9 @@ public class RiskManagementFacade {
                 .filter(i -> i.getId().equals(investmentId))
                 .findFirst()
                 .orElseThrow();
-        List<Investment> updatedInvestments = updateNotionalSalesPrice(Collections.singletonList(investment));
 
-        RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, updatedInvestments);
+        RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, investments, fetchExchangeData());
+        // TODO: FIXME
         return investmentRecommender.getSaleRecommendations(riskManagementCalculator);
     }
 
@@ -112,10 +108,9 @@ public class RiskManagementFacade {
         IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
 
         List<Investment> investments = investmentRepository.findAllByRiskManagementId(individualRisk.getId());
-        List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
         PurchaseRecommendationMetadata purchaseRecommendations = investmentRecommender.getPurchaseRecommendations(
-                new RiskManagementCalculator(individualRisk, updatedInvestments));
+                new RiskManagementCalculator(individualRisk, investments, fetchExchangeData()));
 
         removeIfAlreadyInvested(investments, purchaseRecommendations);
 
@@ -126,10 +121,9 @@ public class RiskManagementFacade {
         IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
 
         List<Investment> investments = investmentRepository.findAllByRiskManagementId(individualRisk.getId());
-        List<Investment> updatedInvestments = updateNotionalSalesPrice(investments);
 
         PurchaseRecommendationMetadata purchaseRecommendations = investmentRecommender.getPurchaseRecommendations(
-                new RiskManagementCalculator(individualRisk, updatedInvestments));
+                new RiskManagementCalculator(individualRisk, investments, fetchExchangeData()));
 
         return purchaseRecommendations.getPurchaseRecommendations().stream()
                 .filter(purchaseRecommendation -> purchaseRecommendation.getWkn().equalsIgnoreCase(wkn))
@@ -137,21 +131,8 @@ public class RiskManagementFacade {
                 .orElseThrow();
     }
 
-    private List<Investment> updateNotionalSalesPrice(List<Investment> investments) {
-        List<ExchangeResult> results = converter.fetchTable();
-        final double exchangeRsl = findExchangeRsl(results);
-
-        investments.forEach(investment -> results.stream()
-                .filter(row -> row.getWkn().equalsIgnoreCase(investment.getWkn()))
-                .findFirst()
-                .ifPresent(result -> {
-                    investment.setCurrentPrice(result.getPrice());
-                    investment.setRsl(result.getRsl());
-                    investment.setExchangeRsl(exchangeRsl);
-                })
-        );
-
-        return investments;
+    private List<ExchangeData> fetchExchangeData() {
+        return converter.fetchTable();
     }
 
     private void removeIfAlreadyInvested(List<Investment> investments, PurchaseRecommendationMetadata purchaseRecommendations) {
@@ -160,7 +141,12 @@ public class RiskManagementFacade {
     }
 
     public InvestmentResult doCreateInvestment(Long riskManagementId, InvestmentResult newInvestment) {
-        return investmentRepository.save(toInvestment(riskManagementId, newInvestment)).toApi();
+        Investment save = investmentRepository.save(toInvestment(riskManagementId, newInvestment));
+
+        // TODO: Fixme
+        return InvestmentResult.builder()
+                .id(save.getId())
+                .build();
     }
 
     private Investment toInvestment(Long riskManagementId, InvestmentResult newInvestment) {
@@ -168,7 +154,6 @@ public class RiskManagementFacade {
                 .wkn(newInvestment.getWkn())
                 .name(newInvestment.getName())
                 .quantity(newInvestment.getQuantity())
-                .currentPrice(newInvestment.getPurchasePrice())
                 .purchasePrice(newInvestment.getPurchasePrice())
                 .notionalSalesPrice(newInvestment.getNotionalSalesPrice())
                 .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
@@ -180,7 +165,7 @@ public class RiskManagementFacade {
         investmentRepository.deleteById(investmentId);
     }
 
-    private double findExchangeRsl(List<ExchangeResult> results) {
+    private double findExchangeRsl(List<ExchangeData> results) {
         return results.stream()
                 .filter(result -> result.getName().equals(EXCHANGE_NAME))
                 .findFirst()
@@ -191,10 +176,10 @@ public class RiskManagementFacade {
     public CalculationResult doPositionCalculation(long riskManagementId, String wkn) {
         IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
 
-        List<ExchangeResult> results = converter.fetchTable();
+        List<ExchangeData> results = converter.fetchTable();
         final double exchangeRsl = findExchangeRsl(results);
 
-        ExchangeResult result = results.stream()
+        ExchangeData result = results.stream()
                 .filter(row -> row.getWkn().equalsIgnoreCase(wkn))
                 .findFirst()
                 .orElseThrow();
