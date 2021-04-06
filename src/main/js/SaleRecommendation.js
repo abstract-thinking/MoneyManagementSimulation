@@ -40,7 +40,7 @@ const SaleRecommendation = ({
           {saleRecommendation.notionalSalesPrice}
         </td>
         <td>
-          {saleRecommendation.shouldSellByFallingBelowTheLimit && (
+          {saleRecommendation.shouldSellByStopPrice && (
             <div>
               {saleRecommendation.name} wöchentlicher Schlusskurs{" "}
               {saleRecommendation.price} liegt unter dem kalkulierten

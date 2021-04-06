@@ -2,7 +2,7 @@ package com.example.risk.control.invest;
 
 import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.boundary.api.SalesRecommendationMetadata;
-import com.example.risk.control.management.caclulate.InvestmentRecommender;
+import com.example.risk.control.management.caclulate.InvestmentCalculator;
 import com.example.risk.service.rsl.RslService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
@@ -33,7 +33,7 @@ public class InvestRecommenderTests {
     private RslService rslService;
 
     @Autowired
-    private InvestmentRecommender recommender;
+    private InvestmentCalculator recommender;
 
     private String asString(Resource resource) {
         try (Reader reader = new InputStreamReader(resource.getInputStream(), UTF_8)) {

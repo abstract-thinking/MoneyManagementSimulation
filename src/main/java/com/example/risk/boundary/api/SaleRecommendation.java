@@ -24,9 +24,9 @@ public class SaleRecommendation {
     BigDecimal notionalSalesPrice;
 
     boolean shouldSellByRslComparison;
-    boolean shouldSellByFallingBelowTheLimit;
+    boolean shouldSellByStopPrice;
 
     public boolean shouldSell() {
-        return shouldSellByFallingBelowTheLimit || shouldSellByRslComparison;
+        return shouldSellByStopPrice || shouldSellByRslComparison;
     }
 }

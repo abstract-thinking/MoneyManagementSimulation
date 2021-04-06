@@ -2,8 +2,6 @@ package com.example.risk.boundary.api;
 
 import org.junit.jupiter.api.Test;
 
-import java.math.BigDecimal;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 class SaleRecommendationTest {
@@ -33,7 +31,7 @@ class SaleRecommendationTest {
     @Test
     void shouldSellBySellRecommendation() {
         SaleRecommendation saleRecommendation = SaleRecommendation.builder()
-                .shouldSellByFallingBelowTheLimit(true)
+                .shouldSellByStopPrice(true)
                 .build();
 
         boolean shouldSell = saleRecommendation.shouldSell();
@@ -44,7 +42,7 @@ class SaleRecommendationTest {
     @Test
     void shouldNotSellBySellRecommendation() {
         SaleRecommendation saleRecommendation = SaleRecommendation.builder()
-                .shouldSellByFallingBelowTheLimit(false)
+                .shouldSellByStopPrice(false)
                 .build();
 
         boolean shouldSell = saleRecommendation.shouldSell();

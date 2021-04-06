@@ -29,15 +29,14 @@ public class Investment {
     private BigDecimal purchasePrice;
     private BigDecimal transactionCosts;
 
-    // Useless
-    private BigDecimal notionalSalesPrice;
+    private BigDecimal stopPrice;
 
     // TODO: This seems to be wrong the investment should not know about the riskManagementId
     // Do I need relation table between?
     private Long riskManagementId;
 
     public BigDecimal getPriceRisk() {
-        return purchasePrice.subtract(notionalSalesPrice);
+        return purchasePrice.subtract(stopPrice);
     }
 
     public BigDecimal getInvestment() {

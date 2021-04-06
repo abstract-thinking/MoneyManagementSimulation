@@ -34,7 +34,7 @@ public class IndividualRisk {
         this.name = name;
     }
 
-    public BigDecimal calculateIndivdualPositionRisk() {
+    public BigDecimal calculateIndividualPositionRisk() {
         return totalCapital
                 .multiply(BigDecimal.valueOf(individualPositionRiskInPercent))
                 .divide(BigDecimal.valueOf(100), 4, RoundingMode.DOWN);

@@ -16,7 +16,7 @@ class InvestmentTest {
             .quantity(10)
             .purchasePrice(BigDecimal.TEN)
             .transactionCosts(BigDecimal.ONE)
-            .notionalSalesPrice(BigDecimal.valueOf(20))
+            .stopPrice(BigDecimal.valueOf(20))
             .build();
 
     @Test
