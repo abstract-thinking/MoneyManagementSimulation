@@ -19,7 +19,7 @@ class RiskManagementTest {
     void shouldReturnPositionRisk() {
         RiskManagementCalculator riskManagementCalculator = createRiskManagementCalculator(Collections.emptyList());
 
-        BigDecimal positionRisk = riskManagementCalculator.calculatePositionRisk();
+        BigDecimal positionRisk = riskManagementCalculator.calculateIndividualPositionRisk();
 
         assertThat(positionRisk).isEqualTo(BigDecimal.valueOf(2250000, 4));
     }

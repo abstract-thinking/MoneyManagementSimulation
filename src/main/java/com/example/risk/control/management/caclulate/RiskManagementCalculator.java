@@ -27,15 +27,13 @@ public class RiskManagementCalculator {
         this.investments = investments;
     }
 
-    public BigDecimal calculatePositionRisk() {
-        return individualRisk.calculatePositionRisk();
+    public BigDecimal calculateIndividualPositionRisk() {
+        return individualRisk.calculateIndivdualPositionRisk();
     }
 
     private BigDecimal calculateDepotRisk() {
-        calculateInvestmentRisk();
-
         return investments.stream()
-                .map(Investment::getInvestmentRisk)
+                .map(Investment::getPositionRisk)
                 .reduce(BigDecimal.ZERO, BigDecimal::add)
                 .abs();
     }
@@ -61,20 +59,17 @@ public class RiskManagementCalculator {
 
     private BigDecimal calculateTotalNotionalRevenue() {
         return investments.stream()
-                .map(Investment::getNotionalRevenue)
+                .map(Investment::calculateNotionalRevenue)
                 .reduce(ZERO, BigDecimal::add);
     }
 
     public RiskResult calculate() {
-        // TOOD: Where should be the logic where the investment risk will be calculated
-        calculateInvestmentRisk();
-
         return RiskResult.builder()
                 .id(individualRisk.getId())
                 .totalCapital(individualRisk.getTotalCapital())
                 .name(individualRisk.getName())
                 .individualPositionRiskInPercent(individualRisk.getIndividualPositionRiskInPercent())
-                .individualPositionRisk(calculatePositionRisk())
+                .individualPositionRisk(calculateIndividualPositionRisk())
                 .investments(map(investments))
                 .totalInvestment(calculateTotalInvestment())
                 .totalRevenue(calculateTotalNotionalRevenue())
@@ -82,39 +77,6 @@ public class RiskManagementCalculator {
                 .depotRiskInPercent(calculateDepotRiskInPercent())
                 .totalRiskInPercent(calculateTotalRiskInPercent())
                 .build();
-    }
-
-    private void calculateInvestmentRisk() {
-        investments.forEach(this::setInvestmentRisk);
-    }
-
-    // TODO: Still not sure how this money management should work.
-    // Mark isPossiblePurchaseCandidate with full risk
-    // Seems to be four phases at the moment
-    private void setInvestmentRisk(Investment investment) {
-        if (isPurchaseCandidate(investment)) {
-            investment.setRisk(investment.getProfitOrLoss().negate());
-        } else if (isPossiblePurchaseCandidate(investment)) {
-            investment.setRisk(individualRisk.calculatePositionRisk());
-        } else if (isPossibleProfitCandidate(investment)) {
-            investment.setRisk(individualRisk.calculatePositionRisk().add(investment.getProfitOrLoss().negate()));
-        } else {
-            investment.setRisk(ZERO);
-        }
-    }
-
-    private boolean isPurchaseCandidate(Investment investment) {
-        return investment.getProfitOrLoss().compareTo(individualRisk.calculatePositionRisk().negate()) < 0;
-    }
-
-    private boolean isPossiblePurchaseCandidate(Investment investment) {
-        return investment.getProfitOrLoss().compareTo(individualRisk.calculatePositionRisk()) <= 0 &&
-                investment.getProfitOrLoss().compareTo(ZERO) < 0;
-    }
-
-    private boolean isPossibleProfitCandidate(Investment investment) {
-        return investment.getProfitOrLoss().compareTo(individualRisk.calculatePositionRisk()) <= 0 &&
-                investment.getProfitOrLoss().compareTo(ZERO) >= 0;
     }
 
     private List<InvestmentResult> map(List<Investment> investments) {

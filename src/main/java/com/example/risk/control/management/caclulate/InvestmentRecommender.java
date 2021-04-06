@@ -99,7 +99,7 @@ public class InvestmentRecommender {
                 .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
                 .build();
 
-        int quantity = calculateQuantity(riskManagementCalculator.calculatePositionRisk(), possibleInvestment);
+        int quantity = calculateQuantity(riskManagementCalculator.calculateIndividualPositionRisk(), possibleInvestment);
 
         return PurchaseRecommendation.builder()
                 .name(result.getName())

@@ -73,7 +73,7 @@ const RiskManagement = ({ riskManagementId }) => {
             <td className="header">Fiktiver Verkaufspreis</td>
             <td className="header">Kosten</td>
             <td className="header">Fiktiver Verkaufserlös</td>
-            <td className="header">Risiko</td>
+            <td className="header">Positionsrisiko</td>
           </tr>
           {riskManagement.investments &&
             riskManagement.investments.map(investment => (

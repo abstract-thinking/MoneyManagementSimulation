@@ -1,6 +1,7 @@
 package com.example.risk.data;
 
 import com.example.risk.boundary.api.InvestmentResult;
+import com.example.risk.control.management.caclulate.PriceCalculator;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -31,49 +32,39 @@ public class Investment {
     private BigDecimal transactionCosts;
 
     private BigDecimal notionalSalesPrice;
+
+    // TODO: This are not static. It looks that I'm mixing two responsibilities in one
     private BigDecimal currentPrice;
+    private double rsl;
+    private double exchangeRsl;
 
     // TODO: This seems to be wrong the investment should not know about the riskManagementId
     // Do I need relation table between?
     private Long riskManagementId;
 
-    // TODO: Maybe into another table as well.
-    private BigDecimal risk;
-
     public BigDecimal getPriceRisk() {
         return purchasePrice.subtract(notionalSalesPrice);
-    }
-
-    public BigDecimal getInvestmentRisk() {
-        if (risk == null) {
-            throw new RuntimeException("Illegal use: Risk must calculated! " + name);
-        }
-
-        return risk;
     }
 
     public BigDecimal getInvestment() {
         return purchasePrice.multiply(BigDecimal.valueOf(quantity));
     }
 
-    public BigDecimal getNotionalRevenue() {
-        return determineSalesPrice().multiply(BigDecimal.valueOf(quantity));
+    public BigDecimal calculateNotionalRevenue() {
+        return calculateNotionalSalesPrice().multiply(BigDecimal.valueOf(quantity)).subtract(transactionCosts);
     }
 
-    private BigDecimal determineSalesPrice() {
-        log.info("Determine notional sales price for {}. Initial {} or current {}.", name, notionalSalesPrice,
-                currentPrice);
-        if (notionalSalesPrice.compareTo(currentPrice) < 0) {
-            log.info("Determine initial as sales price {}", notionalSalesPrice);
-            return currentPrice;
-        } else {
-            log.info("Determine current as sales price {}", currentPrice);
-            return currentPrice;
-        }
+    private BigDecimal calculateNotionalSalesPrice() {
+        return PriceCalculator.calculateNotionalSalesPrice(rsl, currentPrice, exchangeRsl);
     }
 
-    public BigDecimal getProfitOrLoss() {
-        return getNotionalRevenue().subtract(getInvestment()).subtract(transactionCosts);
+    public BigDecimal getPositionRisk() {
+        final BigDecimal profitOrLoss = calculateNotionalRevenue().subtract(getInvestment());
+        return isLoss(profitOrLoss) ? profitOrLoss.negate() : BigDecimal.ZERO;
+    }
+
+    private boolean isLoss(BigDecimal profitOrLoss) {
+        return profitOrLoss.compareTo(BigDecimal.ZERO) < 0;
     }
 
     public InvestmentResult toApi() {
@@ -86,8 +77,8 @@ public class Investment {
                 .notionalSalesPrice(notionalSalesPrice)
                 .transactionCosts(transactionCosts)
                 .investment(getInvestment())
-                .notionalRevenue(getNotionalRevenue())
-                .positionRisk(getInvestmentRisk())
+                .notionalRevenue(calculateNotionalRevenue())
+                .positionRisk(getPositionRisk())
                 .build();
     }
 }

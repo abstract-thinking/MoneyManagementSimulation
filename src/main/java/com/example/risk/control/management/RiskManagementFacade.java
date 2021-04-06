@@ -138,10 +138,17 @@ public class RiskManagementFacade {
     }
 
     private List<Investment> updateNotionalSalesPrice(List<Investment> investments) {
-        investments.forEach(investment -> converter.fetchTable().stream()
+        List<ExchangeResult> results = converter.fetchTable();
+        final double exchangeRsl = findExchangeRsl(results);
+
+        investments.forEach(investment -> results.stream()
                 .filter(row -> row.getWkn().equalsIgnoreCase(investment.getWkn()))
                 .findFirst()
-                .ifPresent(result -> investment.setCurrentPrice(result.getPrice()))
+                .ifPresent(result -> {
+                    investment.setCurrentPrice(result.getPrice());
+                    investment.setRsl(result.getRsl());
+                    investment.setExchangeRsl(exchangeRsl);
+                })
         );
 
         return investments;
@@ -200,7 +207,7 @@ public class RiskManagementFacade {
                 .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
                 .build();
 
-        int quantity = calculateQuantity(individualRisk.calculatePositionRisk(), possibleInvestment);
+        int quantity = calculateQuantity(individualRisk.calculateIndivdualPositionRisk(), possibleInvestment);
 
         return CalculationResult.builder()
                 .wkn(result.getWkn())
@@ -211,7 +218,7 @@ public class RiskManagementFacade {
                 .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
                 .rsl(result.getRsl())
                 .exchangeRsl(exchangeRsl)
-                .positionRisk(individualRisk.calculatePositionRisk())
+                .positionRisk(individualRisk.calculateIndivdualPositionRisk())
                 .build();
     }
 
