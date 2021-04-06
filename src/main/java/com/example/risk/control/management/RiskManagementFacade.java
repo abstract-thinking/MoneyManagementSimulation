@@ -1,6 +1,7 @@
 package com.example.risk.control.management;
 
 import com.example.risk.boundary.api.CalculationResult;
+import com.example.risk.boundary.api.CurrentDataResult;
 import com.example.risk.boundary.api.InvestmentResult;
 import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
@@ -172,5 +173,12 @@ public class RiskManagementFacade {
         }
 
         riskManagementRepository.save(individualRisk);
+    }
+
+    public CurrentDataResult doCurrent(Long riskManagementId) {
+        final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
+        final List<Investment> investments = investmentRepository.findAllByRiskManagementId(individualRisk.getId());
+
+        return new PositionCalculator(fetchExchangeData()).current(investments);
     }
 }

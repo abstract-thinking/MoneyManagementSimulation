@@ -1,6 +1,7 @@
 package com.example.risk.boundary;
 
 import com.example.risk.boundary.api.CalculationResult;
+import com.example.risk.boundary.api.CurrentDataResult;
 import com.example.risk.boundary.api.InvestmentResult;
 import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
 import com.example.risk.boundary.api.RiskData;
@@ -141,5 +142,11 @@ public class RiskManagementController {
                                @RequestBody RiskData riskData) {
         riskManagementFacade.doUpdateCoreData(riskManagementId, riskData);
     }
+
+    @GetMapping(path = "/api/riskManagements/{riskManagementId}/current", produces = APPLICATION_JSON_VALUE)
+    public CurrentDataResult showCurrent(@PathVariable Long riskManagementId) {
+        return riskManagementFacade.doCurrent(riskManagementId);
+    }
+
 
 }

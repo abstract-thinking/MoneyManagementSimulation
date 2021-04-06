@@ -10,6 +10,9 @@ const NavigationBar = ({ riskManagementId }) => {
           <Nav.Link href={`/riskManagements/${riskManagementId}`}>
             Home
           </Nav.Link>
+          <Nav.Link href={`/riskManagements/${riskManagementId}/current`}>
+            Aktuell
+          </Nav.Link>
           <Nav.Link
             href={`/riskManagements/${riskManagementId}/sell-recommendations`}
           >
@@ -24,7 +27,7 @@ const NavigationBar = ({ riskManagementId }) => {
             Ändern
           </Nav.Link>
           <Nav.Link href={`/riskManagements/${riskManagementId}/calculation`}>
-            Positionsgröße
+            Suchen
           </Nav.Link>
         </Nav>
       </Navbar.Collapse>

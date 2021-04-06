@@ -9,12 +9,14 @@ const RiskManagement = ({ riskManagementId }) => {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
+  const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}`;
+
   useEffect(() => {
     setLoading(true);
     setError("");
 
     axios
-      .get("http://localhost:8080/api/riskManagements/" + riskManagementId)
+      .get(targetUrl)
       .then(response => {
         setRiskManagement(response.data);
         console.log("Received data: ", response.data);
@@ -45,6 +47,17 @@ const RiskManagement = ({ riskManagementId }) => {
 
   if (riskManagement === "") {
     return <p>loading starts now</p>;
+  }
+
+  if (riskManagement.investments.length === 0) {
+    return (
+      <>
+        <NavigationBar riskManagementId={riskManagementId} />
+        <p className="position-absolute top-50 start-50 translate-middle fs-2">
+          Zur Zeit keine Investment vorhanden!
+        </p>
+      </>
+    );
   }
 
   return (

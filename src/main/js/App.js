@@ -8,6 +8,7 @@ import SaleRecommendation from "./SaleRecommendation";
 import PurchaseRecommendations from "./PurchaseRecommendations";
 import RiskManagementModifier from "./RiskManagementModifier";
 import CalculationExplanation from "./CalculationExplanation";
+import OneView from "./OneView";
 
 const App = () => {
   return (
@@ -20,6 +21,7 @@ const App = () => {
         <PurchaseRecommendations path="riskManagements/:riskManagementId/purchase-recommendations" />
         <RiskManagementModifier path="riskManagements/:riskManagementId/modifier" />
         <CalculationExplanation path="riskManagements/:riskManagementId/calculation" />
+        <OneView path="/riskManagements/:riskManagementId/current" />
       </Router>
     </>
   );
