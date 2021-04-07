@@ -5,6 +5,7 @@ import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.converter.ExchangeData;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
+import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -14,7 +15,8 @@ import java.util.List;
 import static com.example.risk.control.management.caclulate.PriceCalculator.calculateNotionalSalesPrice;
 import static java.math.BigDecimal.ZERO;
 
-public class RiskManagementCalculator extends Calculator {
+@AllArgsConstructor
+public class RiskManagementCalculator {
 
     private static final BigDecimal ONE_HUNDRED = BigDecimal.valueOf(100);
 
@@ -22,12 +24,7 @@ public class RiskManagementCalculator extends Calculator {
 
     private final List<Investment> investments;
 
-    public RiskManagementCalculator(IndividualRisk individualRisk, List<Investment> investments, List<ExchangeData> exchangeData) {
-        super(exchangeData);
-
-        this.individualRisk = individualRisk;
-        this.investments = investments;
-    }
+    private final ExchangeSnapshot exchangeSnapshot;
 
     private BigDecimal calculateDepotRisk() {
         BigDecimal depotRisk = ZERO;
@@ -40,9 +37,9 @@ public class RiskManagementCalculator extends Calculator {
     }
 
     private BigDecimal calculateMaxNotionalPrice(Investment investment) {
-        for (ExchangeData exchangeData : exchangeData) {
+        for (ExchangeData exchangeData : exchangeSnapshot.getExchangeData()) {
             if (exchangeData.getWkn().equalsIgnoreCase(investment.getWkn())) {
-                final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(exchangeData.getRsl(), exchangeData.getPrice(), exchangeRsl);
+                final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(exchangeData.getRsl(), exchangeData.getPrice(), exchangeSnapshot.getExchangeRsl());
                 return investment.getStopPrice().max(notionalSalesPrice);
             }
         }
@@ -53,6 +50,7 @@ public class RiskManagementCalculator extends Calculator {
     private BigDecimal calculatePositionRisk(Investment investment, BigDecimal notionalSalesPrice) {
         final BigDecimal notionalRevenue = calculateNotionalRevenue(investment, notionalSalesPrice);
         final BigDecimal profitOrLoss = notionalRevenue.subtract(investment.getInvestment());
+
         return profitOrLoss.min(ZERO).negate();
     }
 

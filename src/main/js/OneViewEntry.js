@@ -6,7 +6,7 @@ const OneViewEntry = ({ entry }) => (
     <td className="text-content">{entry.name}</td>
     <td className="number-content">{entry.rsl.toFixed(2)}</td>
     <td className="number-content">{entry.price.toFixed(2)}</td>
-    <td className="number-content">{entry.stopprice.toFixed(2)}</td>
+    <td className="number-content">{entry.stopPrice.toFixed(2)}</td>
   </tr>
 );
 

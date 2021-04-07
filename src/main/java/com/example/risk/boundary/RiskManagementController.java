@@ -147,6 +147,4 @@ public class RiskManagementController {
     public CurrentDataResult showCurrent(@PathVariable Long riskManagementId) {
         return riskManagementFacade.doCurrent(riskManagementId);
     }
-
-
 }

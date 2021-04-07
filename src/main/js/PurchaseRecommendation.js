@@ -59,7 +59,7 @@ const PurchaseRecommendation = ({
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Invement hinzufügen</Modal.Title>
+          <Modal.Title>Investment hinzufügen</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <Form>

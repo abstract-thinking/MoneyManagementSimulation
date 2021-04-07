@@ -7,6 +7,7 @@ import com.example.risk.boundary.api.SalesRecommendationMetadata;
 import com.example.risk.converter.ExchangeData;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
+import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -17,23 +18,23 @@ import static com.example.risk.control.management.caclulate.PriceCalculator.calc
 import static java.util.Comparator.comparingDouble;
 import static java.util.stream.Collectors.toList;
 
-public class InvestmentCalculator extends Calculator {
+@AllArgsConstructor
+public class InvestmentRecommender {
 
-    public InvestmentCalculator(List<ExchangeData> exchangeData) {
-        super(exchangeData);
-    }
+    private final ExchangeSnapshot exchangeSnapshot;
 
-    public SalesRecommendationMetadata getSaleRecommendations(List<Investment> investments) {
+    public SalesRecommendationMetadata findSaleRecommendations(List<Investment> investments) {
         List<SaleRecommendation> salesRecommendations = new ArrayList<>();
         investments.forEach(investment ->
-                exchangeData.stream()
+                exchangeSnapshot.getExchangeData().stream()
                         .filter(result -> result.getWkn().equalsIgnoreCase(investment.getWkn()))
                         .map(result -> createSellRecommendation(result, investment))
                         .filter(SaleRecommendation::shouldSell)
                         .findFirst()
                         .ifPresent(salesRecommendations::add));
 
-        return new SalesRecommendationMetadata(EXCHANGE_NAME, exchangeRsl, salesRecommendations);
+        return new SalesRecommendationMetadata(exchangeSnapshot.getExchangeName(),
+                exchangeSnapshot.getExchangeRsl(), salesRecommendations);
     }
 
     private SaleRecommendation createSellRecommendation(ExchangeData result, Investment investment) {
@@ -54,31 +55,37 @@ public class InvestmentCalculator extends Calculator {
     }
 
     private boolean isCompanyRslLowerThanExchangeRsl(ExchangeData result) {
-        return result.getRsl() < exchangeRsl;
+        return result.getRsl() < exchangeSnapshot.getExchangeRsl();
     }
 
-    public PurchaseRecommendationMetadata getPurchaseRecommendations(IndividualRisk individualRisk) {
-        List<PurchaseRecommendation> purchaseRecommendations = exchangeData.stream()
-                .filter(result -> result.getRsl() > exchangeRsl)
+    public PurchaseRecommendationMetadata findPurchaseRecommendations(IndividualRisk individualRisk) {
+        List<PurchaseRecommendation> purchaseRecommendations = exchangeSnapshot.getExchangeData().stream()
+                .filter(result -> result.getRsl() > exchangeSnapshot.getExchangeRsl())
                 .sorted(comparingDouble(ExchangeData::getRsl).reversed())
                 .limit(7)
                 .map(result -> createBuyRecommendation(result, individualRisk))
                 .collect(toList());
 
-        return new PurchaseRecommendationMetadata(EXCHANGE_NAME, exchangeRsl, purchaseRecommendations);
+        return new PurchaseRecommendationMetadata(exchangeSnapshot.getExchangeName(),
+                exchangeSnapshot.getExchangeRsl(), purchaseRecommendations);
     }
 
     private PurchaseRecommendation createBuyRecommendation(ExchangeData result, IndividualRisk individualRisk) {
-        final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(result.getRsl(), result.getPrice(), exchangeRsl);
+        final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(result.getRsl(), result.getPrice(),
+                exchangeSnapshot.getExchangeRsl());
 
         Investment possibleInvestment = Investment.builder()
                 .purchasePrice(result.getPrice())
                 .stopPrice(notionalSalesPrice)
-                .transactionCosts(EXCHANGE_TRANSACTION_COSTS)
+                .transactionCosts(exchangeSnapshot.getExchangeTransactionCosts())
                 .build();
 
         final int quantity = calculateQuantity(individualRisk.calculateIndividualPositionRisk(), possibleInvestment);
 
+        return createPurchaseRecommendation(result, notionalSalesPrice, quantity);
+    }
+
+    private PurchaseRecommendation createPurchaseRecommendation(ExchangeData result, BigDecimal notionalSalesPrice, int quantity) {
         return PurchaseRecommendation.builder()
                 .name(result.getName())
                 .rsl(result.getRsl())
