@@ -19,7 +19,7 @@ public class ExchangeSnapshot {
 
     public ExchangeSnapshot(List<ExchangeData> exchangeData) {
         this.exchangeName = "NASDAQ 100";
-        this.exchangeTransactionCosts = BigDecimal.valueOf(35.50);
+        this.exchangeTransactionCosts = BigDecimal.valueOf(36);
         this.exchangeData = exchangeData;
         this.exchangeRsl = findExchangeRsl(exchangeData);
     }

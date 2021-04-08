@@ -62,8 +62,10 @@ public class RiskManagementCalculator {
     }
 
     private double calculateTotalRiskInPercent() {
+        BigDecimal freeCapital = individualRisk.getTotalCapital().subtract(calculateTotalInvestment());
+
         return calculateDepotRisk()
-                .divide(individualRisk.getTotalCapital(), 4, RoundingMode.DOWN)
+                .divide(freeCapital.add(calculateTotalNotionalRevenue()), 4, RoundingMode.DOWN)
                 .multiply(ONE_HUNDRED).doubleValue();
     }
 

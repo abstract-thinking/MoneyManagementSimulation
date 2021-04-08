@@ -99,15 +99,15 @@ const CalculationExplanation = ({ riskManagementId }) => {
               <td>{result.rsl}</td>
             </tr>
             <tr>
-              <td>Aktueller Preis</td>
+              <td>Aktueller Kurs</td>
               <td>{result.price.toFixed(2)}</td>
             </tr>
             <tr>
-              <td>Börse RSL</td>
+              <td>Börsen RSL</td>
               <td>{result.exchangeRsl}</td>
             </tr>
             <tr>
-              <td>Fiktiver Verkaufspreis</td>
+              <td>Fiktiver Stoppkurs</td>
               <td>{result.notionalSalesPrice.toFixed(2)}</td>
             </tr>
             <tr>
@@ -115,7 +115,7 @@ const CalculationExplanation = ({ riskManagementId }) => {
               <td>{result.positionRisk.toFixed(2)}</td>
             </tr>
             <tr>
-              <td>Komplette Transaktionskosten</td>
+              <td>Gesamte Transaktionskosten</td>
               <td>{result.transactionCosts.toFixed(2)}</td>
             </tr>
             <tr>
@@ -125,7 +125,7 @@ const CalculationExplanation = ({ riskManagementId }) => {
               </td>
             </tr>
             <tr>
-              <td>Verlustrisiko pro Aktie</td>
+              <td>Positionsrisiko pro Stück</td>
               <td>{(result.price - result.notionalSalesPrice).toFixed(2)}</td>
             </tr>
             <tr>
