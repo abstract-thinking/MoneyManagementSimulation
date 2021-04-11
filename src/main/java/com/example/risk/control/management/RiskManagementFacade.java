@@ -9,12 +9,12 @@ import com.example.risk.boundary.api.RiskData;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
 import com.example.risk.boundary.api.SalesRecommendationMetadata;
-import com.example.risk.control.management.caclulate.CurrentDataProcessor;
-import com.example.risk.control.management.caclulate.ExchangeSnapshot;
-import com.example.risk.control.management.caclulate.InvestmentRecommender;
-import com.example.risk.control.management.caclulate.PositionCalculator;
-import com.example.risk.control.management.caclulate.RiskManagementCalculator;
+import com.example.risk.control.management.calculate.CurrentDataProcessor;
+import com.example.risk.control.management.calculate.InvestmentRecommender;
+import com.example.risk.control.management.calculate.PositionCalculator;
+import com.example.risk.control.management.calculate.RiskManagementCalculator;
 import com.example.risk.converter.DecisionRowConverter;
+import com.example.risk.converter.ExchangeSnapshot;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import com.example.risk.data.InvestmentRepository;
@@ -114,7 +114,7 @@ public class RiskManagementFacade {
     }
 
     private ExchangeSnapshot fetchExchangeData() {
-        return new ExchangeSnapshot(converter.fetchTable());
+        return converter.fetchTable();
     }
 
     private void removeIfAlreadyInvested(IndividualRisk individualRisk, PurchaseRecommendationMetadata purchaseRecommendations) {
@@ -175,6 +175,7 @@ public class RiskManagementFacade {
     public CurrentDataResult doCurrent(Long riskManagementId) {
         final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
         final List<Investment> investments = investmentRepository.findAllByRiskManagementId(individualRisk.getId());
+
 
         return new CurrentDataProcessor(fetchExchangeData()).process(investments);
     }

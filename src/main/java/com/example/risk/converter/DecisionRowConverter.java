@@ -18,23 +18,23 @@ public class DecisionRowConverter {
 
     private final RslService rslService;
 
-    public List<ExchangeData> fetchTable() {
+    public ExchangeSnapshot fetchTable() {
         String content = rslService.fetchTable();
 
-        return parseContent(content);
+        return new ExchangeSnapshot(parseContent(content));
     }
 
-    private List<ExchangeData> parseContent(String content) {
+    private List<ExchangeSnapshot.ExchangeData> parseContent(String content) {
         Document doc = Jsoup.parse(content);
 
         //  <table class="extendetKursliste filterTable ov">
         Element table = doc.select("table").get(3);
         Elements rows = table.select("tr");
 
-        List<ExchangeData> result = new ArrayList<>();
+        List<ExchangeSnapshot.ExchangeData> result = new ArrayList<>();
         for (int i = 2; i < rows.size(); ++i) {
             Elements cols = rows.get(i).select("td");
-            result.add(ExchangeData.builder()
+            result.add(ExchangeSnapshot.ExchangeData.builder()
                     .wkn(cols.get(1).text())
                     .name(cols.get(2).text())
                     .price(BigDecimal.valueOf(parseDouble(cols.get(4).text())))
