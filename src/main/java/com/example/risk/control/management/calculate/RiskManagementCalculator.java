@@ -2,9 +2,9 @@ package com.example.risk.control.management.calculate;
 
 import com.example.risk.boundary.api.InvestmentResult;
 import com.example.risk.boundary.api.RiskResult;
-import com.example.risk.converter.ExchangeSnapshot;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
+import com.example.risk.service.finanztreff.ExchangeSnapshot;
 import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
@@ -32,7 +32,7 @@ public class RiskManagementCalculator {
     }
 
     private BigDecimal calculateMaxNotionalPrice(Investment investment) {
-        return exchangeSnapshot.getData().stream()
+        return exchangeSnapshot.getQuotes().stream()
                 .filter(data -> data.getWkn().equalsIgnoreCase(investment.getWkn()))
                 .findFirst()
                 .map(data -> calculateNotionalSalesPrice(data.getRsl(), data.getPrice(), exchangeSnapshot.getRsl()))

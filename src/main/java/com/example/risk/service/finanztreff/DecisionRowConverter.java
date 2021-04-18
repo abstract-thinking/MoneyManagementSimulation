@@ -1,6 +1,5 @@
-package com.example.risk.converter;
+package com.example.risk.service.finanztreff;
 
-import com.example.risk.service.rsl.RslService;
 import lombok.AllArgsConstructor;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -24,21 +23,20 @@ public class DecisionRowConverter {
         return new ExchangeSnapshot(parseContent(content));
     }
 
-    private List<ExchangeSnapshot.ExchangeData> parseContent(String content) {
+    private List<ExchangeSnapshot.Quotes> parseContent(String content) {
         Document doc = Jsoup.parse(content);
 
         //  <table class="extendetKursliste filterTable ov">
         Element table = doc.select("table").get(3);
         Elements rows = table.select("tr");
 
-        List<ExchangeSnapshot.ExchangeData> result = new ArrayList<>();
+        List<ExchangeSnapshot.Quotes> result = new ArrayList<>();
         for (int i = 2; i < rows.size(); ++i) {
             Elements cols = rows.get(i).select("td");
-            result.add(ExchangeSnapshot.ExchangeData.builder()
+            result.add(ExchangeSnapshot.Quotes.builder()
                     .wkn(cols.get(1).text())
                     .name(cols.get(2).text())
                     .price(BigDecimal.valueOf(parseDouble(cols.get(4).text())))
-                    .vola30Day(parseDouble(cols.get(5).text()))
                     .rsl(parseDouble(cols.get(6).text()))
                     .build());
         }

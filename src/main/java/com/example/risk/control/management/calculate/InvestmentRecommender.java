@@ -4,9 +4,9 @@ import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
 import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.boundary.api.SalesRecommendationMetadata;
-import com.example.risk.converter.ExchangeSnapshot;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
+import com.example.risk.service.finanztreff.ExchangeSnapshot;
 import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
@@ -26,7 +26,7 @@ public class InvestmentRecommender {
     public SalesRecommendationMetadata findSaleRecommendations(List<Investment> investments) {
         List<SaleRecommendation> salesRecommendations = new ArrayList<>();
         investments.forEach(investment ->
-                exchangeSnapshot.getData().stream()
+                exchangeSnapshot.getQuotes().stream()
                         .filter(result -> result.getWkn().equalsIgnoreCase(investment.getWkn()))
                         .map(result -> createSellRecommendation(result, investment))
                         .filter(SaleRecommendation::shouldSell)
@@ -37,7 +37,7 @@ public class InvestmentRecommender {
         return new SalesRecommendationMetadata(exchangeSnapshot.getName(), exchangeSnapshot.getRsl(), salesRecommendations);
     }
 
-    private SaleRecommendation createSellRecommendation(ExchangeSnapshot.ExchangeData result, Investment investment) {
+    private SaleRecommendation createSellRecommendation(ExchangeSnapshot.Quotes result, Investment investment) {
         return SaleRecommendation.builder()
                 .id(investment.getId())
                 .wkn(result.getWkn())
@@ -50,18 +50,18 @@ public class InvestmentRecommender {
                 .build();
     }
 
-    private boolean isCurrentPriceLowerThanStopPrice(ExchangeSnapshot.ExchangeData result, Investment investment) {
+    private boolean isCurrentPriceLowerThanStopPrice(ExchangeSnapshot.Quotes result, Investment investment) {
         return result.getPrice().min(investment.getStopPrice()).equals(result.getPrice());
     }
 
-    private boolean isCompanyRslLowerThanExchangeRsl(ExchangeSnapshot.ExchangeData result) {
+    private boolean isCompanyRslLowerThanExchangeRsl(ExchangeSnapshot.Quotes result) {
         return result.getRsl() < exchangeSnapshot.getRsl();
     }
 
     public PurchaseRecommendationMetadata findPurchaseRecommendations(IndividualRisk individualRisk) {
-        List<PurchaseRecommendation> purchaseRecommendations = exchangeSnapshot.getData().stream()
+        List<PurchaseRecommendation> purchaseRecommendations = exchangeSnapshot.getQuotes().stream()
                 .filter(result -> result.getRsl() > exchangeSnapshot.getRsl())
-                .sorted(comparingDouble(ExchangeSnapshot.ExchangeData::getRsl).reversed())
+                .sorted(comparingDouble(ExchangeSnapshot.Quotes::getRsl).reversed())
                 .limit(7)
                 .map(result -> createBuyRecommendation(result, individualRisk))
                 .collect(toList());
@@ -70,7 +70,7 @@ public class InvestmentRecommender {
                 exchangeSnapshot.getRsl(), purchaseRecommendations);
     }
 
-    private PurchaseRecommendation createBuyRecommendation(ExchangeSnapshot.ExchangeData result, IndividualRisk individualRisk) {
+    private PurchaseRecommendation createBuyRecommendation(ExchangeSnapshot.Quotes result, IndividualRisk individualRisk) {
         final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(result.getRsl(), result.getPrice(),
                 exchangeSnapshot.getRsl());
 
@@ -81,12 +81,11 @@ public class InvestmentRecommender {
         return createPurchaseRecommendation(result, notionalSalesPrice, quantity);
     }
 
-    private PurchaseRecommendation createPurchaseRecommendation(ExchangeSnapshot.ExchangeData result, BigDecimal notionalSalesPrice, int quantity) {
+    private PurchaseRecommendation createPurchaseRecommendation(ExchangeSnapshot.Quotes result, BigDecimal notionalSalesPrice, int quantity) {
         return PurchaseRecommendation.builder()
                 .name(result.getName())
                 .rsl(result.getRsl())
                 .wkn(result.getWkn())
-                .vola30Day(result.getVola30Day())
                 .price(result.getPrice())
                 .notionalSalesPrice(notionalSalesPrice)
                 .quantity(quantity)

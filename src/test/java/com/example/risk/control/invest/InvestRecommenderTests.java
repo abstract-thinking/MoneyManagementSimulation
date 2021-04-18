@@ -3,7 +3,7 @@ package com.example.risk.control.invest;
 import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.boundary.api.SalesRecommendationMetadata;
 import com.example.risk.control.management.calculate.InvestmentRecommender;
-import com.example.risk.service.rsl.RslService;
+import com.example.risk.service.finanztreff.RslService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;

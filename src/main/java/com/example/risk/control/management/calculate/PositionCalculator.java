@@ -1,8 +1,8 @@
 package com.example.risk.control.management.calculate;
 
 import com.example.risk.boundary.api.CalculationResult;
-import com.example.risk.converter.ExchangeSnapshot;
 import com.example.risk.data.IndividualRisk;
+import com.example.risk.service.finanztreff.ExchangeSnapshot;
 import lombok.AllArgsConstructor;
 
 import java.math.BigDecimal;
@@ -16,7 +16,7 @@ public class PositionCalculator {
     private final ExchangeSnapshot exchangeSnapshot;
 
     public CalculationResult calculate(String wkn, IndividualRisk individualRisk) {
-        final ExchangeSnapshot.ExchangeData foundExchangeData = findExchangeData(wkn);
+        final ExchangeSnapshot.Quotes foundExchangeData = findExchangeData(wkn);
         final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(
                 foundExchangeData.getRsl(), foundExchangeData.getPrice(), exchangeSnapshot.getRsl());
 
@@ -27,14 +27,14 @@ public class PositionCalculator {
         return createResult(individualRisk, foundExchangeData, notionalSalesPrice, quantity);
     }
 
-    private ExchangeSnapshot.ExchangeData findExchangeData(String wkn) {
-        return exchangeSnapshot.getData().stream()
+    private ExchangeSnapshot.Quotes findExchangeData(String wkn) {
+        return exchangeSnapshot.getQuotes().stream()
                 .filter(data -> data.getWkn().equalsIgnoreCase(wkn))
                 .findFirst()
                 .orElseThrow();
     }
 
-    private CalculationResult createResult(IndividualRisk individualRisk, ExchangeSnapshot.ExchangeData foundExchangeData, BigDecimal notionalSalesPrice, int quantity) {
+    private CalculationResult createResult(IndividualRisk individualRisk, ExchangeSnapshot.Quotes foundExchangeData, BigDecimal notionalSalesPrice, int quantity) {
         return CalculationResult.builder()
                 .wkn(foundExchangeData.getWkn())
                 .name(foundExchangeData.getName())

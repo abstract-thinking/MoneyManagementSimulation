@@ -1,4 +1,4 @@
-package com.example.risk.service.rsl;
+package com.example.risk.service.finanztreff;
 
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;

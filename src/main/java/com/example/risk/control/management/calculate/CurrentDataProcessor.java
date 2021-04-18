@@ -2,8 +2,8 @@ package com.example.risk.control.management.calculate;
 
 import com.example.risk.boundary.api.CurrentData;
 import com.example.risk.boundary.api.CurrentDataResult;
-import com.example.risk.converter.ExchangeSnapshot;
 import com.example.risk.data.Investment;
+import com.example.risk.service.finanztreff.ExchangeSnapshot;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
@@ -19,7 +19,8 @@ public class CurrentDataProcessor {
     public CurrentDataResult process(List<Investment> investments) {
         final List<CurrentData> currentData = new ArrayList<>();
 
-        investments.forEach(investment -> exchangeSnapshot.getData().forEach(data -> {
+        investments.forEach(investment ->
+                exchangeSnapshot.getQuotes().forEach(data -> {
                     if (investment.getWkn().equalsIgnoreCase(data.getWkn())) {
                         currentData.add(createCurrentData(investment, data));
                     }
@@ -31,7 +32,7 @@ public class CurrentDataProcessor {
         return new CurrentDataResult(exchangeSnapshot.getName(), exchangeSnapshot.getRsl(), currentData);
     }
 
-    private CurrentData createCurrentData(Investment investment, ExchangeSnapshot.ExchangeData data) {
+    private CurrentData createCurrentData(Investment investment, ExchangeSnapshot.Quotes data) {
         return CurrentData.builder()
                 .wkn(data.getWkn())
                 .name(data.getName())

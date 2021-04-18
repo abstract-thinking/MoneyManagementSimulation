@@ -1,5 +1,6 @@
 package com.example.risk.service.rsl;
 
+import com.example.risk.service.finanztreff.RslService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;

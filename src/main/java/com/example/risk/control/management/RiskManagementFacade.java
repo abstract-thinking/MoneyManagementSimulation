@@ -13,12 +13,12 @@ import com.example.risk.control.management.calculate.CurrentDataProcessor;
 import com.example.risk.control.management.calculate.InvestmentRecommender;
 import com.example.risk.control.management.calculate.PositionCalculator;
 import com.example.risk.control.management.calculate.RiskManagementCalculator;
-import com.example.risk.converter.DecisionRowConverter;
-import com.example.risk.converter.ExchangeSnapshot;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import com.example.risk.data.InvestmentRepository;
 import com.example.risk.data.RiskManagementRepository;
+import com.example.risk.service.finanztreff.DecisionRowConverter;
+import com.example.risk.service.finanztreff.ExchangeSnapshot;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
