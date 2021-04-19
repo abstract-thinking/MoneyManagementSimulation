@@ -7,8 +7,7 @@ import java.util.List;
 @Value
 public class CurrentDataResult {
 
-    String exchange;
-    double exchangeRsl;
+    ExchangeResult2 exchangeResult;
 
     List<CurrentData> currentData;
 }

@@ -2,52 +2,73 @@ package com.example.risk.control.management;
 
 import com.example.risk.boundary.api.CalculationResult;
 import com.example.risk.boundary.api.CurrentDataResult;
+import com.example.risk.boundary.api.ExchangeResult;
 import com.example.risk.boundary.api.InvestmentResult;
 import com.example.risk.boundary.api.PurchaseRecommendation;
-import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
+import com.example.risk.boundary.api.PurchaseRecommendations;
 import com.example.risk.boundary.api.RiskData;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
-import com.example.risk.boundary.api.SalesRecommendationMetadata;
-import com.example.risk.control.management.calculate.CurrentDataProcessor;
-import com.example.risk.control.management.calculate.InvestmentRecommender;
-import com.example.risk.control.management.calculate.PositionCalculator;
-import com.example.risk.control.management.calculate.RiskManagementCalculator;
+import com.example.risk.boundary.api.SalesRecommendations;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import com.example.risk.data.InvestmentRepository;
 import com.example.risk.data.RiskManagementRepository;
+import com.example.risk.service.CurrentDataProcessor;
+import com.example.risk.service.InvestmentRecommender;
+import com.example.risk.service.PositionCalculator;
+import com.example.risk.service.PriceCalculator;
+import com.example.risk.service.RelativeStrengthCalculator;
 import com.example.risk.service.finanztreff.DecisionRowConverter;
 import com.example.risk.service.finanztreff.ExchangeSnapshot;
+import com.example.risk.service.tradier.Quote;
+import com.example.risk.service.tradier.TradierService;
+import com.example.risk.service.wiki.Company;
+import com.example.risk.service.wiki.WikiService;
+import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static java.util.Collections.singletonList;
 
+@AllArgsConstructor
 @Component
 public class RiskManagementFacade {
 
     private final RiskManagementRepository riskManagementRepository;
+
     private final InvestmentRepository investmentRepository;
+
     private final DecisionRowConverter converter;
 
-    public RiskManagementFacade(RiskManagementRepository riskManagementRepository,
-                                InvestmentRepository investmentRepository, DecisionRowConverter converter) {
-        this.riskManagementRepository = riskManagementRepository;
-        this.investmentRepository = investmentRepository;
-        this.converter = converter;
-    }
+    private final CurrentDataProcessor.RiskManagementCalculator riskManagementCalculator;
+
+    private final CurrentDataProcessor currentDataProcessor;
+
+    private final WikiService wikiService;
+
+    private final TradierService tradierService;
+
+    private final RelativeStrengthCalculator relativeStrengthCalculator;
+
+    private final PriceCalculator priceCalculator;
+
+    private final InvestmentRecommender investmentRecommender;
 
     public RiskResults doRiskManagements() {
         final List<RiskResult> riskResults = new ArrayList<>();
 
         riskManagementRepository.findAll().forEach(risk -> {
                     final List<Investment> investments = investmentRepository.findAllByRiskManagementId(risk.getId());
-                    final RiskManagementCalculator riskManagementCalculator =
-                            new RiskManagementCalculator(risk, investments, fetchExchangeData());
-                    riskResults.add(riskManagementCalculator.calculatePositionRisk());
+                    riskResults.add(riskManagementCalculator.calculatePositionRisk(fetchExchangeData(), risk, investments));
                 }
         );
 
@@ -58,11 +79,9 @@ public class RiskManagementFacade {
         final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
         final List<Investment> investments = investmentRepository.findAllByRiskManagementId(individualRisk.getId());
 
-        final RiskManagementCalculator riskManagementCalculator = new RiskManagementCalculator(individualRisk, investments, fetchExchangeData());
-        final RiskResult riskResult = riskManagementCalculator.calculatePositionRisk();
+        final RiskResult riskResult = riskManagementCalculator.calculatePositionRisk(fetchExchangeData(), individualRisk, investments);
 
-        new InvestmentRecommender(fetchExchangeData())
-                .findSaleRecommendations(investments)
+        investmentRecommender.findSaleRecommendations(fetchExchangeData(), investments)
                 .getSaleRecommendations().forEach(sellRecommendation ->
                 riskResult.getInvestments().stream()
                         .filter(investment -> sellRecommendation.getWkn().equalsIgnoreCase(investment.getWkn()))
@@ -73,14 +92,14 @@ public class RiskManagementFacade {
         return riskResult;
     }
 
-    public SalesRecommendationMetadata doSaleRecommendations(Long riskManagementId) {
+    public SalesRecommendations doSaleRecommendations(Long riskManagementId) {
         final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
         final List<Investment> investments = investmentRepository.findAllByRiskManagementId(individualRisk.getId());
 
-        return new InvestmentRecommender(fetchExchangeData()).findSaleRecommendations(investments);
+        return investmentRecommender.findSaleRecommendations(fetchExchangeData(), investments);
     }
 
-    public SalesRecommendationMetadata doSaleRecommendation(Long riskManagementId, Long investmentId) {
+    public SalesRecommendations doSaleRecommendation(Long riskManagementId, Long investmentId) {
         final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
         final List<Investment> investments = investmentRepository.findAllByRiskManagementId(individualRisk.getId());
         final Investment investment = investments.stream()
@@ -88,14 +107,14 @@ public class RiskManagementFacade {
                 .findFirst()
                 .orElseThrow();
 
-        return new InvestmentRecommender(fetchExchangeData()).findSaleRecommendations(singletonList(investment));
+        return investmentRecommender.findSaleRecommendations(fetchExchangeData(), singletonList(investment));
     }
 
-    public PurchaseRecommendationMetadata doPurchaseRecommendations(Long riskManagementId) {
+    public PurchaseRecommendations doPurchaseRecommendations(Long riskManagementId) {
         final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
 
-        final PurchaseRecommendationMetadata purchaseRecommendations = new InvestmentRecommender(fetchExchangeData())
-                .findPurchaseRecommendations(individualRisk);
+        final PurchaseRecommendations purchaseRecommendations =
+                investmentRecommender.findPurchaseRecommendations(fetchExchangeData(), individualRisk);
 
         removeIfAlreadyInvested(individualRisk, purchaseRecommendations);
 
@@ -105,8 +124,7 @@ public class RiskManagementFacade {
     public PurchaseRecommendation doPurchaseRecommendation(Long riskManagementId, String wkn) {
         final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
 
-        return new InvestmentRecommender(fetchExchangeData())
-                .findPurchaseRecommendations(individualRisk)
+        return investmentRecommender.findPurchaseRecommendations(fetchExchangeData(), individualRisk)
                 .getPurchaseRecommendations().stream()
                 .filter(purchaseRecommendation -> purchaseRecommendation.getWkn().equalsIgnoreCase(wkn))
                 .findFirst()
@@ -117,7 +135,7 @@ public class RiskManagementFacade {
         return converter.fetchTable();
     }
 
-    private void removeIfAlreadyInvested(IndividualRisk individualRisk, PurchaseRecommendationMetadata purchaseRecommendations) {
+    private void removeIfAlreadyInvested(IndividualRisk individualRisk, PurchaseRecommendations purchaseRecommendations) {
         investmentRepository.findAllByRiskManagementId(individualRisk.getId()).forEach(investment ->
                 purchaseRecommendations.getPurchaseRecommendations().removeIf(recommendation ->
                         recommendation.getWkn().equalsIgnoreCase(investment.getWkn())));
@@ -152,10 +170,13 @@ public class RiskManagementFacade {
         investmentRepository.deleteById(investmentId);
     }
 
+    @Autowired
+    PositionCalculator positionCalculator;
+
     public CalculationResult doPositionCalculation(long riskManagementId, String wkn) {
         final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
 
-        return new PositionCalculator(fetchExchangeData()).calculate(wkn, individualRisk);
+        return positionCalculator.calculate(fetchExchangeData(), wkn, individualRisk);
     }
 
     public void doUpdateCoreData(Long riskManagementId, RiskData riskData) {
@@ -176,7 +197,39 @@ public class RiskManagementFacade {
         final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
         final List<Investment> investments = investmentRepository.findAllByRiskManagementId(individualRisk.getId());
 
+        return currentDataProcessor.process(fetchExchangeData(), investments);
+    }
 
-        return new CurrentDataProcessor(fetchExchangeData()).process(investments);
+    public ExchangeResult doIt(String exchange) throws ExecutionException, InterruptedException {
+        List<Company> companies = wikiService.fetchCompanies(exchange);
+
+        Map<Company, CompletableFuture<List<Quote>>> futures = new HashMap<>();
+        for (Company company : companies) {
+            futures.put(company, tradierService.fetchWeeklyQuotes(company.getSymbol()));
+        }
+
+        ExchangeResult result = new ExchangeResult(exchange);
+        for (Map.Entry<Company, CompletableFuture<List<Quote>>> future : futures.entrySet()) {
+            final List<Quote> quotes = future.getValue().get();
+            final double rsl = relativeStrengthCalculator.calculateRelativeStrengthLevy(quotes);
+            final BigDecimal stopPrice = priceCalculator.calculateStopPrice(quotes);
+
+            final Quote lastQuote = quotes.get(quotes.size() - 1);
+            result.add(createCompanyResult(future.getKey(), rsl, stopPrice, lastQuote));
+        }
+
+        result.setRsl(relativeStrengthCalculator.calculateExchangeRsl(result.getCompanyResults()));
+
+        return result;
+    }
+
+    private ExchangeResult.CompanyResult createCompanyResult(Company company, double rsl, BigDecimal stopPrice, Quote quote) {
+        return ExchangeResult.CompanyResult.builder()
+                .company(company)
+                .rsl(rsl)
+                .stopPrice(stopPrice)
+                .date(quote.getDate())
+                .weeklyPrice(quote.getClose())
+                .build();
     }
 }

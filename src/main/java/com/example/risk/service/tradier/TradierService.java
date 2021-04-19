@@ -2,9 +2,11 @@ package com.example.risk.service.tradier;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 
@@ -18,6 +20,7 @@ import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
 @Slf4j
+@Service
 public class TradierService {
 
     private static final String URL = "https://sandbox.tradier.com/v1/markets/history";
@@ -27,7 +30,8 @@ public class TradierService {
     @Value("${tradier.key}")
     private String key;
 
-    private CompletableFuture<List<Quote>> fetchWeeklyQuotes(String symbol) {
+    @Cacheable("fetchWeeklyQuotes")
+    public CompletableFuture<List<Quote>> fetchWeeklyQuotes(String symbol) {
         HttpHeaders headers = new HttpHeaders();
         headers.set(AUTHORIZATION, "Bearer " + key);
         headers.set(ACCEPT, APPLICATION_JSON_VALUE);

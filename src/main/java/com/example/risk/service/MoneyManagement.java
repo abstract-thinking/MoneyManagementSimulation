@@ -1,13 +1,12 @@
-package com.example.risk.control.management.calculate;
+package com.example.risk.service;
 
-import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.Value;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Service
 public class MoneyManagement {
 
     public static int calculateQuantity(BigDecimal relativePositionRisk, Parameters parameters) {
@@ -16,7 +15,7 @@ public class MoneyManagement {
     }
 
     @Value
-    static class Parameters {
+    public static class Parameters {
 
         BigDecimal purchasePrice;
         BigDecimal stopPrice;

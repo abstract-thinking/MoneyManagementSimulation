@@ -3,11 +3,11 @@ package com.example.risk.boundary;
 import com.example.risk.boundary.api.CalculationResult;
 import com.example.risk.boundary.api.CurrentDataResult;
 import com.example.risk.boundary.api.InvestmentResult;
-import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
+import com.example.risk.boundary.api.PurchaseRecommendations;
 import com.example.risk.boundary.api.RiskData;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
-import com.example.risk.boundary.api.SalesRecommendationMetadata;
+import com.example.risk.boundary.api.SalesRecommendations;
 import com.example.risk.control.management.RiskManagementFacade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -97,14 +97,14 @@ public class RiskManagementController {
     }
 
     @GetMapping(path = "/api/riskManagements/{riskManagementId}/recommendations/sales", produces = APPLICATION_JSON_VALUE)
-    public SalesRecommendationMetadata saleRecommendations(@PathVariable("riskManagementId") Long riskManagementId) {
+    public SalesRecommendations saleRecommendations(@PathVariable("riskManagementId") Long riskManagementId) {
         log.info("Sale recommendations invoked");
 
         return riskManagementFacade.doSaleRecommendations(riskManagementId);
     }
 
     @GetMapping(path = "/api/riskManagements/{riskManagementId}/recommendations/sales/{investmentId}", produces = APPLICATION_JSON_VALUE)
-    public SalesRecommendationMetadata saleRecommendation(
+    public SalesRecommendations saleRecommendation(
             @PathVariable("riskManagementId") Long riskManagementId,
             @PathVariable("investmentId") Long investmentId) {
         log.info("Sale recommendation invoked");
@@ -113,7 +113,7 @@ public class RiskManagementController {
     }
 
     @GetMapping(path = "/api/riskManagements/{riskManagementId}/recommendations/purchases", produces = APPLICATION_JSON_VALUE)
-    public PurchaseRecommendationMetadata purchaseRecommendations(@PathVariable Long riskManagementId) {
+    public PurchaseRecommendations purchaseRecommendations(@PathVariable Long riskManagementId) {
         log.info("Purchase recommendations invoked");
 
         return riskManagementFacade.doPurchaseRecommendations(riskManagementId);

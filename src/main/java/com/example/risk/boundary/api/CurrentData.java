@@ -8,7 +8,6 @@ import java.math.BigDecimal;
 @Value
 @Builder
 public class CurrentData {
-
     String wkn;
     String name;
     BigDecimal price;

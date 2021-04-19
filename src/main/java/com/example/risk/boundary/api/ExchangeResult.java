@@ -1,5 +1,6 @@
-package com.example.risk;
+package com.example.risk.boundary.api;
 
+import com.example.risk.service.wiki.Company;
 import lombok.Builder;
 import lombok.Data;
 import lombok.ToString;
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Data
 public class ExchangeResult {
+
     final String name;
     double rsl;
 
@@ -22,17 +24,6 @@ public class ExchangeResult {
 
     public void add(CompanyResult companyResult) {
         companyResults.add(companyResult);
-    }
-
-    public void calculateRsl() {
-        rsl = sum() / companyResults.size();
-    }
-
-    private double sum() {
-        return companyResults.stream()
-                .map(CompanyResult::getRsl)
-                .mapToDouble(Double::doubleValue)
-                .sum();
     }
 
     @Data

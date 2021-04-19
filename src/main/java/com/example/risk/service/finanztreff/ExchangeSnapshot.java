@@ -14,32 +14,39 @@ import java.util.List;
 @ToString
 public class ExchangeSnapshot {
 
-    final String name;
-
-    final BigDecimal transactionCosts;
-
-    double rsl;
-
+    final Exchange exchange;
     List<Quotes> quotes;
 
     public ExchangeSnapshot(List<Quotes> quotes) {
-        this.name = "NASDAQ 100";
+        this.exchange = new Exchange(findExchangeRsl(quotes));
+        this.quotes = quotes;
+    }
+
+    private double findExchangeRsl(List<Quotes> exchangeData) {
+        return exchangeData.stream()
+                .filter(result -> result.getName().equals(exchange.getName()))
+                .findFirst()
+                .orElseThrow()
+                .getRsl();
+    }
+
+    @Data
+    @Builder
+    @ToString
+    public static class Exchange {
+        private final String name = "NASDAQ 100";
         // Gesamtkosten Kauf + Verkauf: 48,38 EUR (0,03 %)
         // Gesamtkosten Kauf + Verkauf: 40,34 EUR (0,04 %)
         // Gesamtkosten Kauf + Verkauf: 51,82 EUR (0,02 %)
         // Gesamtkosten Kauf + Verkauf: 53,13 EUR (0,02 %)
         // Gesamtkosten Kauf + Verkauf: 43,77 EUR (0,03 %)
-        this.transactionCosts = BigDecimal.valueOf(60);
-        this.quotes = quotes;
-        this.rsl = findExchangeRsl(quotes);
-    }
+        private final BigDecimal transactionCosts = BigDecimal.valueOf(60);
 
-    private double findExchangeRsl(List<Quotes> exchangeData) {
-        return exchangeData.stream()
-                .filter(result -> result.getName().equals(name))
-                .findFirst()
-                .orElseThrow()
-                .getRsl();
+        private final double rsl;
+
+        public Exchange(double rsl) {
+            this.rsl = rsl;
+        }
     }
 
     @Data

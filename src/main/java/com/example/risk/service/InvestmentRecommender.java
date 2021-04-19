@@ -1,43 +1,43 @@
-package com.example.risk.control.management.calculate;
+package com.example.risk.service;
 
+import com.example.risk.boundary.api.ExchangeResult2;
 import com.example.risk.boundary.api.PurchaseRecommendation;
-import com.example.risk.boundary.api.PurchaseRecommendationMetadata;
+import com.example.risk.boundary.api.PurchaseRecommendations;
 import com.example.risk.boundary.api.SaleRecommendation;
-import com.example.risk.boundary.api.SalesRecommendationMetadata;
+import com.example.risk.boundary.api.SalesRecommendations;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import com.example.risk.service.finanztreff.ExchangeSnapshot;
-import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.example.risk.control.management.calculate.MoneyManagement.calculateQuantity;
-import static com.example.risk.control.management.calculate.PriceCalculator.calculateNotionalSalesPrice;
+import static com.example.risk.service.MoneyManagement.calculateQuantity;
+import static com.example.risk.service.PriceCalculator.calculateNotionalSalesPrice;
 import static java.util.Comparator.comparingDouble;
 import static java.util.stream.Collectors.toList;
 
-@AllArgsConstructor
+@Service
 public class InvestmentRecommender {
 
-    private final ExchangeSnapshot exchangeSnapshot;
-
-    public SalesRecommendationMetadata findSaleRecommendations(List<Investment> investments) {
+    public SalesRecommendations findSaleRecommendations(ExchangeSnapshot snapshot, List<Investment> investments) {
         List<SaleRecommendation> salesRecommendations = new ArrayList<>();
         investments.forEach(investment ->
-                exchangeSnapshot.getQuotes().stream()
+                snapshot.getQuotes().stream()
                         .filter(result -> result.getWkn().equalsIgnoreCase(investment.getWkn()))
-                        .map(result -> createSellRecommendation(result, investment))
+                        .map(result -> createSellRecommendation(snapshot, result, investment))
                         .filter(SaleRecommendation::shouldSell)
                         .findFirst()
                         .ifPresent(salesRecommendations::add)
         );
 
-        return new SalesRecommendationMetadata(exchangeSnapshot.getName(), exchangeSnapshot.getRsl(), salesRecommendations);
+        ExchangeResult2 exchangeResult = new ExchangeResult2(snapshot.getExchange().getName(), snapshot.getExchange().getRsl());
+        return new SalesRecommendations(exchangeResult, salesRecommendations);
     }
 
-    private SaleRecommendation createSellRecommendation(ExchangeSnapshot.Quotes result, Investment investment) {
+    private SaleRecommendation createSellRecommendation(ExchangeSnapshot exchangeSnapshot, ExchangeSnapshot.Quotes result, Investment investment) {
         return SaleRecommendation.builder()
                 .id(investment.getId())
                 .wkn(result.getWkn())
@@ -46,7 +46,7 @@ public class InvestmentRecommender {
                 .price(result.getPrice())
                 .notionalSalesPrice(investment.getStopPrice())
                 .shouldSellByStopPrice(isCurrentPriceLowerThanStopPrice(result, investment))
-                .shouldSellByRslComparison(isCompanyRslLowerThanExchangeRsl(result))
+                .shouldSellByRslComparison(isCompanyRslLowerThanExchangeRsl(exchangeSnapshot, result))
                 .build();
     }
 
@@ -54,28 +54,28 @@ public class InvestmentRecommender {
         return result.getPrice().min(investment.getStopPrice()).equals(result.getPrice());
     }
 
-    private boolean isCompanyRslLowerThanExchangeRsl(ExchangeSnapshot.Quotes result) {
-        return result.getRsl() < exchangeSnapshot.getRsl();
+    private boolean isCompanyRslLowerThanExchangeRsl(ExchangeSnapshot snapshot, ExchangeSnapshot.Quotes company) {
+        return company.getRsl() < snapshot.getExchange().getRsl();
     }
 
-    public PurchaseRecommendationMetadata findPurchaseRecommendations(IndividualRisk individualRisk) {
-        List<PurchaseRecommendation> purchaseRecommendations = exchangeSnapshot.getQuotes().stream()
-                .filter(result -> result.getRsl() > exchangeSnapshot.getRsl())
+    public PurchaseRecommendations findPurchaseRecommendations(ExchangeSnapshot snapshot, IndividualRisk individualRisk) {
+        List<PurchaseRecommendation> purchaseRecommendations = snapshot.getQuotes().stream()
+                .filter(result -> result.getRsl() > snapshot.getExchange().getRsl())
                 .sorted(comparingDouble(ExchangeSnapshot.Quotes::getRsl).reversed())
                 .limit(7)
-                .map(result -> createBuyRecommendation(result, individualRisk))
+                .map(result -> createBuyRecommendation(snapshot, result, individualRisk))
                 .collect(toList());
 
-        return new PurchaseRecommendationMetadata(exchangeSnapshot.getName(),
-                exchangeSnapshot.getRsl(), purchaseRecommendations);
+        ExchangeResult2 exchangeResult = new ExchangeResult2(snapshot.getExchange().getName(), snapshot.getExchange().getRsl());
+        return new PurchaseRecommendations(exchangeResult, purchaseRecommendations);
     }
 
-    private PurchaseRecommendation createBuyRecommendation(ExchangeSnapshot.Quotes result, IndividualRisk individualRisk) {
+    private PurchaseRecommendation createBuyRecommendation(ExchangeSnapshot snapshot, ExchangeSnapshot.Quotes result, IndividualRisk individualRisk) {
         final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(result.getRsl(), result.getPrice(),
-                exchangeSnapshot.getRsl());
+                snapshot.getExchange().getRsl());
 
         final MoneyManagement.Parameters purchaseParameters = new MoneyManagement.Parameters(
-                result.getPrice(), notionalSalesPrice, exchangeSnapshot.getTransactionCosts());
+                result.getPrice(), notionalSalesPrice, snapshot.getExchange().getTransactionCosts());
         final int quantity = calculateQuantity(individualRisk.calculateIndividualPositionRisk(), purchaseParameters);
 
         return createPurchaseRecommendation(result, notionalSalesPrice, quantity);

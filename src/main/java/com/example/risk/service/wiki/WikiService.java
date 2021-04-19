@@ -4,16 +4,20 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Service
 public class WikiService {
 
     private static final String URL_FORMAT = "https://en.wikipedia.org/wiki/%s#Components";
 
+    @Cacheable("fetchCompanies")
     public List<Company> fetchCompanies(String exchange) {
         ResponseEntity<String> result = new RestTemplate().getForEntity(String.format(URL_FORMAT, exchange), String.class);
 

@@ -35,7 +35,7 @@ public class Investment {
     // Do I need relation table between?
     private Long riskManagementId;
 
-    public BigDecimal getInvestment() {
+    public BigDecimal getInvestmentCapital() {
         return purchasePrice.multiply(BigDecimal.valueOf(quantity));
     }
 

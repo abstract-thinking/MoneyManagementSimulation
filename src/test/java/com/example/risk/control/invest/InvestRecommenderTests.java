@@ -1,8 +1,8 @@
 package com.example.risk.control.invest;
 
 import com.example.risk.boundary.api.SaleRecommendation;
-import com.example.risk.boundary.api.SalesRecommendationMetadata;
-import com.example.risk.control.management.calculate.InvestmentRecommender;
+import com.example.risk.boundary.api.SalesRecommendations;
+import com.example.risk.service.InvestmentRecommender;
 import com.example.risk.service.finanztreff.RslService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Disabled;
@@ -50,7 +50,7 @@ public class InvestRecommenderTests {
         when(rslService.fetchTable()).thenReturn(asString(resource));
 
         // FIXME:
-        SalesRecommendationMetadata saleRecommendations = recommender.findSaleRecommendations(null);
+        SalesRecommendations saleRecommendations = recommender.findSaleRecommendations(null, null);
 
         assertThat(saleRecommendations.getSaleRecommendations()).hasSize(2);
         assertThat(saleRecommendations.getSaleRecommendations()).contains(

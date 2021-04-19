@@ -21,7 +21,7 @@ class InvestmentTest {
 
     @Test
     void shouldGetInvestment() {
-        BigDecimal investment = this.investment.getInvestment();
+        BigDecimal investment = this.investment.getInvestmentCapital();
 
         assertThat(investment).isEqualTo(BigDecimal.valueOf(100));
     }
@@ -33,7 +33,7 @@ class InvestmentTest {
                 .purchasePrice(BigDecimal.valueOf(50))
                 .build();
 
-        assertThat(investment.getInvestment()).isEqualTo(BigDecimal.valueOf(2050));
+        assertThat(investment.getInvestmentCapital()).isEqualTo(BigDecimal.valueOf(2050));
     }
 
 

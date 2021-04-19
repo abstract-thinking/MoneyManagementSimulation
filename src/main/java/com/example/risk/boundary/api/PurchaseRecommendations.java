@@ -5,10 +5,9 @@ import lombok.Value;
 import java.util.List;
 
 @Value
-public class PurchaseRecommendationMetadata {
+public class PurchaseRecommendations {
 
-    String exchange;
-    double exchangeRsl;
+    ExchangeResult2 exchangeResult;
 
     List<PurchaseRecommendation> purchaseRecommendations;
 }
