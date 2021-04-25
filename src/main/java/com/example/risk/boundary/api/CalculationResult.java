@@ -15,7 +15,7 @@ public class CalculationResult {
     BigDecimal notionalSalesPrice;
     double rsl;
 
-    ExchangeResult2 exchangeResult;
+    ExchangeResult exchangeResult;
 
     int quantity;
     BigDecimal transactionCosts;

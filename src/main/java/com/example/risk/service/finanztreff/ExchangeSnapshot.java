@@ -11,7 +11,6 @@ import java.util.List;
 @Builder
 @Data
 @AllArgsConstructor
-@ToString
 public class ExchangeSnapshot {
 
     final Exchange exchange;
@@ -24,7 +23,7 @@ public class ExchangeSnapshot {
 
     private double findExchangeRsl(List<Quotes> exchangeData) {
         return exchangeData.stream()
-                .filter(result -> result.getName().equals(exchange.getName()))
+                .filter(result -> result.getName().equals("NASDAQ 100"))
                 .findFirst()
                 .orElseThrow()
                 .getRsl();

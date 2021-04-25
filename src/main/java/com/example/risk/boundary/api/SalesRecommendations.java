@@ -7,6 +7,6 @@ import java.util.List;
 @Value
 public class SalesRecommendations {
 
-    ExchangeResult2 exchangeResult;
+    ExchangeResult exchangeResult;
     List<SaleRecommendation> saleRecommendations;
 }

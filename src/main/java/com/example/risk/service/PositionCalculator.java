@@ -1,7 +1,9 @@
 package com.example.risk.service;
 
 import com.example.risk.boundary.api.CalculationResult;
-import com.example.risk.boundary.api.ExchangeResult2;
+import com.example.risk.boundary.api.ExchangeResult;
+import com.example.risk.boundary.api.QueryResult;
+import com.example.risk.control.management.Exchange;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.service.finanztreff.ExchangeSnapshot;
 import org.springframework.stereotype.Service;
@@ -15,20 +17,41 @@ import static com.example.risk.service.PriceCalculator.calculateNotionalSalesPri
 public class PositionCalculator {
 
     public CalculationResult calculate(ExchangeSnapshot snapshot, String wkn, IndividualRisk individualRisk) {
-        final ExchangeSnapshot.Quotes foundExchangeData = findExchangeData(snapshot, wkn);
+        final ExchangeSnapshot.Quotes foundQuotes = findQuotes(snapshot, wkn);
+
         final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(
-                foundExchangeData.getRsl(), foundExchangeData.getPrice(), snapshot.getExchange().getRsl());
+                foundQuotes.getRsl(), foundQuotes.getPrice(), snapshot.getExchange().getRsl());
 
-        final MoneyManagement.Parameters purchaseParameters = new MoneyManagement.Parameters(
-                foundExchangeData.getPrice(), notionalSalesPrice, snapshot.getExchange().getTransactionCosts());
-        final int quantity = calculateQuantity(individualRisk.calculateIndividualPositionRisk(), purchaseParameters);
+        final MoneyManagement.Parameters parameters = new MoneyManagement.Parameters(
+                foundQuotes.getPrice(), notionalSalesPrice, snapshot.getExchange().getTransactionCosts());
+        final int quantity = calculateQuantity(individualRisk.calculateIndividualPositionRisk(), parameters);
 
-        return createResult(snapshot, individualRisk, foundExchangeData, notionalSalesPrice, quantity);
+        return createResult(snapshot, individualRisk, foundQuotes, notionalSalesPrice, quantity);
     }
 
-    private ExchangeSnapshot.Quotes findExchangeData(ExchangeSnapshot exchangeSnapshot, String wkn) {
+    public CalculationResult calculate(QueryResult queryResult, String symbol, IndividualRisk individualRisk) {
+        final QueryResult.CompanyResult foundQuotes = findQuotes(queryResult, symbol);
+
+        final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(
+                foundQuotes.getRsl(), foundQuotes.getWeeklyPrice(), queryResult.getExchange().getRsl());
+
+        final MoneyManagement.Parameters parameters = new MoneyManagement.Parameters(
+                foundQuotes.getWeeklyPrice(), notionalSalesPrice, queryResult.getExchange().getTransactionCosts());
+        final int quantity = calculateQuantity(individualRisk.calculateIndividualPositionRisk(), parameters);
+
+        return createResult(queryResult.getExchange(), individualRisk, foundQuotes, notionalSalesPrice, quantity);
+    }
+
+    private ExchangeSnapshot.Quotes findQuotes(ExchangeSnapshot exchangeSnapshot, String wkn) {
         return exchangeSnapshot.getQuotes().stream()
                 .filter(data -> data.getWkn().equalsIgnoreCase(wkn))
+                .findFirst()
+                .orElseThrow();
+    }
+
+    private QueryResult.CompanyResult findQuotes(QueryResult queryResult, String symbol) {
+        return queryResult.getCompanyResults().stream()
+                .filter(company -> company.getSymbol().equalsIgnoreCase(symbol))
                 .findFirst()
                 .orElseThrow();
     }
@@ -42,8 +65,33 @@ public class PositionCalculator {
                 .notionalSalesPrice(notionalSalesPrice)
                 .transactionCosts(snapshot.getExchange().getTransactionCosts())
                 .rsl(foundExchangeData.getRsl())
-                .exchangeResult(new ExchangeResult2(snapshot.getExchange().getName(), snapshot.getExchange().getRsl()))
+                .exchangeResult(createExchangeResult(snapshot))
                 .positionRisk(individualRisk.calculateIndividualPositionRisk())
                 .build();
     }
+
+    private CalculationResult createResult(Exchange exchange, IndividualRisk individualRisk,
+                                           QueryResult.CompanyResult company,
+                                           BigDecimal notionalSalesPrice, int quantity) {
+        return CalculationResult.builder()
+                .wkn(company.getSymbol())
+                .name(company.getName())
+                .price(company.getWeeklyPrice())
+                .quantity(quantity)
+                .notionalSalesPrice(notionalSalesPrice)
+                .transactionCosts(exchange.getTransactionCosts())
+                .rsl(exchange.getRsl())
+                .exchangeResult(createExchangeResult(exchange))
+                .positionRisk(individualRisk.calculateIndividualPositionRisk())
+                .build();
+    }
+
+    private ExchangeResult createExchangeResult(ExchangeSnapshot snapshot) {
+        return new ExchangeResult(snapshot.getExchange().getName(), snapshot.getExchange().getRsl());
+    }
+
+    private ExchangeResult createExchangeResult(Exchange exchange) {
+        return new ExchangeResult(exchange.getName(), exchange.getRsl());
+    }
+
 }

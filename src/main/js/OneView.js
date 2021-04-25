@@ -86,8 +86,8 @@ const OneView = ({ riskManagementId }) => {
 
           <tr className="exchange-row">
             <td />
-            <td className="text-content">{result.exchange}</td>
-            <td className="number-content">{result.exchangeRsl.toFixed(2)}</td>
+            <td className="text-content">{result.exchangeResult.name}</td>
+            <td className="number-content">{result.exchangeResult.rsl.toFixed(2)}</td>
             <td colSpan={2} />
           </tr>
         </tbody>

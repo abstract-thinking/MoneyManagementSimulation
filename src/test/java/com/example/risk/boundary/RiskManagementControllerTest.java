@@ -1,14 +1,11 @@
 package com.example.risk.boundary;
 
 import com.example.risk.boundary.api.RiskResult;
-import org.junit.Ignore;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.web.server.ResponseStatusException;
-
-import java.util.NoSuchElementException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -17,7 +14,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class RiskManagementControllerTest {
 
     @Autowired
-    private RiskManagementController boundary;
+    private RiskManagementControllerNew boundary;
 
     @Disabled("Missing test data")
     @Test

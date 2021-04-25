@@ -10,6 +10,7 @@ import java.math.BigDecimal;
 public class PurchaseRecommendation {
 
     String wkn;
+    String symbol;
     String name;
 
     int quantity;

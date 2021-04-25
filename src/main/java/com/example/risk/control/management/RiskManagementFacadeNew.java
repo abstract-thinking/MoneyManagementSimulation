@@ -5,6 +5,7 @@ import com.example.risk.boundary.api.CurrentDataResult;
 import com.example.risk.boundary.api.InvestmentResult;
 import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.PurchaseRecommendations;
+import com.example.risk.boundary.api.QueryResult;
 import com.example.risk.boundary.api.RiskData;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
@@ -16,33 +17,49 @@ import com.example.risk.data.RiskManagementRepository;
 import com.example.risk.service.CurrentDataProcessor;
 import com.example.risk.service.InvestmentRecommender;
 import com.example.risk.service.PositionCalculator;
+import com.example.risk.service.PriceCalculator;
+import com.example.risk.service.RelativeStrengthCalculator;
 import com.example.risk.service.RiskManagementCalculator;
-import com.example.risk.service.finanztreff.DecisionRowConverter;
-import com.example.risk.service.finanztreff.ExchangeSnapshot;
+import com.example.risk.service.tradier.Quote;
+import com.example.risk.service.tradier.TradierService;
+import com.example.risk.service.wiki.Company;
+import com.example.risk.service.wiki.WikiService;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 import static java.util.Collections.singletonList;
 
 @AllArgsConstructor
 @Component
-public class RiskManagementFacade {
+public class RiskManagementFacadeNew {
 
     private final RiskManagementRepository riskManagementRepository;
 
     private final InvestmentRepository investmentRepository;
 
-    private final DecisionRowConverter converter;
-
     private final RiskManagementCalculator riskManagementCalculator;
 
     private final CurrentDataProcessor currentDataProcessor;
 
+    private final WikiService wikiService;
+
+    private final TradierService tradierService;
+
+    private final RelativeStrengthCalculator relativeStrengthCalculator;
+
+    private final PriceCalculator priceCalculator;
+
     private final InvestmentRecommender investmentRecommender;
+
+    private final PositionCalculator positionCalculator;
 
     public RiskResults doRiskManagements() {
         final List<RiskResult> riskResults = new ArrayList<>();
@@ -97,7 +114,7 @@ public class RiskManagementFacade {
         final PurchaseRecommendations purchaseRecommendations =
                 investmentRecommender.findPurchaseRecommendations(fetchExchangeData(), individualRisk);
 
-        removeIfAlreadyInvested(individualRisk, purchaseRecommendations);
+        removeIfAlreadyInvestedSymbol(individualRisk, purchaseRecommendations);
 
         return purchaseRecommendations;
     }
@@ -112,14 +129,20 @@ public class RiskManagementFacade {
                 .orElseThrow();
     }
 
-    private ExchangeSnapshot fetchExchangeData() {
-        return converter.fetchTable();
+    private QueryResult fetchExchangeData() {
+        try {
+
+            return doIt(new Exchange("NASDAQ 100", "NASDAQ-100", BigDecimal.valueOf(60)));
+        } catch (ExecutionException | InterruptedException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
-    private void removeIfAlreadyInvested(IndividualRisk individualRisk, PurchaseRecommendations purchaseRecommendations) {
+    private void removeIfAlreadyInvestedSymbol(IndividualRisk individualRisk, PurchaseRecommendations purchaseRecommendations) {
         investmentRepository.findAllByRiskManagementId(individualRisk.getId()).forEach(investment ->
                 purchaseRecommendations.getPurchaseRecommendations().removeIf(recommendation ->
-                        recommendation.getWkn().equalsIgnoreCase(investment.getWkn())));
+                        recommendation.getWkn().equalsIgnoreCase(investment.getSymbol())));
     }
 
     public InvestmentResult doCreateInvestment(Long riskManagementId, InvestmentResult newInvestment) {
@@ -151,9 +174,6 @@ public class RiskManagementFacade {
         investmentRepository.deleteById(investmentId);
     }
 
-    @Autowired
-    PositionCalculator positionCalculator;
-
     public CalculationResult doPositionCalculation(long riskManagementId, String wkn) {
         final IndividualRisk individualRisk = riskManagementRepository.findById(riskManagementId).orElseThrow();
 
@@ -181,4 +201,37 @@ public class RiskManagementFacade {
         return currentDataProcessor.process(fetchExchangeData(), investments);
     }
 
+    private QueryResult doIt(Exchange exchange) throws ExecutionException, InterruptedException {
+        List<Company> companies = wikiService.fetchCompanies(exchange.getSymbol());
+
+        Map<Company, CompletableFuture<List<Quote>>> futures = new HashMap<>();
+        for (Company company : companies) {
+            futures.put(company, tradierService.fetchWeeklyQuotes(company.getSymbol()));
+        }
+
+        QueryResult result = new QueryResult(exchange);
+        for (Map.Entry<Company, CompletableFuture<List<Quote>>> future : futures.entrySet()) {
+            final List<Quote> quotes = future.getValue().get();
+            final double rsl = relativeStrengthCalculator.calculateRelativeStrengthLevy(quotes);
+            final BigDecimal stopPrice = priceCalculator.calculateStopPrice(quotes);
+
+            final Quote lastQuote = quotes.get(quotes.size() - 1);
+            result.add(createCompanyResult(future.getKey(), rsl, stopPrice, lastQuote));
+        }
+
+        result.getExchange().setRsl(relativeStrengthCalculator.calculateExchangeRsl(result.getCompanyResults()));
+
+        return result;
+    }
+
+    private QueryResult.CompanyResult createCompanyResult(Company company, double rsl, BigDecimal stopPrice, Quote quote) {
+        return QueryResult.CompanyResult.builder()
+                .symbol(company.getSymbol())
+                .name(company.getName())
+                .rsl(rsl)
+                .stopPrice(stopPrice)
+                .date(quote.getDate())
+                .weeklyPrice(quote.getClose())
+                .build();
+    }
 }

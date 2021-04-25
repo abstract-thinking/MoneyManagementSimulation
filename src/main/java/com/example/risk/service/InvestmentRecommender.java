@@ -1,10 +1,12 @@
 package com.example.risk.service;
 
-import com.example.risk.boundary.api.ExchangeResult2;
+import com.example.risk.boundary.api.ExchangeResult;
 import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.PurchaseRecommendations;
+import com.example.risk.boundary.api.QueryResult;
 import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.boundary.api.SalesRecommendations;
+import com.example.risk.control.management.Exchange;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import com.example.risk.service.finanztreff.ExchangeSnapshot;
@@ -33,8 +35,21 @@ public class InvestmentRecommender {
                         .ifPresent(salesRecommendations::add)
         );
 
-        ExchangeResult2 exchangeResult = new ExchangeResult2(snapshot.getExchange().getName(), snapshot.getExchange().getRsl());
-        return new SalesRecommendations(exchangeResult, salesRecommendations);
+        return new SalesRecommendations(createExchangeResult(snapshot), salesRecommendations);
+    }
+
+    public SalesRecommendations findSaleRecommendations(QueryResult queryResult, List<Investment> investments) {
+        List<SaleRecommendation> salesRecommendations = new ArrayList<>();
+        investments.forEach(investment ->
+                queryResult.getCompanyResults().stream()
+                        .filter(company -> company.getSymbol().equalsIgnoreCase(investment.getSymbol()))
+                        .map(result -> createSellRecommendation(queryResult.getExchange(), result, investment))
+                        .filter(SaleRecommendation::shouldSell)
+                        .findFirst()
+                        .ifPresent(salesRecommendations::add)
+        );
+
+        return new SalesRecommendations(createExchangeResult(queryResult.getExchange()), salesRecommendations);
     }
 
     private SaleRecommendation createSellRecommendation(ExchangeSnapshot exchangeSnapshot, ExchangeSnapshot.Quotes result, Investment investment) {
@@ -50,12 +65,35 @@ public class InvestmentRecommender {
                 .build();
     }
 
+    private SaleRecommendation createSellRecommendation(Exchange exchange,
+                                                        QueryResult.CompanyResult company,
+                                                        Investment investment) {
+        return SaleRecommendation.builder()
+                .id(investment.getId())
+                .wkn(company.getSymbol())
+                .name(company.getName())
+                .rsl(company.getRsl())
+                .price(company.getWeeklyPrice())
+                .notionalSalesPrice(investment.getStopPrice())
+                .shouldSellByStopPrice(isCurrentPriceLowerThanStopPrice(company, investment))
+                .shouldSellByRslComparison(isCompanyRslLowerThanExchangeRsl(exchange, company))
+                .build();
+    }
+
     private boolean isCurrentPriceLowerThanStopPrice(ExchangeSnapshot.Quotes result, Investment investment) {
         return result.getPrice().min(investment.getStopPrice()).equals(result.getPrice());
     }
 
+    private boolean isCurrentPriceLowerThanStopPrice(QueryResult.CompanyResult result, Investment investment) {
+        return result.getStopPrice().min(investment.getStopPrice()).equals(result.getStopPrice());
+    }
+
     private boolean isCompanyRslLowerThanExchangeRsl(ExchangeSnapshot snapshot, ExchangeSnapshot.Quotes company) {
         return company.getRsl() < snapshot.getExchange().getRsl();
+    }
+
+    private boolean isCompanyRslLowerThanExchangeRsl(Exchange exchange, QueryResult.CompanyResult company) {
+        return company.getRsl() < exchange.getRsl();
     }
 
     public PurchaseRecommendations findPurchaseRecommendations(ExchangeSnapshot snapshot, IndividualRisk individualRisk) {
@@ -66,19 +104,48 @@ public class InvestmentRecommender {
                 .map(result -> createBuyRecommendation(snapshot, result, individualRisk))
                 .collect(toList());
 
-        ExchangeResult2 exchangeResult = new ExchangeResult2(snapshot.getExchange().getName(), snapshot.getExchange().getRsl());
-        return new PurchaseRecommendations(exchangeResult, purchaseRecommendations);
+        return new PurchaseRecommendations(createExchangeResult(snapshot), purchaseRecommendations);
+    }
+
+    public PurchaseRecommendations findPurchaseRecommendations(QueryResult queryResult, IndividualRisk individualRisk) {
+        List<PurchaseRecommendation> purchaseRecommendations = queryResult.getCompanyResults().stream()
+                .filter(result -> result.getRsl() > queryResult.getExchange().getRsl())
+                .sorted(comparingDouble(QueryResult.CompanyResult::getRsl).reversed())
+                .limit(7)
+                .map(company -> createBuyRecommendation(queryResult.getExchange(), company, individualRisk))
+                .collect(toList());
+
+        return new PurchaseRecommendations(createExchangeResult(queryResult.getExchange()), purchaseRecommendations);
+    }
+
+    private ExchangeResult createExchangeResult(ExchangeSnapshot snapshot) {
+        return new ExchangeResult(snapshot.getExchange().getName(), snapshot.getExchange().getRsl());
+    }
+
+    private ExchangeResult createExchangeResult(Exchange exchange) {
+        return new ExchangeResult(exchange.getName(), exchange.getRsl());
     }
 
     private PurchaseRecommendation createBuyRecommendation(ExchangeSnapshot snapshot, ExchangeSnapshot.Quotes result, IndividualRisk individualRisk) {
         final BigDecimal notionalSalesPrice = calculateNotionalSalesPrice(result.getRsl(), result.getPrice(),
                 snapshot.getExchange().getRsl());
 
-        final MoneyManagement.Parameters purchaseParameters = new MoneyManagement.Parameters(
+        final MoneyManagement.Parameters parameters = new MoneyManagement.Parameters(
                 result.getPrice(), notionalSalesPrice, snapshot.getExchange().getTransactionCosts());
-        final int quantity = calculateQuantity(individualRisk.calculateIndividualPositionRisk(), purchaseParameters);
+        final int quantity = calculateQuantity(individualRisk.calculateIndividualPositionRisk(), parameters);
 
         return createPurchaseRecommendation(result, notionalSalesPrice, quantity);
+    }
+
+    private PurchaseRecommendation createBuyRecommendation(Exchange exchange,
+                                                           QueryResult.CompanyResult company,
+                                                           IndividualRisk individualRisk) {
+
+        final MoneyManagement.Parameters parameters = new MoneyManagement.Parameters(
+                company.getWeeklyPrice(), company.getStopPrice(), exchange.getTransactionCosts());
+        final int quantity = calculateQuantity(individualRisk.calculateIndividualPositionRisk(), parameters);
+
+        return createPurchaseRecommendation(company, quantity);
     }
 
     private PurchaseRecommendation createPurchaseRecommendation(ExchangeSnapshot.Quotes result, BigDecimal notionalSalesPrice, int quantity) {
@@ -91,4 +158,16 @@ public class InvestmentRecommender {
                 .quantity(quantity)
                 .build();
     }
+
+    private PurchaseRecommendation createPurchaseRecommendation(QueryResult.CompanyResult company, int quantity) {
+        return PurchaseRecommendation.builder()
+                .wkn(company.getSymbol())
+                .name(company.getName())
+                .rsl(company.getRsl())
+                .price(company.getWeeklyPrice())
+                .notionalSalesPrice(company.getStopPrice())
+                .quantity(quantity)
+                .build();
+    }
+
 }

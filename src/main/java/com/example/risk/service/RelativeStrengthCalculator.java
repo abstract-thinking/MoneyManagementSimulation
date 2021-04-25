@@ -1,6 +1,6 @@
 package com.example.risk.service;
 
-import com.example.risk.boundary.api.ExchangeResult;
+import com.example.risk.boundary.api.QueryResult;
 import com.example.risk.service.tradier.Quote;
 import org.springframework.stereotype.Service;
 
@@ -35,13 +35,13 @@ public class RelativeStrengthCalculator {
                 .sum());
     }
 
-    public double calculateExchangeRsl(List<ExchangeResult.CompanyResult> companyResults) {
+    public double calculateExchangeRsl(List<QueryResult.CompanyResult> companyResults) {
         return sum(companyResults) / companyResults.size();
     }
 
-    private double sum(List<ExchangeResult.CompanyResult> companyResults) {
+    private double sum(List<QueryResult.CompanyResult> companyResults) {
         return companyResults.stream()
-                .map(ExchangeResult.CompanyResult::getRsl)
+                .map(QueryResult.CompanyResult::getRsl)
                 .mapToDouble(Double::doubleValue)
                 .sum();
     }

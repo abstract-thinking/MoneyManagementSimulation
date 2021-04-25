@@ -7,7 +7,7 @@ import java.util.List;
 @Value
 public class PurchaseRecommendations {
 
-    ExchangeResult2 exchangeResult;
+    ExchangeResult exchangeResult;
 
     List<PurchaseRecommendation> purchaseRecommendations;
 }
