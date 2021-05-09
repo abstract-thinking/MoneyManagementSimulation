@@ -51,3 +51,5 @@ dist
 .eslintcache
 
 /src/main/java/com/example/risk/data/DatabaseLoader.java
+/src/main/frontend/node/
+/transaction.log
