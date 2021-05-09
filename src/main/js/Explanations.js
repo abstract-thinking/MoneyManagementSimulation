@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
-import OneViewEntry from "./OneViewEntry";
+import Explanation from "./Explanation";
 import { Table } from "react-bootstrap";
 import NavigationBar from "./NavigationBar";
 
-const OneView = ({ riskManagementId }) => {
+const Explanations = ({ riskManagementId }) => {
   const [result, setResult] = useState(null);
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -98,4 +98,4 @@ const OneView = ({ riskManagementId }) => {
   );
 };
 
-export default OneView;
+export default Explanations;

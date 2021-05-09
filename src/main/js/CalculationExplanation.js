@@ -103,8 +103,12 @@ const CalculationExplanation = ({ riskManagementId }) => {
               <td>{result.price.toFixed(2)}</td>
             </tr>
             <tr>
+              <td>Börse</td>
+              <td>{result.exchangeResult.name}</td>
+            </tr>
+            <tr>
               <td>Börsen RSL</td>
-              <td>{result.exchangeRsl}</td>
+              <td>{result.exchangeResult.rsl}</td>
             </tr>
             <tr>
               <td>Fiktiver Stoppkurs</td>
@@ -130,7 +134,7 @@ const CalculationExplanation = ({ riskManagementId }) => {
             </tr>
             <tr>
               <td>Anzahl</td>
-              <td>{result.quantity}</td>
+              <td>{result.quantity > 0 ? result.quantity : 0}</td>
             </tr>
           </tbody>
         </Table>

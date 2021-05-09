@@ -1,6 +1,6 @@
 import React from "react";
 
-const OneViewEntry = ({ entry }) => (
+const Explanation = ({ entry }) => (
   <tr className="entry-data">
     <td className="text-content">{entry.wkn}</td>
     <td className="text-content">{entry.name}</td>
@@ -12,4 +12,4 @@ const OneViewEntry = ({ entry }) => (
   </tr>
 );
 
-export default OneViewEntry;
+export default Explanation;
