@@ -2,6 +2,7 @@ package com.example.risk.control.management;
 
 import com.example.risk.boundary.api.CalculationResult;
 import com.example.risk.boundary.api.CurrentDataResult;
+import com.example.risk.boundary.api.Exchange;
 import com.example.risk.boundary.api.InvestmentResult;
 import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.PurchaseRecommendations;
@@ -131,7 +132,6 @@ public class RiskManagementFacadeNew {
 
     private QueryResult fetchExchangeData() {
         try {
-
             return doIt(new Exchange("NASDAQ 100", "NASDAQ-100", BigDecimal.valueOf(60)));
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();

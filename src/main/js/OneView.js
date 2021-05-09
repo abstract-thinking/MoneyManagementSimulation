@@ -74,8 +74,10 @@ const OneView = ({ riskManagementId }) => {
             <th className="header">WKN</th>
             <th className="header">Name</th>
             <th className="header">RSL</th>
+            <th className="header">Kaufkurs</th>
             <th className="header">Aktueller Kurs</th>
-            <th className="header">Fiktiver Stoppkurs</th>
+            <th className="header">Aktueller fiktiver Stoppkurs</th>
+            <th className="header">Initialer fiktiver Stoppkurs</th>
           </tr>
         </thead>
         <tbody>

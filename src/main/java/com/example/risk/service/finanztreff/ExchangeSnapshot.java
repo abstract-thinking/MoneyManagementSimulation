@@ -3,7 +3,6 @@ package com.example.risk.service.finanztreff;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
-import lombok.ToString;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -31,7 +30,6 @@ public class ExchangeSnapshot {
 
     @Data
     @Builder
-    @ToString
     public static class Exchange {
         private final String name = "NASDAQ 100";
         // Gesamtkosten Kauf + Verkauf: 48,38 EUR (0,03 %)
@@ -50,7 +48,6 @@ public class ExchangeSnapshot {
 
     @Data
     @Builder
-    @ToString
     public static class Quotes {
         String wkn;
         String name;
@@ -60,7 +57,6 @@ public class ExchangeSnapshot {
 
     @Data
     @Builder
-    @ToString
     public static class Result {
         String wkn;
         String name;

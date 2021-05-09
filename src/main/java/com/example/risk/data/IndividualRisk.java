@@ -3,7 +3,6 @@ package com.example.risk.data;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -14,7 +13,6 @@ import java.math.RoundingMode;
 @Data
 @NoArgsConstructor
 @EqualsAndHashCode
-@ToString
 @Entity
 public class IndividualRisk {
 

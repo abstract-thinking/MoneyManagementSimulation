@@ -1,12 +1,12 @@
 package com.example.risk.service;
 
+import com.example.risk.boundary.api.Exchange;
 import com.example.risk.boundary.api.ExchangeResult;
 import com.example.risk.boundary.api.PurchaseRecommendation;
 import com.example.risk.boundary.api.PurchaseRecommendations;
 import com.example.risk.boundary.api.QueryResult;
 import com.example.risk.boundary.api.SaleRecommendation;
 import com.example.risk.boundary.api.SalesRecommendations;
-import com.example.risk.control.management.Exchange;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.data.Investment;
 import com.example.risk.service.finanztreff.ExchangeSnapshot;
@@ -28,8 +28,9 @@ public class InvestmentRecommender {
         List<SaleRecommendation> salesRecommendations = new ArrayList<>();
         investments.forEach(investment ->
                 snapshot.getQuotes().stream()
-                        .filter(result -> result.getWkn().equalsIgnoreCase(investment.getWkn()))
-                        .map(result -> createSellRecommendation(snapshot, result, investment))
+                        .filter(company -> company.getWkn().equalsIgnoreCase(investment.getWkn()))
+                        .map(company -> createSellRecommendation(snapshot, company,
+                                currentNotionalSalesPrice(snapshot, company, investment)))
                         .filter(SaleRecommendation::shouldSell)
                         .findFirst()
                         .ifPresent(salesRecommendations::add)
@@ -43,7 +44,8 @@ public class InvestmentRecommender {
         investments.forEach(investment ->
                 queryResult.getCompanyResults().stream()
                         .filter(company -> company.getSymbol().equalsIgnoreCase(investment.getSymbol()))
-                        .map(result -> createSellRecommendation(queryResult.getExchange(), result, investment))
+                        .map(company -> createSellRecommendation(queryResult.getExchange(), company,
+                                currentNotionalSalesPrice(queryResult.getCurrent(), investment)))
                         .filter(SaleRecommendation::shouldSell)
                         .findFirst()
                         .ifPresent(salesRecommendations::add)
@@ -52,40 +54,50 @@ public class InvestmentRecommender {
         return new SalesRecommendations(createExchangeResult(queryResult.getExchange()), salesRecommendations);
     }
 
-    private SaleRecommendation createSellRecommendation(ExchangeSnapshot exchangeSnapshot, ExchangeSnapshot.Quotes result, Investment investment) {
+    private BigDecimal currentNotionalSalesPrice(ExchangeSnapshot exchangeSnapshot, ExchangeSnapshot.Quotes quotes, Investment investment) {
+        BigDecimal calculatedNotionalSalesPrice =
+                calculateNotionalSalesPrice(quotes.getRsl(), quotes.getPrice(), exchangeSnapshot.getExchange().getRsl());
+
+        return investment.getStopPrice().max(calculatedNotionalSalesPrice);
+    }
+
+    private BigDecimal currentNotionalSalesPrice(QueryResult.CompanyResult company, Investment investment) {
+        return investment.getStopPrice().max(company.getStopPrice());
+    }
+
+    private SaleRecommendation createSellRecommendation(
+            ExchangeSnapshot exchangeSnapshot, ExchangeSnapshot.Quotes company, BigDecimal currentNotionalSalesPrice) {
+
         return SaleRecommendation.builder()
-                .id(investment.getId())
-                .wkn(result.getWkn())
-                .name(result.getName())
-                .rsl(result.getRsl())
-                .price(result.getPrice())
-                .notionalSalesPrice(investment.getStopPrice())
-                .shouldSellByStopPrice(isCurrentPriceLowerThanStopPrice(result, investment))
-                .shouldSellByRslComparison(isCompanyRslLowerThanExchangeRsl(exchangeSnapshot, result))
+                .wkn(company.getWkn())
+                .name(company.getName())
+                .rsl(company.getRsl())
+                .price(company.getPrice())
+                .notionalSalesPrice(currentNotionalSalesPrice)
+                .shouldSellByStopPrice(isCurrentPriceLowerThanStopPrice(company, currentNotionalSalesPrice))
+                .shouldSellByRslComparison(isCompanyRslLowerThanExchangeRsl(exchangeSnapshot, company))
                 .build();
     }
 
-    private SaleRecommendation createSellRecommendation(Exchange exchange,
-                                                        QueryResult.CompanyResult company,
-                                                        Investment investment) {
+    private SaleRecommendation createSellRecommendation(Exchange exchange, QueryResult.CompanyResult company,
+                                                        BigDecimal currentNotionalSalesPrice) {
         return SaleRecommendation.builder()
-                .id(investment.getId())
                 .wkn(company.getSymbol())
                 .name(company.getName())
                 .rsl(company.getRsl())
                 .price(company.getWeeklyPrice())
-                .notionalSalesPrice(investment.getStopPrice())
-                .shouldSellByStopPrice(isCurrentPriceLowerThanStopPrice(company, investment))
+                .notionalSalesPrice(currentNotionalSalesPrice)
+                .shouldSellByStopPrice(isCurrentPriceLowerThanStopPrice(company, currentNotionalSalesPrice))
                 .shouldSellByRslComparison(isCompanyRslLowerThanExchangeRsl(exchange, company))
                 .build();
     }
 
-    private boolean isCurrentPriceLowerThanStopPrice(ExchangeSnapshot.Quotes result, Investment investment) {
-        return result.getPrice().min(investment.getStopPrice()).equals(result.getPrice());
+    private boolean isCurrentPriceLowerThanStopPrice(ExchangeSnapshot.Quotes quotes, BigDecimal currentStopPrice) {
+        return quotes.getPrice().min(currentStopPrice).equals(quotes.getPrice());
     }
 
-    private boolean isCurrentPriceLowerThanStopPrice(QueryResult.CompanyResult result, Investment investment) {
-        return result.getStopPrice().min(investment.getStopPrice()).equals(result.getStopPrice());
+    private boolean isCurrentPriceLowerThanStopPrice(QueryResult.CompanyResult quotes, BigDecimal currentStopPrice) {
+        return quotes.getStopPrice().min(currentStopPrice).equals(quotes.getStopPrice());
     }
 
     private boolean isCompanyRslLowerThanExchangeRsl(ExchangeSnapshot snapshot, ExchangeSnapshot.Quotes company) {

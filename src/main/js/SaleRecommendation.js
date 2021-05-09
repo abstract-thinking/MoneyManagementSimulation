@@ -5,7 +5,7 @@ import axios from "axios";
 const SaleRecommendation = ({
   saleRecommendation,
   riskManagementId,
-  exchangeRsl,
+  exchange,
   updateView
 }) => {
   const [show, setShow] = useState(false);
@@ -50,7 +50,7 @@ const SaleRecommendation = ({
           {saleRecommendation.shouldSellByRslComparison && (
             <div>
               {saleRecommendation.name} RSL {saleRecommendation.rsl} liegt unter
-              dem RSL {exchangeRsl}.
+              dem {exchange.name} RSL {exchange.rsl}.
             </div>
           )}
         </td>

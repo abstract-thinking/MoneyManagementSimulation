@@ -27,7 +27,7 @@ public class PriceCalculator {
         return BigDecimal.valueOf(calculateDoubleEMAIndicator(quotes).getValue(quotes.size() - 1).doubleValue());
     }
 
-    private DoubleEMAIndicator calculateDoubleEMAIndicator(List<Quote> weeklyQuotes) {
+    private static DoubleEMAIndicator calculateDoubleEMAIndicator(List<Quote> weeklyQuotes) {
         final BarSeries series = new BaseBarSeries();
         weeklyQuotes.forEach(quote ->
                 series.addBar(quote.getDate().atStartOfDay(ZoneId.systemDefault()),

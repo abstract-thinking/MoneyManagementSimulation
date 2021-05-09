@@ -2,9 +2,9 @@ package com.example.risk.service;
 
 import com.example.risk.boundary.api.CurrentData;
 import com.example.risk.boundary.api.CurrentDataResult;
+import com.example.risk.boundary.api.Exchange;
 import com.example.risk.boundary.api.ExchangeResult;
 import com.example.risk.boundary.api.QueryResult;
-import com.example.risk.control.management.Exchange;
 import com.example.risk.data.Investment;
 import com.example.risk.service.finanztreff.ExchangeSnapshot;
 import org.springframework.stereotype.Service;
@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.example.risk.service.PriceCalculator.calculateNotionalSalesPrice;
 import static java.util.Comparator.comparingDouble;
 
 @Service
@@ -23,7 +24,7 @@ public class CurrentDataProcessor {
         investments.forEach(investment ->
                 snapshot.getQuotes().forEach(data -> {
                     if (investment.getWkn().equalsIgnoreCase(data.getWkn())) {
-                        currentData.add(createCurrentData(investment, data));
+                        currentData.add(createCurrentData(investment, snapshot.getExchange(), data));
                     }
                 })
         );
@@ -57,12 +58,14 @@ public class CurrentDataProcessor {
         return new ExchangeResult(exchange.getName(), exchange.getRsl());
     }
 
-    private CurrentData createCurrentData(Investment investment, ExchangeSnapshot.Quotes data) {
+    private CurrentData createCurrentData(Investment investment, ExchangeSnapshot.Exchange exchange, ExchangeSnapshot.Quotes data) {
         return CurrentData.builder()
                 .wkn(data.getWkn())
                 .name(data.getName())
-                .price(data.getPrice())
-                .stopPrice(investment.getStopPrice())
+                .purchasePrice(investment.getPurchasePrice())
+                .currentPrice(data.getPrice())
+                .currentStopPrice(calculateNotionalSalesPrice(data.getRsl(), data.getPrice(), exchange.getRsl()))
+                .initialStopPrice(investment.getStopPrice())
                 .rsl(data.getRsl())
                 .build();
     }
@@ -71,8 +74,10 @@ public class CurrentDataProcessor {
         return CurrentData.builder()
                 .wkn(company.getSymbol())
                 .name(company.getName())
-                .price(company.getWeeklyPrice())
-                .stopPrice(investment.getStopPrice())
+                .purchasePrice(investment.getPurchasePrice())
+                .currentPrice(company.getWeeklyPrice())
+                // TOOO: currentStopPrice is missing
+                .initialStopPrice(investment.getStopPrice())
                 .rsl(company.getRsl())
                 .build();
     }

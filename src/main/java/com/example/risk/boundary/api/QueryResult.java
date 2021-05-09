@@ -1,6 +1,5 @@
 package com.example.risk.boundary.api;
 
-import com.example.risk.control.management.Exchange;
 import lombok.Builder;
 import lombok.Data;
 
@@ -22,6 +21,11 @@ public class QueryResult {
 
     public void add(CompanyResult companyResult) {
         companyResults.add(companyResult);
+    }
+
+    public CompanyResult getCurrent() {
+        // TODO: This should be the last one (0 or size() - 1)
+        return companyResults.get(companyResults.size() - 1);
     }
 
     @Data

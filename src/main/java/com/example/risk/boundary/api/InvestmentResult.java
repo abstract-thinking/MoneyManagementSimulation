@@ -3,14 +3,12 @@ package com.example.risk.boundary.api;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import org.springframework.hateoas.RepresentationModel;
 
 import java.math.BigDecimal;
 
 @Data
 @EqualsAndHashCode(callSuper = true)
-@ToString
 @Builder
 public class InvestmentResult extends RepresentationModel<InvestmentResult> {
 

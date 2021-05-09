@@ -10,7 +10,9 @@ import java.math.BigDecimal;
 public class CurrentData {
     String wkn;
     String name;
-    BigDecimal price;
-    BigDecimal stopPrice;
+    BigDecimal purchasePrice;
+    BigDecimal currentPrice;
+    BigDecimal currentStopPrice;
+    BigDecimal initialStopPrice;
     double rsl;
 }

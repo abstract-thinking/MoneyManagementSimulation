@@ -1,4 +1,4 @@
-package com.example.risk.control.management;
+package com.example.risk.boundary.api;
 
 import lombok.Data;
 

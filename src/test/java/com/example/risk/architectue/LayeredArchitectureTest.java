@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Disabled;
 
 import static com.tngtech.archunit.library.Architectures.layeredArchitecture;
 
-// @Disabled
+@Disabled
 @AnalyzeClasses(packages = "com.example.risk")
 public class LayeredArchitectureTest {
 

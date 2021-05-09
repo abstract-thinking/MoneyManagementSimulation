@@ -86,7 +86,7 @@ const SalesRecommendations = ({ riskManagementId }) => {
                 key={saleRecommendation.name}
                 riskManagementId={riskManagementId}
                 saleRecommendation={saleRecommendation}
-                exchangeRsl={result.exchangeRsl}
+                exchange={result.exchangeResult}
                 updateView={fetchData}
               />
             ))}

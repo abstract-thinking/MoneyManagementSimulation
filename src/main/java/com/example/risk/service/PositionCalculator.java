@@ -1,9 +1,9 @@
 package com.example.risk.service;
 
 import com.example.risk.boundary.api.CalculationResult;
+import com.example.risk.boundary.api.Exchange;
 import com.example.risk.boundary.api.ExchangeResult;
 import com.example.risk.boundary.api.QueryResult;
-import com.example.risk.control.management.Exchange;
 import com.example.risk.data.IndividualRisk;
 import com.example.risk.service.finanztreff.ExchangeSnapshot;
 import org.springframework.stereotype.Service;
