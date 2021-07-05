@@ -8,11 +8,11 @@ import java.math.BigDecimal;
 @Value
 @Builder
 public class CurrentData {
-    String wkn;
+    String symbol;
     String name;
     BigDecimal purchasePrice;
     BigDecimal currentPrice;
-    BigDecimal currentStopPrice;
     BigDecimal initialStopPrice;
+    BigDecimal currentStopPrice;
     double rsl;
 }

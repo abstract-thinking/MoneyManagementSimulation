@@ -14,7 +14,7 @@ public class InvestmentResult extends RepresentationModel<InvestmentResult> {
 
     private Long id;
 
-    private String wkn;
+    private String symbol;
     private String name;
     private int quantity;
     private BigDecimal purchasePrice;

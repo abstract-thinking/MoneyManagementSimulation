@@ -7,7 +7,7 @@ import com.example.risk.boundary.api.PurchaseRecommendations;
 import com.example.risk.boundary.api.RiskData;
 import com.example.risk.boundary.api.RiskResult;
 import com.example.risk.boundary.api.RiskResults;
-import com.example.risk.boundary.api.SalesRecommendations;
+import com.example.risk.boundary.api.SaleRecommendations;
 import com.example.risk.control.management.RiskManagementFacade;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -21,13 +21,11 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.NoSuchElementException;
 
 import static org.springframework.hateoas.server.mvc.WebMvcLinkBuilder.linkTo;
-import static org.springframework.http.HttpStatus.NOT_FOUND;
-import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 
 @CrossOrigin
 @Slf4j
@@ -49,15 +47,11 @@ public class RiskManagementController {
     }
 
     @GetMapping(path = "/api/riskManagements/{riskManagementId}", produces = APPLICATION_JSON_VALUE)
-    public RiskResult riskManagement(@PathVariable("riskManagementId") Long riskManagementId) {
+    public RiskResult riskManagement(@PathVariable("riskManagementId") Long riskManagementId) throws NoSuchElementException {
         log.info("Risk management invoked");
 
         RiskResult riskResult;
-        try {
-            riskResult = riskManagementFacade.doRiskManagement(riskManagementId);
-        } catch (NoSuchElementException ex) {
-            throw new ResponseStatusException(NOT_FOUND);
-        }
+        riskResult = riskManagementFacade.doRiskManagement(riskManagementId);
 
         addSelfLink(riskResult);
         addSaleRecommendationLink(riskResult);
@@ -68,17 +62,15 @@ public class RiskManagementController {
     private void addSaleRecommendationLink(RiskResult riskResult) {
         for (InvestmentResult investment : riskResult.getInvestments()) {
             if (investment.getHasSellRecommendation()) {
-
-                String relativePath = "/api/riskManagements/" + riskResult.getId() + "/recommendations/sales/" + investment.getId();
-
-                Link link = Link.of(relativePath, "sale");
-//                Link link = linkTo(RiskManagementControllerContractsMvvBracketIT.class)
-//                        .slash("api")
-//                        .slash("riskManagements")
-//                        .slash(riskResult.getId())
-//                        .slash("sell-recommendation")
-//                        .slash(investment.getId())
-//                        .withRel("sell-recommendation");
+                // String relativePath = "/api/riskManagements/" + riskResult.getId() + "/recommendations/sales/" + investment.getId();
+                // Link link = Link.of(relativePath, "sale");
+                Link link = linkTo(RiskManagementController.class)
+                        .slash("api")
+                        .slash("riskManagements")
+                        .slash(riskResult.getId())
+                        .slash("sell-recommendation")
+                        .slash(investment.getId())
+                        .withRel("sell-recommendation");
 
                 investment.add(link);
             }
@@ -97,14 +89,14 @@ public class RiskManagementController {
     }
 
     @GetMapping(path = "/api/riskManagements/{riskManagementId}/recommendations/sales", produces = APPLICATION_JSON_VALUE)
-    public SalesRecommendations saleRecommendations(@PathVariable("riskManagementId") Long riskManagementId) {
+    public SaleRecommendations saleRecommendations(@PathVariable("riskManagementId") Long riskManagementId) {
         log.info("Sale recommendations invoked");
 
         return riskManagementFacade.doSaleRecommendations(riskManagementId);
     }
 
     @GetMapping(path = "/api/riskManagements/{riskManagementId}/recommendations/sales/{investmentId}", produces = APPLICATION_JSON_VALUE)
-    public SalesRecommendations saleRecommendation(
+    public SaleRecommendations saleRecommendation(
             @PathVariable("riskManagementId") Long riskManagementId,
             @PathVariable("investmentId") Long investmentId) {
         log.info("Sale recommendation invoked");
@@ -133,8 +125,8 @@ public class RiskManagementController {
     @GetMapping(path = "/api/riskManagements/{riskManagementId}/calc", produces = APPLICATION_JSON_VALUE)
     public CalculationResult positionCalculation(
             @PathVariable Long riskManagementId,
-            @RequestParam String wkn) {
-        return riskManagementFacade.doPositionCalculation(riskManagementId, wkn);
+            @RequestParam String symbol) {
+        return riskManagementFacade.doPositionCalculation(riskManagementId, symbol);
     }
 
     @PutMapping("/api/riskManagements/{riskManagementId}")

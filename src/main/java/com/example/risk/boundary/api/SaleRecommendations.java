@@ -5,7 +5,7 @@ import lombok.Value;
 import java.util.List;
 
 @Value
-public class SalesRecommendations {
+public class SaleRecommendations {
 
     ExchangeResult exchangeResult;
     List<SaleRecommendation> saleRecommendations;

@@ -9,7 +9,7 @@ const PurchaseRecommendations = ({ riskManagementId }) => {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}/recommendations/purchases`;
+  const targetUrl = `http://localhost:9090/api/riskManagements/${riskManagementId}/recommendations/purchases`;
 
   useEffect(() => {
     fetchData();
@@ -70,7 +70,7 @@ const PurchaseRecommendations = ({ riskManagementId }) => {
       <Table striped bordered>
         <thead>
           <tr>
-            <th className="header">WKN</th>
+            <th className="header">Symbol</th>
             <th className="header">Name</th>
             <th className="header">RSL</th>
             <th className="header">Anzahl</th>

@@ -10,7 +10,7 @@ const SalesRecommendations = ({ riskManagementId }) => {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}/recommendations/sales`;
+  const targetUrl = `http://localhost:9090/api/riskManagements/${riskManagementId}/recommendations/sales`;
 
   useEffect(() => {
     fetchData();
@@ -71,7 +71,7 @@ const SalesRecommendations = ({ riskManagementId }) => {
       <Table striped bordered>
         <thead>
           <tr>
-            <th className="header">WKN</th>
+            <th className="header">Symbol</th>
             <th className="header">Name</th>
             <th className="header">RSL</th>
             <th className="header">Preis</th>

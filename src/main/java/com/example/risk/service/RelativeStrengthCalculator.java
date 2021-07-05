@@ -16,6 +16,10 @@ public class RelativeStrengthCalculator {
     private static final int RSL_WEEKS = 27;
 
     public double calculateRelativeStrengthLevy(List<Quote> quotes) {
+        if (quotes.isEmpty()) {
+            return -1;
+        }
+
         List<Quote> rslQuotes = cutOffTail(quotes);
         assert rslQuotes.size() == RSL_WEEKS;
 

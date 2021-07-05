@@ -8,7 +8,7 @@ import java.math.BigDecimal;
 @Builder
 @Value
 public class CalculationResult {
-    String wkn;
+    String symbol;
     String name;
 
     BigDecimal price;

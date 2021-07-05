@@ -9,7 +9,7 @@ const RiskManagement = ({ riskManagementId }) => {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}`;
+  const targetUrl = `http://localhost:9090/api/riskManagements/${riskManagementId}`;
 
   useEffect(() => {
     setLoading(true);
@@ -78,7 +78,7 @@ const RiskManagement = ({ riskManagementId }) => {
             <td>{riskManagement.individualPositionRisk.toFixed(2)}</td>
           </tr>
           <tr>
-            <td className="header">WKN</td>
+            <td className="header">Symbol</td>
             <td className="header">Name</td>
             <td className="header">Stück</td>
             <td className="header">Kaufkurs</td>

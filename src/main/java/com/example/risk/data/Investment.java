@@ -23,7 +23,6 @@ public class Investment {
     @GeneratedValue
     private Long id;
 
-    private String wkn;
     private String symbol;
     private String name;
     private int quantity;
@@ -31,6 +30,7 @@ public class Investment {
     private BigDecimal transactionCosts;
 
     private BigDecimal stopPrice;
+    private BigDecimal currentStopPrice;
 
     // TODO: This seems to be wrong the investment should not know about the riskManagementId
     // Do I need relation table between?

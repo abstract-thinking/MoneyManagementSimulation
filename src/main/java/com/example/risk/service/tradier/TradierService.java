@@ -32,28 +32,38 @@ public class TradierService {
 
     @Cacheable("fetchWeeklyQuotes")
     public CompletableFuture<List<Quote>> fetchWeeklyQuotes(String symbol) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.set(AUTHORIZATION, "Bearer " + key);
-        headers.set(ACCEPT, APPLICATION_JSON_VALUE);
-
-        LocalDate now = LocalDate.now();
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(URL)
-                .queryParam("symbol", symbol)
-                .queryParam("interval", "weekly")
-                .queryParam("start", now.minusWeeks(RSL_WEEKS * 3).toString())
-                .queryParam("end", now.toString());
-
-        HttpEntity<?> entity = new HttpEntity<>(headers);
-
+        final String uri = createUri(symbol, LocalDate.now());
         HttpEntity<HistoryQuotes> response = new RestTemplate()
-                .exchange(builder.toUriString(), HttpMethod.GET, entity, HistoryQuotes.class);
+                .exchange(uri, HttpMethod.GET, new HttpEntity<>(createHeaders()), HistoryQuotes.class);
 
-        if (response.hasBody() && response.getBody() != null) {
+        log.info("X-Ratelimit-Allowed: {}", response.getHeaders().get("X-Ratelimit-Allowed"));
+        log.info("X-Ratelimit-Used: {}", response.getHeaders().get("X-Ratelimit-Used"));
+        log.info("X-Ratelimit-Available: {}", response.getHeaders().get("X-Ratelimit-Available"));
+        log.info("X-Ratelimit-Expiry: {}", response.getHeaders().get("X-Ratelimit-Expiry"));
+
+        if (response.getBody() != null && response.getBody().getHistory() != null) {
+            log.info("Processing data for " + symbol);
             return CompletableFuture.completedFuture(response.getBody().getHistory().getWeekly());
         } else {
             log.error("Missing data for " + symbol);
             return CompletableFuture.completedFuture(new ArrayList<>());
         }
+    }
+
+    private HttpHeaders createHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set(AUTHORIZATION, "Bearer " + key);
+        headers.set(ACCEPT, APPLICATION_JSON_VALUE);
+        return headers;
+    }
+
+    private String createUri(String symbol, LocalDate now) {
+        return UriComponentsBuilder.fromHttpUrl(URL)
+                .queryParam("symbol", symbol)
+                .queryParam("interval", "weekly")
+                .queryParam("start", now.minusWeeks(RSL_WEEKS * 3).toString())
+                .queryParam("end", now.toString())
+                .toUriString();
     }
 
 }

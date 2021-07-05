@@ -9,7 +9,7 @@ const CalculationExplanation = ({ riskManagementId }) => {
   const [error, setError] = useState("");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}/calc?wkn=`;
+  const targetUrl = `http://localhost:9090/api/riskManagements/${riskManagementId}/calc?symbol=`;
 
   const fetchData = () => {
     setLoading(true);
@@ -54,7 +54,7 @@ const CalculationExplanation = ({ riskManagementId }) => {
         <Table striped bordered>
           <tbody>
             <tr>
-              <td className="header">WKN</td>
+              <td className="header">Symbol</td>
               <td>
                 {" "}
                 <input
@@ -87,8 +87,8 @@ const CalculationExplanation = ({ riskManagementId }) => {
         <Table striped bordered>
           <tbody>
             <tr key={result.name}>
-              <td>WKN</td>
-              <td className="text-content">{result.wkn}</td>
+              <td>Symbol</td>
+              <td className="text-content">{result.symbol}</td>
             </tr>
             <tr>
               <td>Name</td>

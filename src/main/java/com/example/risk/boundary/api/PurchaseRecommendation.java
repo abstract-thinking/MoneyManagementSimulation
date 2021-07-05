@@ -9,7 +9,6 @@ import java.math.BigDecimal;
 @Builder
 public class PurchaseRecommendation {
 
-    String wkn;
     String symbol;
     String name;
 

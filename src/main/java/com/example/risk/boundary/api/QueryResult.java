@@ -24,7 +24,6 @@ public class QueryResult {
     }
 
     public CompanyResult getCurrent() {
-        // TODO: This should be the last one (0 or size() - 1)
         return companyResults.get(companyResults.size() - 1);
     }
 
@@ -36,6 +35,6 @@ public class QueryResult {
         LocalDate date;
         BigDecimal weeklyPrice;
         double rsl;
-        BigDecimal stopPrice;
+        BigDecimal currentStopPrice;
     }
 }

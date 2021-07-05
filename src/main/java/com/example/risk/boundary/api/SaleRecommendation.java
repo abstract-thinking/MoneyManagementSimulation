@@ -11,7 +11,7 @@ import java.math.BigDecimal;
 @Builder
 public class SaleRecommendation {
 
-    String wkn;
+    String symbol;
 
     String name;
     double rsl;
@@ -21,8 +21,4 @@ public class SaleRecommendation {
 
     boolean shouldSellByRslComparison;
     boolean shouldSellByStopPrice;
-
-    public boolean shouldSell() {
-        return shouldSellByStopPrice || shouldSellByRslComparison;
-    }
 }

@@ -14,7 +14,7 @@ const SaleRecommendation = ({
   const handleShow = () => setShow(true);
 
   const handleDelete = () => {
-    const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}/investments/${saleRecommendation.id}`;
+    const targetUrl = `http://localhost:9090/api/riskManagements/${riskManagementId}/investments/${saleRecommendation.id}`;
 
     axios
       .delete(targetUrl)
@@ -32,7 +32,7 @@ const SaleRecommendation = ({
   return (
     <>
       <tr key={saleRecommendation.company}>
-        <td className="text-content">{saleRecommendation.wkn}</td>
+        <td className="text-content">{saleRecommendation.symbol}</td>
         <td className="text-content">{saleRecommendation.name}</td>
         <td className="number-content">{saleRecommendation.rsl}</td>
         <td className="number-content">{saleRecommendation.price}</td>

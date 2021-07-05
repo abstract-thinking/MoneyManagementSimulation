@@ -10,7 +10,7 @@ const Explanations = ({ riskManagementId }) => {
   const [isLoading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}/current`;
+  const targetUrl = `http://localhost:9090/api/riskManagements/${riskManagementId}/current`;
 
   useEffect(() => {
     fetchData();
@@ -71,7 +71,7 @@ const Explanations = ({ riskManagementId }) => {
       <Table striped bordered>
         <thead>
           <tr>
-            <th className="header">WKN</th>
+            <th className="header">Symbol</th>
             <th className="header">Name</th>
             <th className="header">RSL</th>
             <th className="header">Kaufkurs</th>
@@ -83,14 +83,14 @@ const Explanations = ({ riskManagementId }) => {
         <tbody>
           {result.currentData &&
             result.currentData.map(entry => (
-              <OneViewEntry key={entry.name} entry={entry} />
+              <Explanation key={entry.name} entry={entry} />
             ))}
 
           <tr className="exchange-row">
             <td />
             <td className="text-content">{result.exchangeResult.name}</td>
             <td className="number-content">{result.exchangeResult.rsl.toFixed(2)}</td>
-            <td colSpan={2} />
+            <td colSpan={4} />
           </tr>
         </tbody>
       </Table>

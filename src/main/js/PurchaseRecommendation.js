@@ -9,7 +9,7 @@ const PurchaseRecommendation = ({
 }) => {
   const [show, setShow] = useState(false);
   const [data, setData] = useState({
-    wkn: purchaseRecommendation.wkn,
+    symbol: purchaseRecommendation.symbol,
     name: purchaseRecommendation.name,
     quantity: purchaseRecommendation.quantity,
     purchasePrice: purchaseRecommendation.price,
@@ -20,7 +20,7 @@ const PurchaseRecommendation = ({
   const handleShow = () => setShow(true);
 
   const handleSave = () => {
-    const targetUrl = `http://localhost:8080/api/riskManagements/${riskManagementId}`;
+    const targetUrl = `http://localhost:9090/api/riskManagements/${riskManagementId}`;
 
     axios
       .post(targetUrl, data)
@@ -38,7 +38,7 @@ const PurchaseRecommendation = ({
   return (
     <>
       <tr className="purchase-rec-row">
-        <td className="text-content">{purchaseRecommendation.wkn}</td>
+        <td className="text-content">{purchaseRecommendation.symbol}</td>
         <td className="text-content">{purchaseRecommendation.name}</td>
         <td className="number-content">
           {purchaseRecommendation.rsl.toFixed(2)}
@@ -63,11 +63,11 @@ const PurchaseRecommendation = ({
         </Modal.Header>
         <Modal.Body>
           <Form>
-            <Form.Group controlId="formBasicWkn">
-              <Form.Label>WKN</Form.Label>
+            <Form.Group controlId="formBasicSymbol">
+              <Form.Label>Symbol</Form.Label>
               <Form.Control
                 type="text"
-                value={purchaseRecommendation.wkn}
+                value={purchaseRecommendation.sybmol}
                 readOnly
               />
             </Form.Group>

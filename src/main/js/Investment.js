@@ -4,7 +4,7 @@ import { Button } from "react-bootstrap";
 
 const Investment = ({ riskManagementId, investment }) => (
   <tr className="investment-data">
-    <td className="text-content">{investment.wkn}</td>
+    <td className="text-content">{investment.symbol}</td>
     <td className="text-content">{investment.name}</td>
     <td className="number-content">{investment.quantity}</td>
     <td className="number-content">{investment.purchasePrice.toFixed(2)}</td>
